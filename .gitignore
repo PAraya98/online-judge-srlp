@@ -6,7 +6,9 @@
 *.mo
 *~
 *.swp
+node_modules
 dmoj/local_settings.py
+dmoj/settings.py
 resources/style.css
 resources/content-description.css
 resources/ranks.css
