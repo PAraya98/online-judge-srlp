@@ -74,6 +74,7 @@ class RegistrationView(OldRegistrationView):
         })
 
         cleaned_data = form.cleaned_data
+
         profile.timezone = cleaned_data['timezone']
         profile.language = cleaned_data['language']
         profile.organizations.add(*cleaned_data['organizations'])
