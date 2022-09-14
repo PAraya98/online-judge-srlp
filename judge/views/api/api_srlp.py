@@ -10,6 +10,7 @@ from django.utils.functional import cached_property
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
 from django.contrib.auth.models import User
+import json 
 
 from judge.models import (
     Contest, ContestParticipation, ContestTag, Judge, Language, Organization, Problem, ProblemType, Profile, Rating,
@@ -23,10 +24,10 @@ from judge.views.submission import group_test_cases
 class APIUserMagnament():
     
     def register(request):
-        json = request.json()
+        data = json.load(request.stream)
         
-        user, _ = User.objects.get_or_create(username=json.username, email=json.email)
-        User.set_password(user, json.password)
+        user, _ = User.objects.get_or_create(username=data.username, email=data.email)
+        User.set_password(user, data.password)
         user.save()
         profile, created = Profile.objects.get_or_create(
             user=user,
