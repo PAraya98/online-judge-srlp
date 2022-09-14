@@ -35,5 +35,6 @@ class APIUserMagnament():
         profile.save()
 
         return {
-            'State': created
+            'State': created,
+            'status': 200
         }
