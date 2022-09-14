@@ -31,7 +31,7 @@ class APIUserMagnament():
             }
         ) 
         profile.timezone = 'America/Toronto'
-        profile.organizations.add([Organization.objects.get(id=1)])
+        profile.organizations.add(Organization.objects.get(id=1))
         profile.save()
 
         return {
