@@ -23,7 +23,7 @@ class APIUserMagnament():
 
     def register(request):
         
-        user = User.objects.get_or_create(username='paraya101', email='pedro101@alumnos.uta.cl', password='adasd')
+        user, _ = User.objects.get_or_create(username='paraya101', email='pedro101@alumnos.uta.cl', password='adasd')
         profile, created = Profile.objects.get_or_create(
             user=user,
             defaults={
