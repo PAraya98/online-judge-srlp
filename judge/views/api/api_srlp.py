@@ -27,7 +27,7 @@ class APIUserMagnament():
     @csrf_exempt
     def register(request):
         data = json.loads(request.body)
-        
+        print(data)
         user, _ = User.objects.get_or_create(username=data.username, email=data.email)
         User.set_password(user, data.password)
         user.save()
