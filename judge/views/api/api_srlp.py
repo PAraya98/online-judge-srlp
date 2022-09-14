@@ -20,9 +20,7 @@ from judge.views.submission import group_test_cases
 
 
 class APIUserMagnament():
-    model = Profile
-
-    def register(self):
+    def register():
         
         user = models.UserManager.create_user(username='paraya101', email='pedro101@alumnos.uta.cl', password='adasd')
 
