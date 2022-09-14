@@ -10,6 +10,7 @@ from django.utils.functional import cached_property
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 import json 
 
 from judge.models import (
@@ -23,8 +24,9 @@ from judge.views.submission import group_test_cases
 
 class APIUserMagnament():
     
+    @csrf_exempt
     def register(request):
-        data = json.load(request.stream)
+        data = json.loads(request.body)
         
         user, _ = User.objects.get_or_create(username=data.username, email=data.email)
         User.set_password(user, data.password)
