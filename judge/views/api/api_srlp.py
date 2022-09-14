@@ -12,6 +12,7 @@ from django.views.generic.list import BaseListView
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 import json 
+from munch import DefaultMunch
 
 from judge.models import (
     Contest, ContestParticipation, ContestTag, Judge, Language, Organization, Problem, ProblemType, Profile, Rating,
@@ -26,8 +27,7 @@ class APIUserMagnament():
     
     @csrf_exempt
     def register(request):
-        data = json.loads(request.body)
-        print(data)
+        data = DefaultMunch.fromDict(json.loads(request.body))
         user, _ = User.objects.get_or_create(username=data.username, email=data.email)
         User.set_password(user, data.password)
         user.save()
@@ -35,7 +35,7 @@ class APIUserMagnament():
             user=user,
             defaults={
                 'language': Language.get_default_language(),
-            }
+            }       
         ) 
         profile.timezone = 'America/Toronto'
         profile.organizations.add(Organization.objects.get(id=1))
