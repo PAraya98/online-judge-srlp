@@ -21,11 +21,12 @@ from judge.views.submission import group_test_cases
 
 
 class APIUserMagnament():
-
+    
     def register(request):
-
-        user, _ = User.objects.get_or_create(username=request.username, email=request.email)
-        User.set_password(user, request.password)
+        json = request.json()
+        
+        user, _ = User.objects.get_or_create(username=json.username, email=json.email)
+        User.set_password(user, json.password)
         user.save()
         profile, created = Profile.objects.get_or_create(
             user=user,
