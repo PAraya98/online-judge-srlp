@@ -25,7 +25,7 @@ class APIUserMagnament():
 
     def register(request):
         
-        user, _ = User.objects.get_or_create(username='paraya104', email='pedro104@alumnos.uta.cl')
+        user, _ = User.objects.get_or_create(username='paraya105', email='pedro105@alumnos.uta.cl')
         User.set_password(user, 'adasd')
         profile, created = Profile.objects.get_or_create(
             user=user,
@@ -36,7 +36,6 @@ class APIUserMagnament():
         profile.timezone = 'America/Toronto'
         profile.organizations.add(Organization.objects.get(id=1))
         profile.save()
-        hmac.new(force_bytes(settings.SECRET_KEY), msg=secret, digestmod='sha256').hexdigest()
         
         return JsonResponse(
             {   'State': created,
