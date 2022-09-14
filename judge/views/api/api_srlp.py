@@ -34,7 +34,8 @@ class APIUserMagnament():
         profile.organizations.add(Organization.objects.get(id=1))
         profile.save()
 
-        return {
-            'State': created,
-            'status': 200
-        }
+        return JsonResponse(
+            {   'State': created,
+            }, 
+            status=422
+        )
