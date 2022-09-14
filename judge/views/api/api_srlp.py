@@ -23,9 +23,9 @@ from judge.views.submission import group_test_cases
 class APIUserMagnament():
 
     def register(request):
-        
-        user, _ = User.objects.get_or_create(username='paraya107', email='pedro107@alumnos.uta.cl')
-        User.set_password(user, 'Asd_asd1234')
+
+        user, _ = User.objects.get_or_create(username=request.username, email=request.email)
+        User.set_password(user, request.password)
         user.save()
         profile, created = Profile.objects.get_or_create(
             user=user,
@@ -36,9 +36,8 @@ class APIUserMagnament():
         profile.timezone = 'America/Toronto'
         profile.organizations.add(Organization.objects.get(id=1))
         profile.save()
-        
-        return JsonResponse(
-            {   'State': created,
-            }, 
-            status=422
-        )
+        if created : return JsonResponse(
+                            {   'State': created,
+                            }, 
+                            status= 200 if created else 501
+                        )
