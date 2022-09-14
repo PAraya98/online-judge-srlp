@@ -1,6 +1,5 @@
 from operator import attrgetter
-import base64
-import hmac
+from django.conf import settings
 from django.utils.encoding import force_bytes
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
@@ -25,8 +24,8 @@ class APIUserMagnament():
 
     def register(request):
         
-        user, _ = User.objects.get_or_create(username='paraya106', email='pedro106@alumnos.uta.cl')
-        User.set_password(user, 'adasd')
+        user, _ = User.objects.get_or_create(username='paraya107', email='pedro107@alumnos.uta.cl')
+        User.set_password(user, 'Asd_asd1234')
         user.save()
         profile, created = Profile.objects.get_or_create(
             user=user,
