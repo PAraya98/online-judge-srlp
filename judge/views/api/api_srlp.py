@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
+from django.contrib.auth import models
 
 from judge.models import (
     Contest, ContestParticipation, ContestTag, Judge, Language, Organization, Problem, ProblemType, Profile, Rating,
@@ -22,9 +23,11 @@ class APIUserMagnament():
     model = Profile
 
     def register(self):
+        
+        user = models.UserManager('paraya101', email='pedro101@alumnos.uta.cl', password='adasd')
+
         profile, created = Profile.objects.get_or_create(
-            user='paraya101',
-            #email='pedro101@alumnos.uta.cl',
+            user=user,
             defaults={
                 'language': Language.get_default_language(),
             }
