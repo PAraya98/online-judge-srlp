@@ -1,5 +1,7 @@
 from operator import attrgetter
-
+import base64
+import hmac
+from django.utils.encoding import force_bytes
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied, ValidationError
 from django.db.models import Count, F, OuterRef, Prefetch, Q, Subquery
@@ -23,7 +25,8 @@ class APIUserMagnament():
 
     def register(request):
         
-        user, _ = User.objects.get_or_create(username='paraya101', email='pedro101@alumnos.uta.cl', password='adasd')
+        user, _ = User.objects.create(username='paraya104', email='pedro104@alumnos.uta.cl')
+        User.set_password(user, 'adasd')
         profile, created = Profile.objects.get_or_create(
             user=user,
             defaults={
@@ -33,7 +36,8 @@ class APIUserMagnament():
         profile.timezone = 'America/Toronto'
         profile.organizations.add(Organization.objects.get(id=1))
         profile.save()
-
+        hmac.new(force_bytes(settings.SECRET_KEY), msg=secret, digestmod='sha256').hexdigest()
+        
         return JsonResponse(
             {   'State': created,
             }, 
