@@ -23,8 +23,8 @@ class APIUserMagnament():
 
     def register(self):
         profile, created = Profile.objects.get_or_create(
-             user='paraya101',
-            email='pedro101@alumnos.uta.cl',
+            user='paraya101',
+            #email='pedro101@alumnos.uta.cl',
             defaults={
                 'language': Language.get_default_language(),
             }
