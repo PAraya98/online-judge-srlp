@@ -258,7 +258,22 @@ INSTALLED_APPS += (
     'django_jinja',
     'martor',
     'adminsortable2',
+    #For the API REST SRLP
+    'rest_framework',
+    'rest_framework.authtoken'
 )
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_fram,ework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
 
 MIDDLEWARE = (
     'judge.middleware.ShortCircuitMiddleware',

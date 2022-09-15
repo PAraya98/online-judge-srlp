@@ -40,8 +40,11 @@ class APIUserMagnament():
         profile.timezone = 'America/Toronto'
         profile.organizations.add(Organization.objects.get(id=1))
         profile.save()
+
         if created : return JsonResponse(
                             {   'State': created,
+                                'token': request
                             }, 
                             status= 200 if created else 501
                         )
+
