@@ -64,10 +64,8 @@ def register(request):
         profile.organizations.add(Organization.objects.get(id=1))
         profile.save()
 
-        if created : return {   'refresh': str(refresh),
+        if created : return Response({   'refresh': str(refresh),
                                 'access': str(refresh.access_token),
-                            }
+                            })
     except:
-        return {
-            'error': "Error en el servidor"
-        }
+        return Response({'error': "Error en el servidor"})
