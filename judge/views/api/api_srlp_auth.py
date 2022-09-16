@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
-from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from rest_framework import status
@@ -30,9 +30,10 @@ def get_tokens_for_user(request):
         data = DefaultMunch.fromDict(json.loads(request.body))
         user = User.objects.get(username=data.username)
         if(User.check_password(user, data.password)):
-            token = AccessToken.for_user(user)
+            refresh_token = RefreshToken.for_user(user)
             return Response({
-                'token': str(token),
+                'refresh_token': str(refresh_token),
+                'access_token': str(refresh_token.access_token)
                 #'status': 200
             })
         else:
@@ -52,7 +53,7 @@ def register(request):
         user = User.objects.create(username=data.username, email=data.email)
         User.set_password(user, data.password)
         user.save()
-        token = AccessToken.for_user(user)
+        refresh_token = RefreshToken.for_user(user)
 
         profile, created = Profile.objects.get_or_create(
             user=user,
@@ -64,8 +65,9 @@ def register(request):
         profile.organizations.add(Organization.objects.get(id=1))
         profile.save()
 
-        if created : return Response({   'refresh': str(refresh),
-                                'token': str(token),
+        if created : return Response({   
+                                'refresh_token': str(refresh_token),
+                                'access_token': str(refresh_token.access_token)
                             })
     except:
         return Response({'error': "Error en el servidor"})
