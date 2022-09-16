@@ -74,6 +74,6 @@ def register(request):
 @api_view(['POST'])
 def jwt_validation(request):
     try:
-        return Response({ 'user': JWTAuthentication.authenticate(request)})
+        return Response({ 'user': JWTAuthentication.authenticate_header(request)})
     except:
-        return Response({'error': "Error en el servidor"})   
+        return Response({'error': "Error en el servidor"})
