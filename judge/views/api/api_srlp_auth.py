@@ -74,5 +74,5 @@ def register(request):
 @api_view(['POST'])
 def jwt_validation(request):
     
-    return Response({ "status": JWTAuthentication.get_user(JWTAuthentication.authenticate(DefaultMunch.fromDict(json.loads(request.body)).token))})
+    return Response({ "status": JWTAuthentication.get_user(request, DefaultMunch.fromDict(json.loads(request.body)).token)})
    
