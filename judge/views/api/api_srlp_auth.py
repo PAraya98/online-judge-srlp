@@ -10,6 +10,7 @@ from django.utils.functional import cached_property
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -68,3 +69,10 @@ def register(request):
                             })
     except:
         return Response({'error': "Error en el servidor"})
+
+@api_view(['POST'])
+def jwt_validation(request):
+    try:
+        return Response({ 'user': JWTAuthentication.authenticate(request)})
+    except:
+        return Response({'error': "Error en el servidor"})   
