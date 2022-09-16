@@ -17,6 +17,9 @@ from django.utils.translation import gettext_lazy as _
 from django_jinja.builtins import DEFAULT_EXTENSIONS
 from jinja2 import select_autoescape
 
+from django.utils.encoding import force_str
+django.utils.encoding.force_text = force_str
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
