@@ -30,19 +30,19 @@ def get_tokens_for_user(request):
         user = User.objects.get(username=data.username)
         if(User.check_password(user, data.password)):
             refresh = RefreshToken.for_user(user)
-            return {
+            return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
                 #'status': 200
-            }
+            })
         else:
-            return {
+            return Response({
                 'error': "El usuario no existe"
-            }
+            })
     except:
-         return {
+         return Response({
                 'error': "Error en el servidor"
-            }
+            })
    
 
 @api_view(['POST'])
