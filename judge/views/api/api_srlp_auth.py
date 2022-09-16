@@ -43,7 +43,7 @@ def get_tokens_for_user(request):
 @api_view(['POST'])
 def register(request):
     data = DefaultMunch.fromDict(json.loads(request.body))
-    user, _ = User.objects.get_or_create(username=data.username)
+    user, _ = User.objects.create(username=data.username)
     User.set_password(user, data.password)
     user.save()
     refresh = RefreshToken.for_user(user)
