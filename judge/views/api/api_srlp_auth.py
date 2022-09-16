@@ -25,40 +25,49 @@ from munch import DefaultMunch
 
 @api_view(['POST'])
 def get_tokens_for_user(request):
-    data = DefaultMunch.fromDict(json.loads(request.body))
-    user, obtained = User.objects.get(username=data.username)
-    if(not obtained): return {'error': "No encontrado."}
-    if(User.check_password(user, data.password)):
-        refresh = RefreshToken.for_user(user)
-        return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-            #'status': 200
-        }
-    else:
-        return {
-            'error': "El usuario no existe"
-        }
+    try:
+        data = DefaultMunch.fromDict(json.loads(request.body))
+        user = User.objects.get(username=data.username)
+        if(User.check_password(user, data.password)):
+            refresh = RefreshToken.for_user(user)
+            return {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                #'status': 200
+            }
+        else:
+            return {
+                'error': "El usuario no existe"
+            }
+    except:
+         return {
+                'error': "Error en el servidor"
+            }
+   
 
 @api_view(['POST'])
 def register(request):
-    data = DefaultMunch.fromDict(json.loads(request.body))
-    user = User.objects.create(username=data.username, email=data.email)
-    User.set_password(user, data.password)
-    user.save()
-    refresh = RefreshToken.for_user(user)
+    try:
+        data = DefaultMunch.fromDict(json.loads(request.body))
+        user = User.objects.create(username=data.username, email=data.email)
+        User.set_password(user, data.password)
+        user.save()
+        refresh = RefreshToken.for_user(user)
 
-    profile, created = Profile.objects.get_or_create(
-        user=user,
-        defaults={
-            'language': Language.get_default_language(),
-        }       
-    ) 
-    profile.timezone = 'America/Toronto'
-    profile.organizations.add(Organization.objects.get(id=1))
-    profile.save()
+        profile, created = Profile.objects.get_or_create(
+            user=user,
+            defaults={
+                'language': Language.get_default_language(),
+            }       
+        ) 
+        profile.timezone = 'America/Toronto'
+        profile.organizations.add(Organization.objects.get(id=1))
+        profile.save()
 
-    if created : return {   'refresh': str(refresh),
-                            'access': str(refresh.access_token),
-                        }
-    else: return { 'error': "Error al crear el usuario."}
+        if created : return {   'refresh': str(refresh),
+                                'access': str(refresh.access_token),
+                            }
+    except:
+        return {
+            'error': "Error en el servidor"
+        }
