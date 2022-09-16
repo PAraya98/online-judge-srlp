@@ -44,7 +44,7 @@ def get_tokens_for_user(request):
 def register(request):
     data = DefaultMunch.fromDict(json.loads(request.body))
     user, _ = User.objects.get(username=data.username)
-    User.check_password(user, data.password)
+    User.set_password(user, data.password)
     user.save()
     refresh = RefreshToken.for_user(user)
 
