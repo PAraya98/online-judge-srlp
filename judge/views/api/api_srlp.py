@@ -28,9 +28,11 @@ class APIUserMagnament():
     @csrf_exempt
     def register(request):
         data = DefaultMunch.fromDict(json.loads(request.body))
-        user, _ = User.objects.get_or_create(username=data.username, email=data.email)
-        User.set_password(user, data.password)
+        user, _ = User.objects.get(username=data.username)
+        User.check_password(user, data.password)
+
         user.save()
+
         profile, created = Profile.objects.get_or_create(
             user=user,
             defaults={

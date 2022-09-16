@@ -96,8 +96,8 @@ def paged_list_view(view, name):
 
 
 urlpatterns = [
-    path('api_srlp/', include([
-        path('register', api.APIUserMagnament.register),
+     path('api_srlp/auth/', include([
+        path('register', api.APIUserAuth.register),
     ])),
     path('', blog.PostList.as_view(template_name='home.html', title=_('Home')), kwargs={'page': 1}, name='home'),
     path('500/', exception),
