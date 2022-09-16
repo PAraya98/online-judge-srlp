@@ -39,5 +39,6 @@ django-admin-sortable2<2
 icalendar
 munch
 djangorestframework
+djangorestframework-simplejwt
 markdown
 django-filter
