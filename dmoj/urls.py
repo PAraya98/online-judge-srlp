@@ -24,6 +24,12 @@ from judge.views.select2 import AssigneeSelect2View, ClassSelect2View, CommentSe
     UserSearchSelect2View, UserSelect2View
 from judge.views.widgets import martor_image_uploader
 
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
+
 admin.autodiscover()
 
 register_patterns = [
