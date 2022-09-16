@@ -74,5 +74,5 @@ def register(request):
 @api_view(['POST'])
 def jwt_validation(request):
     
-    return Response({ "status": JWTAuthentication.get_user(request)})
+    return Response({ "status": JWTAuthentication.get_user(JWTAuthentication.get_header(request))})
    
