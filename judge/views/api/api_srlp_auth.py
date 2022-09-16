@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from rest_framework import status
@@ -30,10 +30,9 @@ def get_tokens_for_user(request):
         data = DefaultMunch.fromDict(json.loads(request.body))
         user = User.objects.get(username=data.username)
         if(User.check_password(user, data.password)):
-            refresh_token = RefreshToken.for_user(user)
             return Response({
-                'refresh_token': str(refresh_token),
-                'access_token': str(refresh_token.access_token)
+                'refresh_token': str(RefreshToken.for_user(user)),
+                'access_token': str(AccessToken.for_user(user))
                 #'status': 200
             })
         else:
@@ -53,9 +52,8 @@ def register(request):
         user = User.objects.create(username=data.username, email=data.email)
         User.set_password(user, data.password)
         user.save()
-        refresh_token = RefreshToken.for_user(user)
 
-        profile, created = Profile.objects.get_or_create(
+        profile = Profile.objects.create(
             user=user,
             defaults={
                 'language': Language.get_default_language(),
@@ -65,10 +63,11 @@ def register(request):
         profile.organizations.add(Organization.objects.get(id=1))
         profile.save()
 
-        if created : return Response({   
-                                'refresh_token': str(refresh_token),
-                                'access_token': str(refresh_token.access_token)
-                            })
+        return Response({   
+            'refresh_token': str(RefreshToken.for_user(user)),
+            'access_token': str(AccessToken.for_user(user))
+        })
+        
     except:
         return Response({'error': "Error en el servidor"})
 
