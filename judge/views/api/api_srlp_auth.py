@@ -56,10 +56,7 @@ def register(request):
         user.save()
 
         profile = Profile.objects.create(
-            user=user,
-            defaults={
-                'language': Language.get_default_language(),
-            }       
+            user=user     
         ) 
         profile.timezone = 'America/Toronto'
         profile.organizations.add(Organization.objects.get(id=1))
