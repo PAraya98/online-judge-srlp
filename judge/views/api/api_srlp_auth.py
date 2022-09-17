@@ -86,7 +86,7 @@ class HelloView():
     permission_classes = (IsAuthenticated)
 
     @api_view(['POST'])
-    def post(self, request):
+    def post(request):
         content = {'message': 'Hello, World!'}
         return Response(content)
 
