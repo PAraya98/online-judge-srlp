@@ -28,6 +28,9 @@ from judge.models import (
 import json 
 from munch import DefaultMunch
 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
 @api_view(['POST'])
 def get_tokens_for_user(request):
     try:
@@ -69,14 +72,21 @@ def register(request):
         
     except NameError:
         return Response({'error': NameError})
+        
+class clase_prueba(JWTAuthentication):
+    @api_view(['POST'])
+    def jwt_validation(request):
+        try:
+            request.user = self.authenticate(request)[0]
+            return Response({ "a": request.user})
+        except NameError:
+            return Response({'error': NameError})
 
-@api_view(['POST'])
-def jwt_validation(request):
-    try:
-        request.user = JWTAuthentication().authenticate(request)[0]
-        return Response({ "a": request.user})
-    except NameError:
-        return Response({'error': NameError})
+class HelloView(APIView):
+    permission_classes = (IsAuthenticated,)
 
-    
+    #@api_view(['POST'])
+    def get(self, request):
+        content = {'message': 'Hello, World!'}
+        return Response(content)
 
