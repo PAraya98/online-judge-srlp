@@ -89,5 +89,5 @@ class HelloView():
     def post(request):
         request.user = JWTAuthentication().authenticate(request)[0]
         content = {'message': request.user}
-        return Response(content)
+        return content
 
