@@ -86,7 +86,7 @@ class HelloView():
     permission_classes = (IsAuthenticated)
     
     @api_view(['POST'])
-    def asdasd(request):
+    def post(request):
         request.user = JWTAuthentication().authenticate(request)[0]
         content = {'message': request.user}
         return Response(content)
