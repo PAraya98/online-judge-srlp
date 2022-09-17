@@ -75,10 +75,12 @@ class clase_prueba:
     def __init__(self, request):
         self.request = request
 
-    def jwt_validation(request):
+    def jwt_validation(self):
         try:
-            print(request)
-            return Response({ "a": JWTAuthentication.authenticate(clase_prueba)})
+            print(self.request)
+            return Response({ "a": JWTAuthentication.authenticate(self, self.request)})
         except NameError:
             return Response({'error': NameError})
+
+    
 
