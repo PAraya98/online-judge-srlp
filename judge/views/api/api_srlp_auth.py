@@ -71,6 +71,14 @@ def register(request):
         return Response({'error': NameError})
 
 @api_view(['POST'])
-def jwt_validation(request):
-    return Response({ "status": "" })
-   
+class clase_prueba:
+    def __init__(self, request):
+        self.request = request
+
+    def jwt_validation(request):
+        try:
+            print(request)
+            return Response({ "a": JWTAuthentication.authenticate(clase_prueba)})
+        except NameError:
+            return Response({'error': NameError})
+
