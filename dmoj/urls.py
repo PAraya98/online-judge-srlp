@@ -96,7 +96,7 @@ urlpatterns = [
      path('api_srlp/auth/', include([
         path('register', api.register),
         path('login', api.get_tokens_for_user),
-        path('validation', api.HelloView.as_view()),
+        path('validation', api.HelloView.post),
     ])),
     path('', blog.PostList.as_view(template_name='home.html', title=_('Home')), kwargs={'page': 1}, name='home'),
     path('500/', exception),

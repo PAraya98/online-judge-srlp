@@ -82,9 +82,10 @@ class clase_prueba(JWTAuthentication):
         except NameError:
             return Response({'error': NameError})
 
-class HelloView(APIView):
-    permission_classes = (IsAuthenticated,)
+class HelloView():
+    permission_classes = (IsAuthenticated)
 
+    @api_view(['POST'])
     def post(self, request):
         content = {'message': 'Hello, World!'}
         return Response(content)
