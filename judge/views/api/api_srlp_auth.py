@@ -10,6 +10,10 @@ from django.utils.functional import cached_property
 from django.views.generic.detail import BaseDetailView
 from django.views.generic.list import BaseListView
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from rest_framework import status
@@ -39,10 +43,8 @@ def get_tokens_for_user(request):
             return Response({
                 'error': "El usuario no existe"
             })
-    except:
-         return Response({
-                'error': "Error en el servidor"
-            })
+    except NameError:
+        return Response({'error': NameError})
    
 
 @api_view(['POST'])
@@ -68,11 +70,10 @@ def register(request):
             'access_token': str(AccessToken.for_user(user))
         })
         
-    except:
-        return Response({'error': "Error en el servidor"})
+    except NameError:
+        return Response({'error': NameError})
 
 @api_view(['POST'])
 def jwt_validation(request):
-    
-    return Response({ "status": JWTAuthentication.get_user(request, DefaultMunch.fromDict(json.loads(request.body)).token)})
+    return Response({ "status": "" })
    
