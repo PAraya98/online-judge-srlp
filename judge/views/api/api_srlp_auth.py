@@ -84,9 +84,10 @@ class clase_prueba(JWTAuthentication):
 
 class HelloView():
     permission_classes = (IsAuthenticated)
-
+    
     @api_view(['POST'])
-    def post(request):
-        content = {'message': 'Hello, World!'}
+    def asdasd(request):
+        request.user = JWTAuthentication().authenticate(request)[0]
+        content = {'message': request.user}
         return Response(content)
 
