@@ -70,11 +70,12 @@ def register(request):
     except NameError:
         return Response({'error': NameError})
 
-@api_view(['POST'])
+
 class clase_prueba:
     def __init__(self, request):
         self.request = request
-
+        
+    @api_view(['POST'])
     def jwt_validation(self):
         try:
             print(self.request)
