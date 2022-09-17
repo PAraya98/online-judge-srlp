@@ -85,8 +85,7 @@ class clase_prueba(JWTAuthentication):
 class HelloView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    @api_view(['POST'])
-    def get(self, request):
+    def post(self, request):
         content = {'message': 'Hello, World!'}
         return Response(content)
 
