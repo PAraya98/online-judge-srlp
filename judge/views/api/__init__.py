@@ -4,4 +4,4 @@ from .api_v2 import (
     APIProblemList, APISubmissionDetail, APISubmissionList, APIUserDetail, APIUserList,
 )
 from .api_srlp import *
-from .api_srlp_auth import *
+from .srlp_auth import *
