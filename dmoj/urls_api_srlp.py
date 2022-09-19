@@ -6,7 +6,7 @@ from judge.views.api import srlp_auth
 
 srlp_auth_patterns = [
     [   path('register', srlp_auth.register),
-        path('login', srlp_auth.get_tokens_for_user),
+        path('logi', srlp_auth.get_tokens_for_user),
         path('validation', srlp_auth.HelloView.post),
     ]   
 ]
