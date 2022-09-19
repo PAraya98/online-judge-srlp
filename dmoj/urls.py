@@ -25,7 +25,7 @@ from judge.views.select2 import AssigneeSelect2View, ClassSelect2View, CommentSe
 from judge.views.widgets import martor_image_uploader
 from rest_framework_simplejwt.views import TokenVerifyView
 
-from urls_api_srlp import srlp_patterns
+from dmoj import srlp_patterns
 
 
 admin.autodiscover()
