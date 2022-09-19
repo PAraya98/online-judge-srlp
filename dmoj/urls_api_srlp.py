@@ -1,6 +1,5 @@
 from django.urls import include, path, re_path, reverse
 
-
 from judge.views.api import srlp_auth
 
 srlp_auth_patterns = [
