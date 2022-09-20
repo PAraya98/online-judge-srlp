@@ -29,7 +29,7 @@ def get_problem_list(request):
     } for code, points, partial, name, group in queryset})
 
 
-
+@api_view(['GET'])
 def get_problem_info(request):
     problem_code = request.GET.getlist('problem')
     p = get_object_or_404(Problem, code=problem_code)

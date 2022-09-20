@@ -12,7 +12,8 @@ user_patterns = [
 ]
 
 problem_patterns = [
-    path('list', srlp_problem.get_problem_list)
+    path('list', srlp_problem.get_problem_list),
+    path('problem', srlp_problem.get_problem_info)
 ]
 
 srlp_patterns= [
