@@ -51,27 +51,9 @@ def register(request):
         
     except NameError:
         return Response({'error': NameError})
-        
+
 @api_view(['POST'])
 def validation(request):
     permission_classes = (IsAuthenticated)
+    #request.user = JWTAuthentication().authenticate(request)[0]
     return Response({'Validadon': True})
-
-class clase_prueba(JWTAuthentication):
-    @api_view(['POST'])
-    def jwt_validation(request):
-        try:
-            request.user = self.authenticate(request)[0]
-            return Response({ "a": request.user})
-        except NameError:
-            return Response({'error': NameError})
-
-class HelloView():
-    permission_classes = (IsAuthenticated)
-    
-    @api_view(['POST'])
-    def post(request):
-        request.user = JWTAuthentication().authenticate(request)[0]
-        content = {'message': request.user}
-        return content
-

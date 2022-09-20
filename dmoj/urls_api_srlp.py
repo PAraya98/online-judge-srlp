@@ -1,5 +1,5 @@
 from django.urls import include, path, re_path, reverse
-from judge.views.api.srlp import srlp_auth, srlp_user
+from judge.views.api.srlp import srlp_auth, srlp_user, srlp_problem
 
 auth_patterns = [
     path('register', srlp_auth.register),
@@ -11,7 +11,12 @@ user_patterns = [
     path('get_ranking', srlp_user.get_ranking)
 ]
 
+problem_patterns = [
+    path('list', srlp_problem.get_problem_list)
+]
+
 srlp_patterns= [
     path('auth/', include(auth_patterns)),
-    path('user/', include(user_patterns))
+    path('user/', include(user_patterns)),
+    path('problem/', include(problem_patterns))
 ]

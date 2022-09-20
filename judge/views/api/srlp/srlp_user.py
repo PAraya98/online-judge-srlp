@@ -1,4 +1,3 @@
-
 from dmoj import settings
 from judge.models import ContestParticipation, ContestTag, Problem, Profile, Rating, Submission
 
