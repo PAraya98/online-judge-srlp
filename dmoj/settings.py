@@ -531,7 +531,7 @@ DATABASES = {
     },
 }
 
-ENABLE_FTS = False
+ENABLE_FTS = True
 
 # Bridged configuration
 BRIDGED_JUDGE_ADDRESS = [('localhost', 9999)]
