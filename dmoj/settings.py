@@ -30,13 +30,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = True
+
 SITE_ID = 1
 SITE_NAME = 'DMOJ'
 SITE_LONG_NAME = 'DMOJ: Modern Online Judge'
 SITE_ADMIN_EMAIL = False
 
 DMOJ_REQUIRE_STAFF_2FA = True
-# Display warnings that admins will not perform 2FA recovery.
+# Displa|y warnings that admins will not perform 2FA recovery.
 DMOJ_2FA_HARDCORE = False
 
 # Set to 1 to use HTTPS if request was made to https://
