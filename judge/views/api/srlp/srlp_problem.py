@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 import json 
 from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 
 @api_view(['GET'])
 def get_problem_list(request):
@@ -29,6 +30,24 @@ def get_problem_list(request):
 
 
 
+def get_problem_info(request):
+    problem_code = request.GET.getlist('problem')
+    p = get_object_or_404(Problem, code=problem_code)
+    if not p.is_accessible_by(request.user, skip_contest_problem_check=True):
+        raise Response(status=404)
+
+    return Response({
+        'name': p.name,
+        'authors': list(p.authors.values_list('user__username', flat=True)),
+        'types': list(p.types.values_list('full_name', flat=True)),
+        'group': p.group.full_name,
+        'time_limit': p.time_limit,
+        'memory_limit': p.memory_limit,
+        'points': p.points,
+        'partial': p.partial,
+        'languages': list(p.allowed_languages.values_list('key', flat=True)),
+        'description': p.description,        
+    })
 #@action(methods=['GET'], detail=False)
 #def api_schema(self, request):
 #    meta = self.metadata_class()
