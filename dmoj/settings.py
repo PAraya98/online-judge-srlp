@@ -260,7 +260,8 @@ INSTALLED_APPS += (
     'adminsortable2',
     #For the API REST SRLP
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'corsheaders'
 )
 
 SIMPLE_JWT = {
@@ -311,6 +312,7 @@ MIDDLEWARE = (
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'judge.social_auth.SocialAuthExceptionMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
 )
 
 IMPERSONATE_REQUIRE_SUPERUSER = True
