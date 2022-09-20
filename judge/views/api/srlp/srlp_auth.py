@@ -52,6 +52,11 @@ def register(request):
     except NameError:
         return Response({'error': NameError})
         
+@api_view(['POST'])
+def validation(request):
+    permission_classes = (IsAuthenticated)
+    return Response({'Validadon': True})
+
 class clase_prueba(JWTAuthentication):
     @api_view(['POST'])
     def jwt_validation(request):

@@ -16,8 +16,9 @@ from rest_framework.permissions import IsAuthenticated
 def get_ranking(request):
     queryset = Profile.objects.filter(is_unlisted=False).values_list('user__username', 'points', 'performance_points',
                                                                      'display_rank')
-    return {username: { 'points': points,
-                        'performance_points': performance_points,
-                        'rank': rank,
-                      } 
-            for username, points, performance_points, rank in queryset}
+    return Response(
+        {username: { 'points': points,
+                     'performance_points': performance_points,
+                     'rank': rank,
+                    } 
+        for username, points, performance_points, rank in queryset})
