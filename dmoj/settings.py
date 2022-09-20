@@ -32,9 +32,9 @@ ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL = True
 #['192.168.0.99','186.156.92.127', '192.168.0.100','localhost', '127.0.0.1', '0.0.0.0']
 #ALLOWED_HOSTS = ['192.168.0.99','186.156.92.127', '192.168.0.100','localhost', '127.0.0.1', '0.0.0.0']
-CORS_ALLOWED_ORIGINS = [
-    'http://152.173.159.165',
-]
+#CORS_ALLOWED_ORIGINS = [
+#    'http://152.173.159.165',
+#]
 
 SITE_ID = 1
 SITE_NAME = 'DMOJ'
