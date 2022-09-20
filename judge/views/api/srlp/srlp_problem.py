@@ -11,7 +11,7 @@ import json
 from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 
-@api_view(['POST'])
+@api_view(['GET'])
 def get_problem_list(request):
     queryset = Problem.get_public_problems()
     if settings.ENABLE_FTS and 'search' in request.GET:
