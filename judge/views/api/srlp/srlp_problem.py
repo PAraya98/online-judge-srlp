@@ -31,7 +31,7 @@ def get_problem_list(request):
 
 @api_view(['GET'])
 def get_problem_info(request):
-    problem_code = request.GET.getlist('code')
+    problem_code = request.GET.getlist('code')[0]
     print(problem_code)
     p = get_object_or_404(Problem, code=problem_code)
 
