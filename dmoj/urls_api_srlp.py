@@ -9,6 +9,6 @@ srlp_auth_patterns = [
 ]
 
 srlp_patterns= [
-    path('/auth/', include(srlp_auth_patterns)),
+    path('auth/', include(srlp_auth_patterns)),
 ]
 

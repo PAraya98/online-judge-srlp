@@ -412,4 +412,4 @@ if 'newsletter' in settings.INSTALLED_APPS:
 if 'impersonate' in settings.INSTALLED_APPS:
     urlpatterns.append(path('impersonate/', include('impersonate.urls')))
 
-urlpatterns.append(path('srlp_api/', include(srlp_patterns)))
+urlpatterns.append(path('api_srlp/', include(srlp_patterns)))
