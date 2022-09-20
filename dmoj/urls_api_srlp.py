@@ -13,4 +13,5 @@ user_patterns = [
 
 srlp_patterns= [
     path('auth/', include(auth_patterns)),
+    path('user/', include(user_patterns))
 ]
