@@ -31,10 +31,12 @@ def get_problem_list(request):
 
 @api_view(['GET'])
 def get_problem_info(request):
-    problem_code = request.GET.getlist('problem')
+    problem_code = request.GET.getlist('code')
     p = get_object_or_404(Problem, code=problem_code)
-    if not p.is_accessible_by(request.user, skip_contest_problem_check=True):
-        raise Response(status=404)
+
+    #TODO: CUANDO REQUIERA LOGIN QUITAR COMENTARIOS
+    #if not p.is_accessible_by(request.user, skip_contest_problem_check=True):
+    #    raise Response(status=404)
 
     return Response({
         'name': p.name,
