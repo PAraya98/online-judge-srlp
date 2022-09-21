@@ -211,7 +211,7 @@ class Contest(models.Model):
                 raise ValidationError('Contest problem label script: script should return a string.')
 
     def is_in_contest(self, user):
-        if user.is_authenticated:
+        if user is not None or user.is_authenticated:
             profile = user.profile
             return profile and profile.current_contest is not None and profile.current_contest.contest == self
         return False
@@ -228,7 +228,7 @@ class Contest(models.Model):
     def can_see_full_scoreboard(self, user):
         if self.show_scoreboard:
             return True
-        if not user.is_authenticated:
+        if user is not None or not user.is_authenticated:
             return False
         if user.has_perm('judge.see_private_contest') or user.has_perm('judge.edit_all_contest'):
             return True
@@ -422,11 +422,11 @@ class Contest(models.Model):
 
     def is_editable_by(self, user):
         # If the user can edit all contests
-        if user.has_perm('judge.edit_all_contest'):
+        if user is not None and user.has_perm('judge.edit_all_contest'):
             return True
 
         # If the user is a contest organizer or curator
-        if user.has_perm('judge.edit_own_contest') and user.profile.id in self.editor_ids:
+        if  user is not None and user.has_perm('judge.edit_own_contest') and user.profile.id in self.editor_ids:
             return True
 
         return False

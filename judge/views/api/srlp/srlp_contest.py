@@ -1,6 +1,7 @@
 
 from dmoj import settings
 from judge.models import Contest, Contest, ContestParticipation, ContestTag, Rating
+from judge.views.api.srlp.utils_srlp_api import *
 from django.db.models import F, OuterRef, Prefetch, Subquery
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import api_view
@@ -20,8 +21,8 @@ def sane_time_repr(delta):
 
 @api_view(['GET'])
 def get_contest_list(request):
-    user = JWTAuthentication().authenticate(request)
-    user = user[0] if user is not None else None #TODO: SI NO HAY TOKEN DEJAR NONE
+    user = get_jwt_user(request)
+
     queryset = Contest.get_visible_contests(user).prefetch_related(
         Prefetch('tags', queryset=ContestTag.objects.only('name'), to_attr='tag_list'))
 
@@ -41,15 +42,16 @@ def get_contest_list(request):
 
 @api_view(['GET'])
 def get_contest_info(request):
+    user = get_jwt_user(request)
+
     contest = get_object_or_404(Contest, key=contest)
 
     #TODO: CUANDO REQUIERA LOGIN QUITAR COMENTARIOS
     #if not contest.is_accessible_by(request.user):
     #    raise Http404()
 
-
-    in_contest = contest.is_in_contest(request.user)
-    can_see_rankings = contest.can_see_full_scoreboard(request.user)
+    in_contest = contest.is_in_contest(user)
+    can_see_rankings = contest.can_see_full_scoreboard(user)
 
     problems = list(contest.contest_problems.select_related('problem')
                     .defer('problem__description').order_by('order'))
@@ -64,7 +66,7 @@ def get_contest_info(request):
                       .prefetch_related('user__organizations')
                       .annotate(username=F('user__user__username'))
                       .order_by('-score', 'cumtime', 'tiebreaker') if can_see_rankings else [])
-    can_see_problems = (in_contest or contest.ended or contest.is_editable_by(request.user))
+    can_see_problems = (in_contest or contest.ended or contest.is_editable_by(user))
 
     return Response({
         'time_limit': contest.time_limit and contest.time_limit.total_seconds(),
