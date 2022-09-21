@@ -14,10 +14,12 @@ from rest_framework.permissions import IsAuthenticated
 @api_view(['GET'])
 def get_ranking(request):
     queryset = Profile.objects.filter(is_unlisted=False).values_list('user__username', 'points', 'performance_points',
-                                                                     'display_rank')
+                                                                     'display_rank', 'problem_count', 'last_access')
     return Response(
-        {username: { 'points': points,
-                     'performance_points': performance_points,
-                     'rank': rank,
+        {username: {    'points': points, #TODO: Ver diferencia entre points y performance_points 
+                        'problem_count': problem_count,
+                        'performance_points': performance_points,
+                        'last_access': last_access,
+                        'rank': rank,
                     } 
-        for username, points, performance_points, rank in queryset})
+        for username, points, performance_points, rank, problem_count, last_access in queryset})

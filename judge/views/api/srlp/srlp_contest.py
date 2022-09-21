@@ -21,7 +21,7 @@ def sane_time_repr(delta):
 @api_view(['GET'])
 def get_contest_list(request):
     user = JWTAuthentication().authenticate(request)[0]
-    queryset = Contest.get_visible_contests(user).prefetch_related(
+    queryset = Contest.get_visible_contests(request.user).prefetch_related(
         Prefetch('tags', queryset=ContestTag.objects.only('name'), to_attr='tag_list'))
 
     if settings.ENABLE_FTS and 'search' in request.GET:
