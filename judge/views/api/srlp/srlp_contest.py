@@ -20,7 +20,8 @@ def sane_time_repr(delta):
 
 @api_view(['GET'])
 def get_contest_list(request):
-    user = JWTAuthentication().authenticate(request)[0]
+    user = JWTAuthentication().authenticate(request)
+    user = user[0] if user is not None else None #TODO: SI NO HAY TOKEN DEJAR NONE
     queryset = Contest.get_visible_contests(user).prefetch_related(
         Prefetch('tags', queryset=ContestTag.objects.only('name'), to_attr='tag_list'))
 
