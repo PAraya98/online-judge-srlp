@@ -32,6 +32,7 @@ def get_contest_list(request):
 
     return Response({c.key: {
         'name': c.name,
+        'summary': c.summary,
         'start_time': c.start_time.isoformat(),
         'end_time': c.end_time.isoformat(),
         'time_limit': c.time_limit and sane_time_repr(c.time_limit),
@@ -68,6 +69,9 @@ def get_contest_info(request):
     can_see_problems = (in_contest or contest.ended or contest.is_editable_by(user))
 
     return Response({
+        'name': contest.name,
+        'description': contest.description,
+        'summary': contest.summary,
         'time_limit': contest.time_limit and contest.time_limit.total_seconds(),
         'start_time': contest.start_time.isoformat(),
         'end_time': contest.end_time.isoformat(),
