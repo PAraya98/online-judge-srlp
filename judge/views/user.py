@@ -187,10 +187,12 @@ class UserAboutPage(UserPage):
             .annotate(date_only=TruncDate('date'))
             .values('date_only').annotate(cnt=Count('id'))
         )
-
-        context['submission_data'] = mark_safe(json.dumps({
-            date_counts['date_only'].isoformat(): date_counts['cnt'] for date_counts in submissions
-        }))
+        try:
+            context['submission_data'] = mark_safe(json.dumps({
+                date_counts['date_only'].isoformat(): date_counts['cnt'] for date_counts in submissions
+            }))
+        except: 
+            context['submission_data'] = {}
         context['submission_metadata'] = mark_safe(json.dumps({
             'min_year': (
                 self.object.submission_set

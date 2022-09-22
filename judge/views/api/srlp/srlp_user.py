@@ -36,7 +36,11 @@ def get_user_info(request):
     submissions = list(Submission.objects.filter(case_points=F('case_total'), user=profile, problem__is_public=True,
                                                  problem__is_organization_private=False)
                        .values('problem').distinct().values_list('problem__code', flat=True))
+    user = User.objects.get(username=username)
+    
     resp = {
+        'username': user.username,
+        'description': profile,
         'points': profile.points,
         'performance_points': profile.performance_points,
         'rank': profile.display_rank,
