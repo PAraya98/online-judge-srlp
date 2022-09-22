@@ -40,7 +40,7 @@ def get_user_info(request):
     
     resp = {
         'username': user.username,
-        'description': profile,
+        'description': profile.about,
         'points': profile.points,
         'performance_points': profile.performance_points,
         'rank': profile.display_rank,
