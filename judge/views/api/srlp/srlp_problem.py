@@ -12,6 +12,8 @@ from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 
+from judge.views.api.srlp.utils_srlp_api import get_jwt_user
+
 @api_view(['GET'])
 def get_problem_list(request):
     queryset = Problem.get_public_problems()
@@ -32,11 +34,11 @@ def get_problem_list(request):
 @api_view(['GET'])
 def get_problem_info(request):
     code = request.GET.getlist('code')
-    problem_code = request.GET.getlist('code')[0] if code is not None else ''
+    problem_code = '' if code is None else code[0]
     p = get_object_or_404(Problem, code=problem_code)
-
+    
     #TODO: CUANDO REQUIERA LOGIN QUITAR COMENTARIOS
-    #if not p.is_accessible_by(request.user, skip_contest_problem_check=True):
+    #if not p.is_accessible_by(get_jwt_user(request), skip_contest_problem_check=True):
     #    raise Response(status=404)
 
     return Response({

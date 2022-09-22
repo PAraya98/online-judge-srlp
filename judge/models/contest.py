@@ -211,7 +211,7 @@ class Contest(models.Model):
                 raise ValidationError('Contest problem label script: script should return a string.')
 
     def is_in_contest(self, user):
-        if user is not None or user.is_authenticated:
+        if user is not None and user.is_authenticated:
             profile = user.profile
             return profile and profile.current_contest is not None and profile.current_contest.contest == self
         return False
