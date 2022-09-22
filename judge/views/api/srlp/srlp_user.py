@@ -1,7 +1,7 @@
 from dmoj import settings
 from judge.models import ContestParticipation, ContestTag, Problem, Profile, Rating, Submission
 from judge.views.api.srlp.utils_srlp_api import *
-
+from django.db.models import F, OuterRef, Prefetch, Subquery
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import api_view
@@ -33,7 +33,7 @@ def get_user_info(request):
     code = request.GET.getlist('username')
     username = '' if not code else code[0]
     profile = get_object_or_404(Profile, user__username=username)
-    submissions = list(Submission.objects.filter(case_points=('case_total'), user=profile, problem__is_public=True,
+    submissions = list(Submission.objects.filter(case_points=F('case_total'), user=profile, problem__is_public=True,
                                                  problem__is_organization_private=False)
                        .values('problem').distinct().values_list('problem__code', flat=True))
     resp = {
