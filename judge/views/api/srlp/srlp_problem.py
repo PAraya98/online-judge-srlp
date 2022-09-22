@@ -34,6 +34,7 @@ def get_problem_list(request):
 @api_view(['GET'])
 def get_problem_info(request):
     code = request.GET.getlist('code')
+    print(code)
     problem_code = '' if code else code[0]
     p = get_object_or_404(Problem, code=problem_code)
     
