@@ -228,7 +228,7 @@ class Contest(models.Model):
     def can_see_full_scoreboard(self, user):
         if self.show_scoreboard:
             return True
-        if user is not None or not user.is_authenticated:
+        if user is None or not user.is_authenticated:
             return False
         if user.has_perm('judge.see_private_contest') or user.has_perm('judge.edit_all_contest'):
             return True
@@ -328,7 +328,7 @@ class Contest(models.Model):
 
     def access_check(self, user):
         # Do unauthenticated check here so we can skip authentication checks later on.
-        if user is not None or not user.is_authenticated:
+        if user is None or not user.is_authenticated:
             # Unauthenticated users can only see visible, non-private contests
             if not self.is_visible:
                 raise self.Inaccessible()
@@ -387,7 +387,7 @@ class Contest(models.Model):
         if not self.started:
             return False
 
-        if user is not None or not user.is_authenticated:
+        if user is None or not user.is_authenticated:
             return False
 
         if user.profile.id in self.editor_ids or user.profile.id in self.tester_ids:
@@ -402,7 +402,7 @@ class Contest(models.Model):
 
     # Also skips access check
     def is_spectatable_by(self, user):
-        if user is not None or not user.is_authenticated:
+        if user is None or not user.is_authenticated:
             return False
 
         if user.profile.id in self.editor_ids or user.profile.id in self.tester_ids:
