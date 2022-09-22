@@ -8,7 +8,8 @@ auth_patterns = [
 ]
 
 user_patterns = [
-    path('get_ranking', srlp_user.get_ranking)
+    path('get_ranking', srlp_user.get_ranking),
+    path('user', srlp_user.get_user_info)
 ]
 
 problem_patterns = [
