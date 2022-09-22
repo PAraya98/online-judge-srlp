@@ -46,9 +46,8 @@ def get_contest_info(request):
     contest_code = '' if not code else code[0]
     contest = get_object_or_404(Contest, key=contest_code)
 
-    #TODO: CUANDO REQUIERA LOGIN QUITAR COMENTARIOS
-    #if not contest.is_accessible_by(request.user):
-    #    raise Http404()
+    if not contest.is_accessible_by(user):
+       return Response(status=404)
 
     in_contest = contest.is_in_contest(user)
     can_see_rankings = contest.can_see_full_scoreboard(user)
