@@ -43,7 +43,7 @@ def get_contest_list(request):
 def get_contest_info(request):
     user = get_jwt_user(request)
     code = request.GET.getlist('code')
-    contest_code = '' if code is None else code[0]
+    contest_code = '' if code is [] else code[0]
     contest = get_object_or_404(Contest, key=contest_code)
 
     #TODO: CUANDO REQUIERA LOGIN QUITAR COMENTARIOS
