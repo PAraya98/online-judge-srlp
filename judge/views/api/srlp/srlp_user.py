@@ -11,7 +11,7 @@ import json
 from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-
+from judge.jinja2.gravatar import gravatar_username
 
 @api_view(['GET'])
 def get_ranking(request):
@@ -19,7 +19,8 @@ def get_ranking(request):
                                                                      'display_rank', 'problem_count', 'last_access')
     
     return Response(
-        {username: {    'points': points, #TODO: Ver diferencia entre points y performance_points 
+        {username: {    'avatar_url': gravatar_username(username),
+                        'points': points, #TODO: Ver diferencia entre points y performance_points 
                         'problem_count': problem_count,
                         'performance_points': performance_points,
                         'last_access': last_access,
@@ -40,7 +41,7 @@ def get_user_info(request):
     
     resp = {
         'username': user.username,
-        'description': profile.about,
+        'about': profile.about,
         'points': profile.points,
         'performance_points': profile.performance_points,
         'rank': profile.display_rank,

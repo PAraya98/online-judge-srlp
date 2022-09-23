@@ -9,6 +9,7 @@ from judge.models import (
 import json 
 from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
+from judge.jinja2.gravatar import gravatar_username
 
 @api_view(['POST'])
 def get_tokens_for_user(request):
@@ -17,6 +18,7 @@ def get_tokens_for_user(request):
         user = User.objects.get(username=data.username)
         if(User.check_password(user, data.password)):
             return Response({
+                'avatar_url': gravatar_username(user.username),
                 'refresh_token': str(RefreshToken.for_user(user)),
                 'access_token': str(AccessToken.for_user(user))
                 #'status': 200
@@ -45,6 +47,7 @@ def register(request):
         profile.save()
 
         return Response({   
+            'avatar_url': gravatar_username(user.username),
             'refresh_token': str(RefreshToken.for_user(user)),
             'access_token': str(AccessToken.for_user(user))
         })

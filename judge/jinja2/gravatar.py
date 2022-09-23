@@ -23,3 +23,12 @@ def gravatar(email, size=80, default=None):
         args['f'] = 'y'
     gravatar_url += urlencode(args)
     return gravatar_url
+
+@registry.function
+def gravatar_username(username, size=80, default=None):
+    gravatar_url = 'https://www.gravatar.com/avatar/' + hashlib.md5(utf8bytes((username+"@SRLP_DICI").strip().lower())).hexdigest() + '?'
+    args = {'d': 'identicon', 's': str(size)}
+    if default:
+        args['f'] = 'y'
+    gravatar_url += urlencode(args)
+    return gravatar_url
