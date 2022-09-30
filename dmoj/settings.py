@@ -29,16 +29,12 @@ SECRET_KEY = '5*9f5q57mqmlz2#f$x1h76&jxy#yortjl1v+l*6hd18$d*yx#0'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-#CORS_ALLOW_ALL_ORIGINS = True # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
-#CORS_ALLOW_CREDENTIALS = True
-#CORS_ALLOWED_ORIGINS = [
-#    '*',
-#] # If this is used, then not need to use `CORS_ALLOW_ALL_ORIGINS = True`
-#CORS_ALLOWED_ORIGIN_REGEXES = [
-#    '*',
+#CORS_ORIGIN_ALLOW_ALL = True
+#['192.168.0.99','186.156.92.127', '192.168.0.100','localhost', '127.0.0.1', '0.0.0.0']
+#ALLOWED_HOSTS = ['192.168.0.99','186.156.92.127', '192.168.0.100','localhost', '127.0.0.1', '0.0.0.0']
+CORS_ALLOWED_ORIGINS = ['*']
+#    'http://152.173.159.165',
 #]
-
 
 SITE_ID = 1
 SITE_NAME = 'DMOJ'
@@ -46,7 +42,7 @@ SITE_LONG_NAME = 'DMOJ: Modern Online Judge'
 SITE_ADMIN_EMAIL = False
 
 DMOJ_REQUIRE_STAFF_2FA = True
-# Display warnings that admins will not perform 2FA recovery.
+# Displa|y warnings that admins will not perform 2FA recovery.
 DMOJ_2FA_HARDCORE = False
 
 # Set to 1 to use HTTPS if request was made to https://
@@ -254,7 +250,6 @@ INSTALLED_APPS += (
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.sitemaps',
-    'corsheaders',
     'registration',
     'mptt',
     'reversion',
@@ -272,7 +267,7 @@ INSTALLED_APPS += (
     #For the API REST SRLP
     'rest_framework',
     'rest_framework.authtoken',
-    
+    'corsheaders'
 )
 
 SIMPLE_JWT = {
@@ -302,29 +297,28 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata'
-    
 }
 
 MIDDLEWARE = (
-    'corsheaders.middleware.CorsMiddleware',
-    #'judge.middleware.ShortCircuitMiddleware',
-    #'django.middleware.common.CommonMiddleware',
-    #'django.contrib.sessions.middleware.SessionMiddleware',
+    'judge.middleware.ShortCircuitMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     #'judge.middleware.APIMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
-    #'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'judge.middleware.DMOJLoginMiddleware',
-    #'django.contrib.messages.middleware.MessageMiddleware',
-    #'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'judge.user_log.LogUserAccessMiddleware',
-    #'judge.timezone.TimezoneMiddleware',
-    #'impersonate.middleware.ImpersonateMiddleware',
-    #'judge.middleware.DMOJImpersonationMiddleware',
-    #'judge.middleware.ContestMiddleware',
-    #'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
-    #'judge.social_auth.SocialAuthExceptionMiddleware',
-    #'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'judge.middleware.DMOJLoginMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'judge.user_log.LogUserAccessMiddleware',
+    'judge.timezone.TimezoneMiddleware',
+    'impersonate.middleware.ImpersonateMiddleware',
+    'judge.middleware.DMOJImpersonationMiddleware',
+    'judge.middleware.ContestMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'judge.social_auth.SocialAuthExceptionMiddleware',
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 )
 
 IMPERSONATE_REQUIRE_SUPERUSER = True
