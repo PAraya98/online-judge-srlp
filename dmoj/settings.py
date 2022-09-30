@@ -29,7 +29,8 @@ SECRET_KEY = '5*9f5q57mqmlz2#f$x1h76&jxy#yortjl1v+l*6hd18$d*yx#0'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = ['*']
+#CORS_ALLOW_ALL_ORIGINS = True
 
 SITE_ID = 1
 SITE_NAME = 'DMOJ'
