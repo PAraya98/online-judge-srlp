@@ -13,7 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from judge.jinja2.gravatar import gravatar_username
 
-@api_view(['GET'])
+@api_view(['POST'])
 def get_ranking(request):
     queryset = Profile.objects.filter(is_unlisted=False).values_list('user__username', 'points', 'performance_points',
                                                                      'display_rank', 'problem_count', 'last_access')

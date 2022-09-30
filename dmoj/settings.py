@@ -28,13 +28,8 @@ SECRET_KEY = '5*9f5q57mqmlz2#f$x1h76&jxy#yortjl1v+l*6hd18$d*yx#0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', "http://152.173.130.205:3000"]
+ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = True
-#['192.168.0.99','186.156.92.127', '192.168.0.100','localhost', '127.0.0.1', '0.0.0.0']
-#ALLOWED_HOSTS = ['192.168.0.99','186.156.92.127', '192.168.0.100','localhost', '127.0.0.1', '0.0.0.0']
-#CORS_ALLOWED_ORIGINS = ['*', "http://152.173.130.205:3000"]
-#    'http://152.173.159.165',
-#]
 
 SITE_ID = 1
 SITE_NAME = 'DMOJ'
@@ -42,7 +37,7 @@ SITE_LONG_NAME = 'DMOJ: Modern Online Judge'
 SITE_ADMIN_EMAIL = False
 
 DMOJ_REQUIRE_STAFF_2FA = True
-# Displa|y warnings that admins will not perform 2FA recovery.
+# Display warnings that admins will not perform 2FA recovery.
 DMOJ_2FA_HARDCORE = False
 
 # Set to 1 to use HTTPS if request was made to https://
