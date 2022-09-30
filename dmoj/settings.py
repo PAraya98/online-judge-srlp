@@ -29,9 +29,15 @@ SECRET_KEY = '5*9f5q57mqmlz2#f$x1h76&jxy#yortjl1v+l*6hd18$d*yx#0'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-#CORS_ALLOWED_ORIGINS = ['*']
-CORS_ORIGIN_WHITELIST = ['http://152.173.130.205:3000']
-CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_ALL_ORIGINS = True # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3030',
+] # If this is used, then not need to use `CORS_ALLOW_ALL_ORIGINS = True`
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    'http://localhost:3030',
+]
 
 SITE_ID = 1
 SITE_NAME = 'DMOJ'
