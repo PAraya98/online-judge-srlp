@@ -28,11 +28,11 @@ SECRET_KEY = '5*9f5q57mqmlz2#f$x1h76&jxy#yortjl1v+l*6hd18$d*yx#0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', "152.173.130.205:3000"]
+ALLOWED_HOSTS = ['*', "http://152.173.130.205:3000"]
 CORS_ALLOW_ALL_ORIGINS = True
 #['192.168.0.99','186.156.92.127', '192.168.0.100','localhost', '127.0.0.1', '0.0.0.0']
 #ALLOWED_HOSTS = ['192.168.0.99','186.156.92.127', '192.168.0.100','localhost', '127.0.0.1', '0.0.0.0']
-CORS_ALLOWED_ORIGINS = ['*', "152.173.130.205:3000"]
+CORS_ALLOWED_ORIGINS = ['*', "http://152.173.130.205:3000"]
 #    'http://152.173.159.165',
 #]
 
