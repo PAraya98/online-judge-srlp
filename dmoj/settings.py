@@ -295,6 +295,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = (
+    'corsheaders.middleware.CorsMiddleware',
     'judge.middleware.ShortCircuitMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -313,7 +314,6 @@ MIDDLEWARE = (
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'judge.social_auth.SocialAuthExceptionMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 )
 
 IMPERSONATE_REQUIRE_SUPERUSER = True
