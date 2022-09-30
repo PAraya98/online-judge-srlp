@@ -30,6 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 #CORS_ALLOWED_ORIGINS = ['*']
+CORS_ORIGIN_WHITELIST = ['http://152.173.130.205:3000']
 CORS_ALLOW_ALL_ORIGINS = True
 
 SITE_ID = 1
@@ -246,6 +247,7 @@ INSTALLED_APPS += (
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.sitemaps',
+    'corsheaders',
     'registration',
     'mptt',
     'reversion',
@@ -263,7 +265,7 @@ INSTALLED_APPS += (
     #For the API REST SRLP
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders'
+    
 )
 
 SIMPLE_JWT = {
