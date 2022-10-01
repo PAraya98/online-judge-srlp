@@ -25,7 +25,7 @@ class IsAdmin(permissions.BasePermission):
 @api_view(['GET'])
 def get_users_info(request):
     #permission_classes = (IsAdmin)
-    queryset = Profile.objects.filter(is_unlisted=False)
+    queryset = Profile.objects
     if 'search' in request.GET:
             query = ' '.join(request.GET.getlist('search')).strip()
             if query:
