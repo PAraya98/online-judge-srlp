@@ -18,7 +18,7 @@ from rest_framework import permissions
 class IsAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
         if(bool(request.user and request.user.is_authenticated)):
-            return bool(request.user.rank == 'admin')
+            return bool(request.user == 'admin')
         else: return False
 
 
@@ -39,7 +39,6 @@ def get_users_info(request):
                         'rank': rank,
                     })        
     return Response({'usuarios': array})
-
 
 @api_view(['GET'])
 def get_user_data(request):
