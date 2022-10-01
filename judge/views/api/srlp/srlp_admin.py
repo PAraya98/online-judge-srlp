@@ -12,23 +12,33 @@ from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from judge.jinja2.gravatar import gravatar_username
+from rest_framework import permissions
+
+
+class IsAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if(bool(request.user and request.user.is_authenticated)):
+            return bool(request.user.rank == 'admin')
+        else: return False
+
 
 @api_view(['GET'])
 def get_users_info(request):
-    
-    queryset = Profile.objects.filter(is_unlisted=False).values_list('user__username', 'display_rank', 'last_access').order_by('user__username')
+    permission_classes = (IsAdmin)
+    queryset = Profile.objects.filter(is_unlisted=False)
     if 'search' in request.GET:
             query = ' '.join(request.GET.getlist('search')).strip()
             if query:
                 queryset = queryset.search(query)    
     array = []
+    queryset = queryset.values_list('user__username', 'display_rank', 'last_access').order_by('user__username')
     for username, rank, last_access in queryset:
         array.append({  'username': username,
                         'avatar_url': gravatar_username(username),
                         'last_access': last_access,
                         'rank': rank,
                     })        
-    return Response({'data': array})
+    return Response({'usuarios': array})
 
 
 @api_view(['GET'])
