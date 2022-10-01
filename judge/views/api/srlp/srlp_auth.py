@@ -18,6 +18,7 @@ def get_tokens_for_user(request):
         user = User.objects.get(username=data.username)
         if(User.check_password(user, data.password)):
             return Response({
+                'username':   user.username,
                 'avatar_url': gravatar_username(user.username),
                 'refresh_token': str(RefreshToken.for_user(user)),
                 'access_token': str(AccessToken.for_user(user))
