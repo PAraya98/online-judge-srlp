@@ -389,6 +389,7 @@ class ProblemList(QueryStringSortMixin, TitleMixin, SolvedProblemMixin, ListView
             self.search_query = query = ' '.join(self.request.GET.getlist('search')).strip()
             if query:
                 if settings.ENABLE_FTS and self.full_text:
+                    print(query)
                     queryset = self.apply_full_text(queryset, query)
                 else:
                     queryset = queryset.filter(
