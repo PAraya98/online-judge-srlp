@@ -14,12 +14,12 @@ from django.shortcuts import get_object_or_404
 
 from judge.views.api.srlp.utils_srlp_api import get_jwt_user
 
-
+@api_view(['GET'])
 def get_problem_list(request):
     queryset = Problem.get_public_problems()
     print(request.GET)
     if settings.ENABLE_FTS and 'search' in request.GET:
-        query = ' '.join(request.GET.getlist('search')).strip()
+        query = ' '.join(request.GET.get('search')).strip()
         print(query)
         if query:
             queryset = queryset.search(query)
