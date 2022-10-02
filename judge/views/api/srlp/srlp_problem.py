@@ -21,8 +21,6 @@ def get_problem_list(request):
         if query:
             queryset = queryset.search(query)
     queryset = queryset.values_list('code', 'points', 'partial', 'name', 'group__full_name')
-
-    print(queryset)
     return Response({code: {
         'points': points,
         'partial': partial,
