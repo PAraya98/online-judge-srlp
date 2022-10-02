@@ -16,7 +16,7 @@ from judge.views.api.srlp.utils_srlp_api import get_jwt_user
 @api_view(['GET'])
 def get_problem_list(request):
     queryset = Problem.get_public_problems()
-    print(request.GET)
+    print(request.GET, 'search' in request.GET)
     if settings.ENABLE_FTS and 'search' in request.GET:
         query = ' '.join(request.GET.getlist('search',default=list)).strip()
         print(query)
