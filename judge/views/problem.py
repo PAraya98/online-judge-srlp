@@ -349,6 +349,7 @@ class ProblemList(QueryStringSortMixin, TitleMixin, SolvedProblemMixin, ListView
     @staticmethod
     def apply_full_text(queryset, query):
         if recjk.search(query):
+            print(query)
             # MariaDB can't tokenize CJK properly, fallback to LIKE '%term%' for each term.
             for term in query.split():
                 queryset = queryset.filter(Q(code__icontains=term) | Q(name__icontains=term) |
