@@ -20,6 +20,7 @@ class SearchQuerySet(QuerySet):
         return queryset
 
     def search(self, query, mode=DEFAULT):
+        print("Query: ", query)
         meta = self.model._meta
 
         # Get the table name and column names from the model
