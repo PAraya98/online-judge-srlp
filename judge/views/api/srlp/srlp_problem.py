@@ -18,8 +18,8 @@ def get_problem_list(request):
     queryset = Problem.get_visible_problems(get_jwt_user(request))
     print(request.GET)
     if request.GET != []:
-        query = ' '.join(request.GET).strip()
-        print(query)
+        #query = ' '.join(request.GET).strip()
+        print(request.GET)
         if query:
             queryset = queryset.search(query)
     queryset = queryset.values_list('code', 'points', 'partial', 'name', 'group__full_name')
