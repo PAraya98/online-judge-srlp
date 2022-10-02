@@ -1,3 +1,4 @@
+
 from dmoj import settings
 from judge.models import ContestParticipation, ContestTag, Problem, Profile, Rating, Submission
 
@@ -14,16 +15,14 @@ from django.shortcuts import get_object_or_404
 from judge.views.api.srlp.utils_srlp_api import get_jwt_user
 
 @api_view(['GET'])
-def get_problem_list(request):   
-    queryset = Problem.get_visible_problems(get_jwt_user(request))
-    print(request.GET)
-    if request.GET != []:
-        #query = ' '.join(request.GET).strip()
-        query = ' '.join(request.GET).strip()
-        print(query)
+def get_problem_list(request):
+    queryset = Problem.get_public_problems()
+    if settings.ENABLE_FTS and 'search' in request.GET:
+        query = ' '.join(request.GET.getlist('search')).strip()
         if query:
-            queryset = queryset.search('aplusb')
+            queryset = queryset.search(query)
     queryset = queryset.values_list('code', 'points', 'partial', 'name', 'group__full_name')
+
     return Response({code: {
         'points': points,
         'partial': partial,
