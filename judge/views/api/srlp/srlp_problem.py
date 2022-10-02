@@ -19,7 +19,8 @@ def get_problem_list(request):
     queryset = Problem.get_public_problems()
     if settings.ENABLE_FTS and 'search' in request.GET:
         print(request.GET)
-        query = ' '.join(request.GET.items()).strip()
+        print(sum(request.GET.items(), []))
+        query = ' '.join(sum(request.GET.items(), [])).strip()
         print(query)
         if query:
             queryset = queryset.search(query)
