@@ -27,7 +27,7 @@ def get_users_info(request):
     #permission_classes = (IsAdmin)
     queryset = Profile.objects
     if 'search' in request.GET:
-            query = ' '.join(request.GET.getlist('search')).strip()
+            query = ' '.join(request.GET).strip()
             if query:
                 queryset = queryset.search(query)    
     array = []
