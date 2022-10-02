@@ -22,7 +22,7 @@ def get_problem_list(request):
         query = ' '.join(request.GET).strip()
         print(query)
         if query:
-            queryset = queryset.search(['aplusb'])
+            queryset = queryset.search('aplusb')
     queryset = queryset.values_list('code', 'points', 'partial', 'name', 'group__full_name')
     return Response({code: {
         'points': points,
