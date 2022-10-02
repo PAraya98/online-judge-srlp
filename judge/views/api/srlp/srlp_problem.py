@@ -19,7 +19,7 @@ def get_problem_list(request):
     print(request.GET)
     if request.GET != []:
         #query = ' '.join(request.GET).strip()
-        query = request.GET
+        query = ' '.join(request.GET).strip()
         print(request.GET)
         if query:
             queryset = queryset.search(query)
