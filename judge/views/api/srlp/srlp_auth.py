@@ -65,6 +65,7 @@ def validate_session(request):
         {'session': {   'username': user.username,
                         'gravatar': gravatar_username(user.username),
                         'is_admin': user.is_superuser,
-                        'is_profesor': user.is_staff
+                        'is_profesor': user.is_staff,
+                        "is_logged_in": True
                     }
         })
