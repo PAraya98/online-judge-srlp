@@ -53,6 +53,7 @@ def get_problem_info(request):
         'languages': list(p.allowed_languages.values_list('key', flat=True)),
         'description': p.description,        
     })
+    
 #@action(methods=['GET'], detail=False)
 #def api_schema(self, request):
 #    meta = self.metadata_class()
