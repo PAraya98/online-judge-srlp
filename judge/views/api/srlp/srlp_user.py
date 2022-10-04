@@ -4,7 +4,7 @@ from judge.views.api.srlp.utils_srlp_api import *
 from django.db.models import F, OuterRef, Prefetch, Subquery
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 import json 
@@ -12,11 +12,11 @@ from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from judge.jinja2.gravatar import gravatar_username
+from judge.views.api.srlp.utils_srlp_api import acces_denied
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_ranking(request):
-    permission_classes = (IsAuthenticated)
-
     queryset = Profile.objects.filter(is_unlisted=False).values_list('user__username', 'points', 'performance_points',
                                                                      'display_rank', 'problem_count', 'last_access')
     return Response(
