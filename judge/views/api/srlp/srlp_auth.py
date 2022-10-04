@@ -1,6 +1,6 @@
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from judge.models import (
@@ -10,6 +10,7 @@ import json
 from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from judge.jinja2.gravatar import gravatar_username
+from judge.views.api.srlp.utils_srlp_api import get_jwt_user
 
 @api_view(['POST'])
 def get_tokens_for_user(request):
@@ -56,8 +57,14 @@ def register(request):
     except NameError:
         return Response({'error': NameError})
 
-@api_view(['POST'])
-def validation(request):
-    permission_classes = (IsAuthenticated)
-    #request.user = JWTAuthentication().authenticate(request)[0]
-    return Response({'Validadon': True})
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def validate_session(request):
+    user = get_jwt_user(request)
+    return Response(
+        {'session': {   'username': user.username,
+                        'gravatar': gravatar_username(user.username),
+                        'is_admin': user.is_superuser,
+                        'is_profesor': user.is_staff
+                    }
+        })

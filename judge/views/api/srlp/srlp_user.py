@@ -15,7 +15,7 @@ from judge.jinja2.gravatar import gravatar_username
 from judge.views.api.srlp.utils_srlp_api import acces_denied
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def get_ranking(request):
     queryset = Profile.objects.filter(is_unlisted=False).values_list('user__username', 'points', 'performance_points',
                                                                      'display_rank', 'problem_count', 'last_access')
@@ -31,6 +31,7 @@ def get_ranking(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_user_info(request):
     code = request.GET.getlist('username')
     username = '' if not code else code[0]
@@ -56,6 +57,7 @@ def get_user_info(request):
     participations = ContestParticipation.objects.filter(user=profile, virtual=0, contest__is_visible=True,
                                                          contest__is_private=False,
                                                          contest__is_organization_private=False)
+    
     for contest_key, rating, mean, performance in participations.values_list(
         'contest__key', 'rating__rating', 'rating__mean', 'rating__performance',
     ):
