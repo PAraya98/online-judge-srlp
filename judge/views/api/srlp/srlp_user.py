@@ -15,6 +15,8 @@ from judge.jinja2.gravatar import gravatar_username
 
 @api_view(['GET'])
 def get_ranking(request):
+    (IsAuthenticated)
+    
     queryset = Profile.objects.filter(is_unlisted=False).values_list('user__username', 'points', 'performance_points',
                                                                      'display_rank', 'problem_count', 'last_access')
     return Response(
