@@ -159,7 +159,8 @@ class Profile(models.Model):
     ip = models.GenericIPAddressField(verbose_name=_('last IP'), blank=True, null=True)
     organizations = SortedManyToManyField(Organization, verbose_name=_('organization'), blank=True,
                                           related_name='members', related_query_name='member')
-    display_rank = models.CharField(max_length=10, default='Alumno', verbose_name=_('display rank'),
+                                          
+    display_rank = models.CharField(max_length=15, default='Alumno', verbose_name=_('display rank'),
                                     choices=(
                                         ('Administrador', _('Administrador del sitio')),
                                         ('Profesor', _('Acádemico del departamento')),
@@ -168,8 +169,10 @@ class Profile(models.Model):
 
     mute = models.BooleanField(verbose_name=_('comment mute'), help_text=_('Some users are at their best when silent.'),
                                default=False)
+
     is_unlisted = models.BooleanField(verbose_name=_('unlisted user'), help_text=_('User will not be ranked.'),
                                       default=False)
+
     rating = models.IntegerField(null=True, default=None)
     user_script = models.TextField(verbose_name=_('user script'), default='', blank=True, max_length=65536,
                                    help_text=_('User-defined JavaScript for site customization.'))
