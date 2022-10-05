@@ -23,13 +23,13 @@ def get_problem_list(request):
     #        queryset = queryset.search(query)
     queryset = queryset.values_list('code', 'points', 'partial', 'name', 'group__full_name')
 
-    return Response({{
+    return Response({
         'code':  code,
         'points': points,
         'partial': partial,
         'name': name,
         'group': group,
-    } for code, points, partial, name, group in queryset})
+    } for code, points, partial, name, group in queryset)
 
 
 @api_view(['GET'])
