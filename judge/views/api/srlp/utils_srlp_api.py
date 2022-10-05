@@ -1,4 +1,5 @@
 from requests import Response
+from collections import OrderedDict, namedtuple
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import permissions
 from judge.models import Profile
@@ -25,9 +26,11 @@ class CustomPagination(pagination.PageNumberPagination):
     max_page_size = 50
 
     def get_paginated_response(self, data):
-        #response = super(CustomPagination, self).get_paginated_response(data)
-        data['total_pages'] = self.page.paginator.num_pages
-        return Response(data, status=200)
+        response = super(CustomPagination, self).get_paginated_response(data)
+        return Response(OrderedDict([
+            ('total_pages', self.page.paginator.num_pages),
+            data
+        ]))
 
 ######################################################
 #PERMISOS DE USUARIO
