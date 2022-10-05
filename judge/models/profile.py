@@ -159,12 +159,12 @@ class Profile(models.Model):
     ip = models.GenericIPAddressField(verbose_name=_('last IP'), blank=True, null=True)
     organizations = SortedManyToManyField(Organization, verbose_name=_('organization'), blank=True,
                                           related_name='members', related_query_name='member')
-    display_rank = models.CharField(max_length=15, default='Alumno', verbose_name=_('display rank'),
+    display_rank = models.CharField(max_length=10, default='Alumno', verbose_name=_('display rank'),
                                     choices=(
                                         ('Administrador', _('Administrador del sitio')),
                                         ('Profesor', _('Acádemico del departamento')),
                                         ('Alumno', _('Alumno')),
-                                        ('Visitante', _('Visitante')))),
+                                        ('Visitante', _('Visitante'))))
 
     mute = models.BooleanField(verbose_name=_('comment mute'), help_text=_('Some users are at their best when silent.'),
                                default=False)
