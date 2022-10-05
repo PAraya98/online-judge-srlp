@@ -2,7 +2,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [('migrations', '0001_initial')]
+    dependencies = [('judge', '0001_squashed_0084_contest_formats')]
 
     operations = [
        migrations.AddField(
