@@ -16,7 +16,7 @@ from judge.views.api.srlp.utils_srlp_api import *
 
 
 @api_view(['GET'])
-@permission_classes([IsAdministrador])
+@permission_classes([IsAuthenticated])
 def get_users_info(request):    
     queryset = Profile.objects
     if 'search' in request.GET:
@@ -36,7 +36,8 @@ def get_users_info(request):
                             'last_access': last_access,
                             'rank': rank,
                         })        
-        return paginator.get_paginated_response(array)
+        data = {'usuarios': array}
+        return paginator.get_paginated_response(data)
     else:
         return Response({},status=200)
         
