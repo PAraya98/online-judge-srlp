@@ -6,6 +6,7 @@ from judge.models import Profile
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework import pagination
+from rest_framework.decorators import api_view
 
 def get_jwt_user(request):
     user = JWTAuthentication().authenticate(request)
@@ -25,10 +26,11 @@ class CustomPagination(pagination.PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 50
 
+    @api_view(['GET'])
     def get_paginated_response(self, data):
         response = super(CustomPagination, self).get_paginated_response(data)
         response.data['xD'] = "xd"
-        return Response()
+        return Response(response)
 
 ######################################################
 #PERMISOS DE USUARIO
