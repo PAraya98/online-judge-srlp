@@ -19,6 +19,7 @@ from judge.views.api.srlp.utils_srlp_api import acces_denied
 def get_ranking(request):
     queryset = Profile.objects.filter(is_unlisted=False).values_list('user__username', 'points', 'performance_points',
                                                                      'display_rank', 'problem_count', 'last_access')
+    print(queryset.values())
     return Response(
         {username: {    'avatar_url': gravatar_username(username),
                         'points': points, #TODO: Ver diferencia entre points y performance_points 
