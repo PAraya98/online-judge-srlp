@@ -49,12 +49,14 @@ def register(request):
             
         user.save()
         #Creación de instancia profile
-        profile = Profile.objects.create(user=user, display_rank="Alumno") 
-
+        profile = Profile.objects.create(user=user) 
+        profile.display_rank = "Alumno"
         if(data.rol == "Administrador"):
             profile.display_rank = "Administrador"
         elif(data.rol == "Profesor"):
             profile.display_rank = "Profesor"
+        elif(data.rol == "Alumno"):
+            profile.display_rank = "Alumno"
         elif(data.rol == "Invitado"):
             profile.display_rank = "Invitado"
         
