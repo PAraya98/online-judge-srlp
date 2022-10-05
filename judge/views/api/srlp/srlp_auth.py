@@ -46,10 +46,14 @@ def register(request):
         elif(data.rol == "Profesor"):
             user.is_staff = True
         #if(data.rol == "Alumno"):
-            
+        
+        user.first_name = data.first_name
+        user.last_name = data.last_name
+
         user.save()
         #Creación de instancia profile
         profile = Profile.objects.create(user=user) 
+
         profile.display_rank = "Alumno"
         if(data.rol == "Administrador"):
             profile.display_rank = "Administrador"
@@ -59,7 +63,6 @@ def register(request):
             profile.display_rank = "Alumno"
         elif(data.rol == "Invitado"):
             profile.display_rank = "Invitado"
-        
         
         profile.timezone = 'America/Santiago'
         profile.organizations.add(Organization.objects.get(id=1))
