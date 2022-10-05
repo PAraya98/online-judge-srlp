@@ -163,7 +163,7 @@ class Profile(models.Model):
                                     choices=(
                                         ('Administrador', _('Administrador del sitio')),
                                         ('Profesor', _('Acádemico del departamento')),
-                                        ('Alumno', _('Alumno'))
+                                        ('Alumno', _('Alumno')),
                                         ('Visitante', _('Visitante')))),
 
     mute = models.BooleanField(verbose_name=_('comment mute'), help_text=_('Some users are at their best when silent.'),
