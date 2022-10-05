@@ -25,9 +25,8 @@ class CustomPagination(pagination.PageNumberPagination):
     max_page_size = 50
 
     def get_paginated_response(self, data):
-        data = {}
         data['total_pages'] = self.page.paginator.num_pages
-        return Response(data, status=200)
+        return Response(data)
 
 ######################################################
 #PERMISOS DE USUARIO

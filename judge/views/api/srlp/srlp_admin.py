@@ -39,7 +39,7 @@ def get_users_info(request):
         data = {'usuarios': array}
         return paginator.get_paginated_response(data)
     else:
-        return Response({},status=200)
+        return Response({})
         
 
 #Obtener información del alumno
