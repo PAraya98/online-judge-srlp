@@ -27,10 +27,8 @@ class CustomPagination(pagination.PageNumberPagination):
 
     def get_paginated_response(self, data):
         response = super(CustomPagination, self).get_paginated_response(data)
-        return Response(OrderedDict([
-            ('total_pages', self.page.paginator.num_pages),
-            data
-        ]))
+        total_pages = self.page.paginator.num_pages
+        return Response({'data': data, 'total_pages': total_pages})
 
 ######################################################
 #PERMISOS DE USUARIO
