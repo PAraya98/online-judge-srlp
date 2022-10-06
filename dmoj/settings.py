@@ -296,7 +296,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'app_name.pagination.MycustomPagination',
+    'DEFAULT_PAGINATION_CLASS': 'judge.views.api.srlp.utils_srlp_api.pagination.MycustomPagination',
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata'
 }
 
