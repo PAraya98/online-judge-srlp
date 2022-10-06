@@ -32,7 +32,7 @@ def get_users_info(request):
                             'rank': rank,
                         })        
         data = {'usuarios':  array}
-        return Response(paginator.get_paginated_response(data))
+        return paginator.get_paginated_response(data)
     else:
         return Response({})
         
