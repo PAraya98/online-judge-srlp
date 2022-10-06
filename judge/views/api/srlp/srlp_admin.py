@@ -10,14 +10,13 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 import json 
 from munch import DefaultMunch
-from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 
-from judge.views.api.srlp.utils_srlp_api import CustomPagination, IsAdministrador
+from judge.views.api.srlp.utils_srlp_api import CustomPagination, isLogueado, IsAdministrador
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([isLogueado])
 def get_users_info(request):    
     queryset = Profile.objects
     queryset = queryset.values_list('user__username', 'display_rank', 'last_access').order_by('user__username')
