@@ -96,8 +96,8 @@ def register(request):
         profile.organizations.add(Organization.objects.get(id=1))
         profile.save()
         return Response({'status': True})
-    except Exception as e:
-        print("Error: ")
+    except BaseException as error:
+        print('An exception occurred: {}'.format(error))
         return Response({'status': False})
 
 
