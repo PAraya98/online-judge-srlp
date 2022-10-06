@@ -130,8 +130,8 @@ def modify_user(request):
             profile.display_rank = "Invitado"
         user.save()
         profile.save()
-    except Exception as e:
-        print("Error: ")
+    except BaseException as error:
+        print('An exception occurred: {}'.format(error))
         return Response({'status': False})
 
 
