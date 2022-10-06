@@ -13,7 +13,7 @@ from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 
-from judge.views.api.srlp.utils_srlp_api import CustomPagination
+from judge.views.api.srlp.utils_srlp_api import CustomPagination, IsAdministrador
 
 
 @api_view(['GET'])
