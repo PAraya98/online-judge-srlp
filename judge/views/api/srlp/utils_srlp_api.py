@@ -30,7 +30,7 @@ class CustomPagination(PageNumberPagination):
     
 
     def get_paginated_response(self, data):
-        data['page_number'] = self.get_page_number()
+        data['page_number'] = self.page.number
         return Response(data)
 
 
