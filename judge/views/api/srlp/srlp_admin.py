@@ -103,5 +103,5 @@ def register(request):
 
         return Response({'status': True})
     except Exception as e:
-        print("Error: "+e)
+        print("Error: "+e.message)
         return Response({'status': False})
