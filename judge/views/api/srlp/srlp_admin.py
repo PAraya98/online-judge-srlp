@@ -36,7 +36,7 @@ def get_users_info(request):
                             'last_access': last_access,
                             'rank': rank,
                         })        
-        return Response({'usuarios': array, 'page_number': paginator.get_page_number})
+        return Response({'usuarios': "xd"})
     else:
         return Response({})
         
