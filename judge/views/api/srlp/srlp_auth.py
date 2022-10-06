@@ -47,8 +47,8 @@ def register(request):
             user.is_staff = True
         #if(data.rol == "Alumno"):
         
-        user.first_name = data.first_name
-        user.last_name = data.last_name
+        user.first_name = data.nombre
+        user.last_name = data.apellidos
 
         user.save()
         #Creación de instancia profile
