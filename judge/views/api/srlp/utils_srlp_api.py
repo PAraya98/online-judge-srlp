@@ -34,8 +34,6 @@ class CustomPagination(PageNumberPagination):
 #PERMISOS DE USUARIO
 
 
-IsAuthenticated
-
 class isLogueado(IsAuthenticated):
     pass
 
