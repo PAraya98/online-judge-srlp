@@ -5,7 +5,7 @@ from rest_framework import permissions
 from judge.models import Profile
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from rest_framework import pagination
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view
 
 def get_jwt_user(request):
@@ -21,7 +21,7 @@ Paginación para querys:
 Para utilizar se tienen que agregar los parametros ?p=2&page_size=3,
 Donde p es la página y page_size la cantidad de datos a mostrar
 '''
-class CustomPagination(pagination.PageNumberPagination):
+class CustomPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 50
