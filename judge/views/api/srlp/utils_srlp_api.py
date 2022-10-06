@@ -16,19 +16,26 @@ def acces_denied(bool_list):
     return Response({'status': "Acceso denegado"})
 
 
-'''
-Paginación para querys:
-Para utilizar se tienen que agregar los parametros ?p=2&page_size=3,
-Donde p es la página y page_size la cantidad de datos a mostrar
-'''
+
 class CustomPagination(PageNumberPagination):
+    '''
+    Paginación para querys:
+    Para utilizar se tienen que agregar los parametros ?p=2&page_size=3,
+    Donde p es la página y page_size la cantidad de datos a mostrar
+    '''
     page_size = 10
     page_size_query_param = 'page_size'
     max_page_size = 50
 
     def get_paginated_response(self, data):
-        
-        return Response({'data': data})
+        return Response({
+            'next': self.page.next_page_number() if self.page.has_next() else None,
+            'previous': self.page.previous_page_number() if self.page.has_previous() else None,
+            'count': self.page.paginator.count,
+            'results': data
+        })
+
+    
 
 ######################################################
 #PERMISOS DE USUARIO
