@@ -19,11 +19,6 @@ from judge.views.api.srlp.utils_srlp_api import *
 @permission_classes([IsAuthenticated])
 def get_users_info(request):    
     queryset = Profile.objects
-    if 'search' in request.GET:
-            query = ' '.join(request.GET).strip()
-            if query:
-                queryset = queryset.search(query)    
-    
     queryset = queryset.values_list('user__username', 'display_rank', 'last_access').order_by('user__username')
     
     if len(queryset)> 0:
