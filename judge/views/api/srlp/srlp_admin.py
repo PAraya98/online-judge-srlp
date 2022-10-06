@@ -31,7 +31,7 @@ def get_users_info(request):
                             'last_access': last_access,
                             'rank': rank,
                         })        
-        return Response({'usuarios': "xd"})
+        return Response(data={'usuarios': "xd"})
     else:
         return Response({})
         
