@@ -82,13 +82,12 @@ def register(request):
         #if(data.rol == "Alumno"):
         
         user.first_name = data.nombre
-        user.last_name = data.apellidos
+        user.last_name = data.apellido_paterno + " " + data.apellido_materno
 
         user.save()
         #Creación de instancia profile
         profile = Profile.objects.create(user=user) 
 
-        profile.display_rank = "Alumno"
         if(data.rol == "Administrador"):
             profile.display_rank = "Administrador"
         elif(data.rol == "Profesor"):
@@ -106,3 +105,39 @@ def register(request):
     except Exception as e:
         print("Error: "+e.message)
         return Response({'status': False})
+
+
+@api_view(['POST'])
+@permission_classes([IsAdministrador])
+def modify_user(request):
+    try:
+        data = DefaultMunch.fromDict(json.loads(request.body))
+        user = get_object_or_404(Profile, user=data.username)      
+        User.set_password(user, data.password)
+        user.first_name = data.nombre
+        user.last_name = data.apellidos
+        if(data.rol == "Administrador"):
+            user.is_superuser = True
+            user.is_staff = True
+        elif(data.rol == "Profesor"):
+            user.is_staff = True
+        #if(data.rol == "Alumno"):
+        user.first_name = data.nombre
+        user.last_name = data.apellido_paterno + " " + data.apellido_materno
+        user.username = data.username
+        profile = get_object_or_404(Profile, user__username=data.username)
+        if(data.rol == "Administrador"):
+            profile.display_rank = "Administrador"
+        elif(data.rol == "Profesor"):
+            profile.display_rank = "Profesor"
+        elif(data.rol == "Alumno"):
+            profile.display_rank = "Alumno"
+        elif(data.rol == "Invitado"):
+            profile.display_rank = "Invitado"
+        user.save()
+        profile.save()
+    except Exception as e:
+        print("Unexpected error:", sys.exc_info()[0])
+        return Response({'status': False})
+
+
