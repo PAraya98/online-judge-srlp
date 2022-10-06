@@ -66,6 +66,7 @@ def get_user_data(request):
     return Response(resp)
 
 @api_view(['POST'])
+@permission_classes([IsAdministrador])
 def register(request):
     try:
         data = DefaultMunch.fromDict(json.loads(request.body))
