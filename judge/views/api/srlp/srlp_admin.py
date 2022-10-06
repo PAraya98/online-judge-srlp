@@ -19,14 +19,18 @@ from judge.views.api.srlp.utils_srlp_api import CustomPagination, isLogueado, Is
 @permission_classes([IsAdministrador])
 def get_users_info(request):    
     queryset = Profile.objects
-    queryset = queryset.values_list('user__username', 'display_rank', 'last_access').order_by('user__username')
+    queryset = queryset.values_list('user__username', 'user__first_name', 'user__last_name', 
+    'user__email', 'display_rank', 'last_access').order_by('user__username')
     
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
         array = []
-        for username, rank, last_access in result_page:
+        for username, nombre, apellidos, email, rank, last_access in result_page:
             array.append({  'username': username,
+                            'email': email,
+                            'Nombre':  nombre, 
+                            'Apellidos': apellidos,
                             'avatar_url': gravatar_username(username),
                             'last_access': last_access,
                             'rank': rank,
