@@ -32,49 +32,6 @@ def get_tokens_for_user(request):
     except NameError:
         return Response({'error': NameError})
 
-@api_view(['POST'])
-def register(request):
-    try:
-        data = DefaultMunch.fromDict(json.loads(request.body))
-        #Creación de instanicia User
-        user = User.objects.create(username=data.username, email=data.username+"@SRLP_DICI.com")
-        User.set_password(user, data.password)
-
-        if(data.rol == "Administrador"):
-            user.is_superuser = True
-            user.is_staff = True
-        elif(data.rol == "Profesor"):
-            user.is_staff = True
-        #if(data.rol == "Alumno"):
-        
-        user.first_name = data.nombre
-        user.last_name = data.apellidos
-
-        user.save()
-        #Creación de instancia profile
-        profile = Profile.objects.create(user=user) 
-
-        profile.display_rank = "Alumno"
-        if(data.rol == "Administrador"):
-            profile.display_rank = "Administrador"
-        elif(data.rol == "Profesor"):
-            profile.display_rank = "Profesor"
-        elif(data.rol == "Alumno"):
-            profile.display_rank = "Alumno"
-        elif(data.rol == "Invitado"):
-            profile.display_rank = "Invitado"
-        
-        profile.timezone = 'America/Santiago'
-        profile.organizations.add(Organization.objects.get(id=1))
-        profile.save()
-
-        return Response({'status': True})
-
-
-        
-    except NameError:
-        return Response({'status': False})
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def validate_session(request):
