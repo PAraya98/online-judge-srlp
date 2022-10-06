@@ -73,21 +73,17 @@ def register(request):
         #Creación de instanicia User
         user = User.objects.create(username=data.username, email=data.username+"@SRLP_DICI.com")
         User.set_password(user, data.password)
-
         if(data.rol == "Administrador"):
             user.is_superuser = True
             user.is_staff = True
         elif(data.rol == "Profesor"):
             user.is_staff = True
-        #if(data.rol == "Alumno"):
-        
+        #if(data.rol == "Alumno"):        
         user.first_name = data.nombre
         user.last_name = data.apellido_paterno + " " + data.apellido_materno
-
         user.save()
         #Creación de instancia profile
         profile = Profile.objects.create(user=user) 
-
         if(data.rol == "Administrador"):
             profile.display_rank = "Administrador"
         elif(data.rol == "Profesor"):
@@ -95,15 +91,13 @@ def register(request):
         elif(data.rol == "Alumno"):
             profile.display_rank = "Alumno"
         elif(data.rol == "Invitado"):
-            profile.display_rank = "Invitado"
-        
+            profile.display_rank = "Invitado"        
         profile.timezone = 'America/Santiago'
         profile.organizations.add(Organization.objects.get(id=1))
         profile.save()
-
         return Response({'status': True})
     except Exception as e:
-        print("Error: "+e.message)
+        print("Error: ")
         return Response({'status': False})
 
 
@@ -137,7 +131,7 @@ def modify_user(request):
         user.save()
         profile.save()
     except Exception as e:
-        print("Unexpected error:", sys.exc_info()[0])
+        print("Error: ")
         return Response({'status': False})
 
 
