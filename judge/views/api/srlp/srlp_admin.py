@@ -16,7 +16,7 @@ from judge.views.api.srlp.utils_srlp_api import CustomPagination, isLogueado, Is
 
 
 @api_view(['GET'])
-@permission_classes([isLogueado])
+@permission_classes([IsAdministrador])
 def get_users_info(request):    
     queryset = Profile.objects
     queryset = queryset.values_list('user__username', 'display_rank', 'last_access').order_by('user__username')
