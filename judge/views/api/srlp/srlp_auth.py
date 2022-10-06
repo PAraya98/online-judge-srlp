@@ -68,16 +68,12 @@ def register(request):
         profile.organizations.add(Organization.objects.get(id=1))
         profile.save()
 
-        return Response({   
-            'avatar_url': gravatar_username(user.username),
-            'refresh_token': str(RefreshToken.for_user(user)),
-            'access_token': str(AccessToken.for_user(user))
-        })
+        return Response({'status': True})
 
 
         
     except NameError:
-        return Response({'error': NameError})
+        return Response({'status': False})
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
