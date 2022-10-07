@@ -11,28 +11,39 @@ import json
 from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+from django.db.models import F
 
-from judge.views.api.srlp.utils_srlp_api import get_jwt_user, CustomPagination
+from judge.views.api.srlp.utils_srlp_api import get_jwt_user, CustomPagination, filter_if_not_none
 
 @api_view(['GET'])
 def get_problem_list(request):
-    queryset = Problem.get_public_problems()
-    #if settings.ENABLE_FTS and 'search' in request.GET:
-    #    query = ' '.join(request.GET.getlist('search')).strip()
-    #    if query:
-    #        queryset = queryset.search(query)
-    queryset = queryset.values_list('code', 'points', 'partial', 'name', 'group__full_name')
+    queryset = Problem.get_public_problems() #TODO: Cambiar para organizaciones "Curso"
 
+    if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): queryset = queryset.order_by(request.GET.get('order_by'))
+    
+    queryset = queryset.annotate(group=F('group'))
+    
+    queryset = queryset.values('code', 'points', 'partial', 'name', 'group')
+    
+    queryset = filter_if_not_none(
+        queryset,
+        name__icontains=request.GET.get('name'),
+        code__icontains=request.GET.get('code'),
+        group__icontains=request.GET.get('group'),
+    )
+    #TODO: SE NECESITA HACER FILTRO POR TIPOS 
     if len(queryset)> 0:
         paginator = CustomPagination()
-        result_page = paginator.paginate_queryset(queryset, request)
+        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
+        
         data = ({
-            'code':  code,
-            'points': points,
-            'partial': partial,
-            'name': name,
-            'group': group,
-        } for code, points, partial, name, group in result_page)
+            'code':  res.code,
+            'points': res.points,
+            'partial': res.partial,
+            'name': res.name,
+            'group': res.group,
+            #AGREGAR LOS TIPOS DEL PROBLEMA
+        } for res in result_page)
 
         return paginator.get_paginated_response(data)
     else:

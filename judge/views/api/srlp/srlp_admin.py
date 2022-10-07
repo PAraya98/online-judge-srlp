@@ -18,17 +18,17 @@ from judge.views.api.srlp.utils_srlp_api import CustomPagination, isLogueado, Is
 @api_view(['GET'])
 @permission_classes([IsAdministrador])
 def get_users_info(request):    
-    queryset = Profile.objects
-
-    if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): queryset = queryset.order_by(request.GET.get('order_by'))
-
-
-    queryset = queryset.annotate(
+    
+    queryset = Profile.objects.annotate(
         username=F('user__username'), 
         nombre=F('user__first_name'),
         apellidos=F('user__last_name'),
         rol=F('display_rank'),
         email=F('user__email'))
+
+    if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): queryset = queryset.order_by(request.GET.get('order_by'))
+
+
     
     queryset = filter_if_not_none(
         queryset,
