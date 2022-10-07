@@ -21,16 +21,16 @@ def get_problem_list(request):
 
     if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): queryset = queryset.order_by(request.GET.get('order_by'))
     
-    queryset = queryset.annotate(group=F('group__full_name'))
+    queryset = queryset.annotate(group_name=F('group__full_name'))
     
     queryset = filter_if_not_none(
         queryset,
         name__icontains=request.GET.get('name'),
         code__icontains=request.GET.get('code'),
-        group__icontains=request.GET.get('group')
+        group_name__icontains=request.GET.get('group_name')
     )
 
-    queryset = queryset.values('code', 'points', 'partial', 'name', 'group')
+    queryset = queryset.values('code', 'points', 'partial', 'name', 'group_name')
     
     
     #TODO: SE NECESITA HACER FILTRO POR TIPOS 
@@ -43,7 +43,7 @@ def get_problem_list(request):
             'points': res.points,
             'partial': res.partial,
             'name': res.name,
-            'group': res.group,
+            'group_name': res.group_name,
             #AGREGAR LOS TIPOS DEL PROBLEMA
         } for res in result_page)
 
