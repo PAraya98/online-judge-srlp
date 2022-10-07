@@ -15,7 +15,8 @@ def get_jwt_user(request):
 def acces_denied(bool_list):
     return Response({'status': "Acceso denegado"})
 
-
+def filter_if_not_none(qs, **kwargs):
+    return qs.filter(**{k: v for k, v in kwargs.items() if v is not None})
 
 class CustomPagination(PageNumberPagination):
     '''

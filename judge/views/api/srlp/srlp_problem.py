@@ -12,7 +12,7 @@ from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 
-from judge.views.api.srlp.utils_srlp_api import get_jwt_user
+from judge.views.api.srlp.utils_srlp_api import get_jwt_user, CustomPagination
 
 @api_view(['GET'])
 def get_problem_list(request):
@@ -23,13 +23,22 @@ def get_problem_list(request):
     #        queryset = queryset.search(query)
     queryset = queryset.values_list('code', 'points', 'partial', 'name', 'group__full_name')
 
-    return Response({
-        'code':  code,
-        'points': points,
-        'partial': partial,
-        'name': name,
-        'group': group,
-    } for code, points, partial, name, group in queryset)
+    if len(queryset)> 0:
+        paginator = CustomPagination()
+        result_page = paginator.paginate_queryset(queryset, request)
+        data = ({
+            'code':  code,
+            'points': points,
+            'partial': partial,
+            'name': name,
+            'group': group,
+        } for code, points, partial, name, group in result_page)
+
+        return paginator.get_paginated_response(data)
+    else:
+        return Response({})
+
+
 
 
 @api_view(['GET'])
