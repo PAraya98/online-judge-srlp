@@ -12,13 +12,22 @@ import json
 from munch import DefaultMunch
 from django.shortcuts import get_object_or_404
 
-from judge.views.api.srlp.utils_srlp_api import CustomPagination, isLogueado, IsAdministrador
+from judge.views.api.srlp.utils_srlp_api import CustomPagination, isLogueado, IsAdministrador, filter_if_not_none
 
 
 @api_view(['GET'])
 @permission_classes([IsAdministrador])
 def get_users_info(request):    
     queryset = Profile.objects
+
+    queryset = filter_if_not_none(
+            queryset,
+            user__username__contains=request.GET.get('username'),
+            user__first_name__contains=request.GET.get('nombre'),
+            user__last_name__contains=request.GET.get('apellidos'),
+        )
+    if(request.GET.get('order_by')): queryset.order_by(request.GET.get('order_by'))
+    
     queryset = queryset.values_list('user__username', 'user__first_name', 'user__last_name', 
     'user__email', 'display_rank', 'last_access').order_by('user__username')
     

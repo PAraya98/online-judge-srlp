@@ -20,7 +20,7 @@ def acces_denied(bool_list):
 class CustomPagination(PageNumberPagination):
     '''
     Paginación para querys:
-    Para utilizar se tienen que agregar los parametros ?p=2&page_size=3,
+    Para utilizar se tienen que agregar los parametros ?page=2&page_size=3,
     Donde p es la página y page_size la cantidad de datos a mostrar
     '''
     page_size = 10
