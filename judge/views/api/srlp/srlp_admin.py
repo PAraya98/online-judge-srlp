@@ -22,11 +22,11 @@ def get_users_info(request):
 
     queryset = filter_if_not_none(
             queryset,
-            user__username__contains=request.GET.get('username'),
-            user__first_name__contains=request.GET.get('nombre'),
-            user__last_name__contains=request.GET.get('apellidos'),
+            user__username__icontains=request.GET.get('username'),
+            user__first_name__icontains=request.GET.get('nombre'),
+            user__last_name__icontains=request.GET.get('apellidos'),
         )
-    if(request.GET.get('order_by')): queryset.order_by(request.GET.get('order_by'))
+    if(request.GET.get('order_by') is not None): queryset.order_by(request.GET.get('order_by'))
     
     queryset = queryset.values_list('user__username', 'user__first_name', 'user__last_name', 
     'user__email', 'display_rank', 'last_access').order_by('user__username')
