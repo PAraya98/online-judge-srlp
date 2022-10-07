@@ -49,7 +49,7 @@ def get_users_info(request):
                             'Apellidos': res.apellidos,
                             'avatar_url': gravatar_username(res.username),
                             'last_access': res.last_access,
-                            'rol': res.rank,
+                            'rol': res.rol,
                         })        
         data = {'usuarios':  array}
         return paginator.get_paginated_response(data)
