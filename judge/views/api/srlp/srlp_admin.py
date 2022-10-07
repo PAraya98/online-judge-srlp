@@ -2,7 +2,7 @@
 from dmoj import settings
 from judge.jinja2.gravatar import gravatar_username
 from judge.models import ContestParticipation, ContestTag, Problem, Profile, Rating, Submission, Organization
-
+from django.db.models import F
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import api_view, permission_classes
@@ -30,8 +30,7 @@ def get_users_info(request):
     if(request.GET.get('order_by') is not None): queryset.order_by(request.GET.get('order_by'))
     
     queryset = queryset.values_list('user__username', 'user__first_name', 'user__last_name', 
-    'user__email', 'display_rank', 'last_access')
-    
+    'user__email', 'display_rank', 'last_access').annotate(user__username=F('username'))
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
