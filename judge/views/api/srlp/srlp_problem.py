@@ -38,14 +38,16 @@ def get_problem_list(request):
         paginator = CustomPagination()
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
         
-        data = ({
-            'code':  res.code,
-            'points': res.points,
-            'partial': res.partial,
-            'name': res.name,
-            'group_name': res.group_name,
-            #AGREGAR LOS TIPOS DEL PROBLEMA
-        } for res in result_page)
+        data = {
+            'problems': ({
+                'code':  res.code,
+                'points': res.points,
+                'partial': res.partial,
+                'name': res.name,
+                'group_name': res.group_name,
+                #AGREGAR LOS TIPOS DEL PROBLEMA
+            } for res in result_page)
+        }
 
         return paginator.get_paginated_response(data)
     else:
