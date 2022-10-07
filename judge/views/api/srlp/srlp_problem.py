@@ -27,7 +27,7 @@ def get_problem_list(request):
         queryset,
         name__icontains=request.GET.get('name'),
         code__icontains=request.GET.get('code'),
-        group__icontains=request.GET.get('group'),
+        group__icontains=request.GET.get('group')
     )
 
     queryset = queryset.values('code', 'points', 'partial', 'name', 'group')
