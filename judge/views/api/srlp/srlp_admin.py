@@ -30,7 +30,7 @@ def get_users_info(request):
     if(request.GET.get('order_by') is not None): queryset.order_by(request.GET.get('order_by'))
     
     queryset = queryset.values_list('user__username', 'user__first_name', 'user__last_name', 
-    'user__email', 'display_rank', 'last_access').order_by('user__username')
+    'user__email', 'display_rank', 'last_access')
     
     if len(queryset)> 0:
         paginator = CustomPagination()
