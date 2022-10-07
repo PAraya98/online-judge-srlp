@@ -34,7 +34,7 @@ def get_users_info(request):
         nombre=F('user__first_name'),
         apellidos=F('user__last_name'),
         rank=F('display_rank'),
-        email=F('user__email')).values_list(
+        email=F('user__email')).values(
             'username', 
             'nombre', 
             'apellidos', 
@@ -47,14 +47,14 @@ def get_users_info(request):
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
         array = []
-        for username, nombre, apellidos, rank, email, last_access in result_page:
-            array.append({  'username': username,
-                            'email': email,
-                            'Nombre':  nombre, 
-                            'Apellidos': apellidos,
-                            'avatar_url': gravatar_username(username),
-                            'last_access': last_access,
-                            'rank': rank,
+        for res in result_page:
+            array.append({  'username': res.username,
+                            'email': res.email,
+                            'Nombre':  res.nombre, 
+                            'Apellidos': res.apellidos,
+                            'avatar_url': gravatar_username(res.username),
+                            'last_access': res.last_access,
+                            'rank': res.rank,
                         })        
         data = {'usuarios':  array}
         return paginator.get_paginated_response(data)
