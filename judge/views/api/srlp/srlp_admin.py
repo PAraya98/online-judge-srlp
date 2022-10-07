@@ -25,6 +25,7 @@ def get_users_info(request):
             user__username__icontains=request.GET.get('username'),
             user__first_name__icontains=request.GET.get('nombre'),
             user__last_name__icontains=request.GET.get('apellidos'),
+            display_rank=request.GET.get('rank')
         )
     if(request.GET.get('order_by') is not None): queryset.order_by(request.GET.get('order_by'))
     
