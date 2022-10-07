@@ -29,7 +29,7 @@ def get_contest_list(request):
             query = ' '.join(request.GET.getlist('search')).strip()
             if query:
                 queryset = queryset.search(query)
-
+                
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)

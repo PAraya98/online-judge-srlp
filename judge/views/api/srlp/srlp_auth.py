@@ -44,4 +44,3 @@ def validate_session(request):
                         "is_logged_in": True
                     }
         })
-
