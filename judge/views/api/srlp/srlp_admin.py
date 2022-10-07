@@ -20,22 +20,24 @@ from judge.views.api.srlp.utils_srlp_api import CustomPagination, isLogueado, Is
 def get_users_info(request):    
     queryset = Profile.objects
 
-    queryset = filter_if_not_none(
-            queryset,
-            user__username__icontains=request.GET.get('username'),
-            user__first_name__icontains=request.GET.get('nombre'),
-            user__last_name__icontains=request.GET.get('apellidos'),
-            display_rank=request.GET.get('rank')
-        )
+
     
-    if(request.GET.get('order_by') is not None): queryset = queryset.order_by(request.GET.get('order_by'))
+    if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): queryset = queryset.order_by(request.GET.get('order_by'))
     queryset = queryset.annotate(
         username=F('user__username'), 
         nombre=F('user__first_name'),
         apellidos=F('user__last_name'),
-        rank=F('display_rank'),
+        rol=F('display_rank'),
         email=F('user__email')).values()
     
+    queryset = filter_if_not_none(
+        queryset,
+        username__icontains=request.GET.get('username'),
+        nombre__icontains=request.GET.get('nombre'),
+        apellidos__icontains=request.GET.get('apellidos'),
+        rol=request.GET.get('rank')
+    )
+
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
@@ -47,7 +49,7 @@ def get_users_info(request):
                             'Apellidos': res.apellidos,
                             'avatar_url': gravatar_username(res.username),
                             'last_access': res.last_access,
-                            'rank': res.rank,
+                            'rol': res.rank,
                         })        
         data = {'usuarios':  array}
         return paginator.get_paginated_response(data)
@@ -72,7 +74,7 @@ def get_user_data(request):
         'about': profile.about,
         'points': profile.points,
         'performance_points': profile.performance_points,
-        'rank': profile.display_rank,
+        'rol': profile.display_rank,
         'solved_problems': submissions,
         'organizations': list(profile.organizations.values_list('id', flat=True)),
     }

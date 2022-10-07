@@ -54,7 +54,7 @@ def get_user_info(request):
         'about': profile.about,
         'points': profile.points,
         'performance_points': profile.performance_points,
-        'rank': profile.display_rank,
+        'rol': profile.display_rank,
         'solved_problems': submissions,
         'organizations': list(profile.organizations.values_list('id', flat=True)),
     }
