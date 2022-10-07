@@ -132,7 +132,7 @@ def modify_user(request):
         user.username = data.username
         user.save()
         profile.save()
-        
+        return Response({'status': True})
     except BaseException as error:
         print('An exception occurred: {}'.format(error))
         return Response({'status': False})
