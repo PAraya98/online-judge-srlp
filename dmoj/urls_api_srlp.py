@@ -25,6 +25,7 @@ admin_patterns = [
     path('list_users', srlp_admin.get_users_info),
     path('user_data', srlp_admin.get_user_data),
     path('register', srlp_admin.register),
+    path('modify_user', srlp_admin.modify_user)
 ]
 
 srlp_patterns= [

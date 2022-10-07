@@ -106,8 +106,8 @@ def register(request):
 def modify_user(request):
     try:
         data = DefaultMunch.fromDict(json.loads(request.body))
-        user = get_object_or_404(Profile, user=data.username)      
-        User.set_password(user, data.password)
+        user = get_object_or_404(Profile, user=data.old_username)   
+        if(data.password != ""): User.set_password(user, data.password)        
         user.first_name = data.nombre
         user.last_name = data.apellidos
         if(data.rol == "Administrador"):
@@ -119,7 +119,7 @@ def modify_user(request):
         user.first_name = data.nombre
         user.last_name = data.apellido_paterno + " " + data.apellido_materno
         user.username = data.username
-        profile = get_object_or_404(Profile, user__username=data.username)
+        profile = get_object_or_404(Profile, user__username=data.old_username)
         if(data.rol == "Administrador"):
             profile.display_rank = "Administrador"
         elif(data.rol == "Profesor"):
@@ -133,5 +133,3 @@ def modify_user(request):
     except BaseException as error:
         print('An exception occurred: {}'.format(error))
         return Response({'status': False})
-
-
