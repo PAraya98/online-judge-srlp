@@ -106,7 +106,7 @@ def register(request):
 def modify_user(request):
     try:
         data = DefaultMunch.fromDict(json.loads(request.body))
-        user = get_object_or_404(Profile, user=data.old_username)   
+        user = get_object_or_404(User, user=data.old_username)   
         if(data.password != ""): User.set_password(user, data.password)        
         user.first_name = data.nombre
         user.last_name = data.apellidos
