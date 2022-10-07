@@ -34,20 +34,12 @@ def get_users_info(request):
         nombre=F('user__first_name'),
         apellidos=F('user__last_name'),
         rank=F('display_rank'),
-        email=F('user__email')).values(
-            'username', 
-            'nombre', 
-            'apellidos', 
-            'rank', 
-            'email', 
-            'last_access'
-        )
+        email=F('user__email')).values()
     
     if len(queryset)> 0:
         paginator = CustomPagination()
-        result_page = paginator.paginate_queryset(queryset, request)
+        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
         array = []
-        result_page = DefaultMunch.fromDict(result_page)
         for res in result_page:
             array.append({  'username': res.username,
                             'email': res.email,
