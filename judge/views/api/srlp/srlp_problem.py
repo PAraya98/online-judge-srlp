@@ -21,7 +21,7 @@ def get_problem_list(request):
 
     if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): queryset = queryset.order_by(request.GET.get('order_by'))
     
-    queryset = queryset.annotate(group=F('group'))
+    queryset = queryset.annotate(group=F('group__full_name'))
     
     queryset = filter_if_not_none(
         queryset,
@@ -29,7 +29,7 @@ def get_problem_list(request):
         code__icontains=request.GET.get('code'),
         group__icontains=request.GET.get('group'),
     )
-    
+
     queryset = queryset.values('code', 'points', 'partial', 'name', 'group')
     
     
