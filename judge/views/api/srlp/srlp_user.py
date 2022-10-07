@@ -20,15 +20,22 @@ def get_ranking(request):
     queryset = Profile.objects.filter(is_unlisted=False).values_list('user__username', 'points', 'performance_points',
                                                                      'display_rank', 'problem_count', 'last_access')
     print(queryset.values())
-    return Response(
-        {username: {    'avatar_url': gravatar_username(username),
+    
+    if len(queryset)> 0:
+        paginator = CustomPagination()
+        result_page = paginator.paginate_queryset(queryset, request)
+        data = ({username: 
+                    {   'avatar_url': gravatar_username(username),
                         'points': points, #TODO: Ver diferencia entre points y performance_points 
                         'problem_count': problem_count,
                         'performance_points': performance_points,
                         'last_access': last_access,
                         'rank': rank,
                     } 
-        for username, points, performance_points, rank, problem_count, last_access in queryset})
+            for username, points, performance_points, rank, problem_count, last_access in result_page})
+        return paginator.get_paginated_response(data)
+    else:
+        return Response({})
 
 
 @api_view(['GET'])
