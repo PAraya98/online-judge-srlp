@@ -29,20 +29,15 @@ def get_users_info(request):
         )
     
     if(request.GET.get('order_by') is not None): queryset = queryset.order_by(request.GET.get('order_by'))
-    queryset = queryset.values_list(
-        'last_access', 
-        username=F('user__username'), 
-        nombre=F('user__first_name'),
-        apellidos=F('user__last_name'),
-        rank=F('display_rank'),
-        email=F('user__email')
-    )
+    queryset = queryset.values_list('user__username', 'user__first_name', 'user__last_name', 
+    'user__email', 'display_rank', 'last_access')
+    
     
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
         array = []
-        for email, last_access, username, nombre, apellidos, rank in result_page:
+        for username, nombre, apellidos, email, rank, last_access in result_page:
             array.append({  'username': username,
                             'email': email,
                             'Nombre':  nombre, 
