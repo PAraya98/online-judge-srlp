@@ -23,14 +23,16 @@ def get_problem_list(request):
     
     queryset = queryset.annotate(group=F('group'))
     
-    queryset = queryset.values('code', 'points', 'partial', 'name', 'group')
-    
     queryset = filter_if_not_none(
         queryset,
         name__icontains=request.GET.get('name'),
         code__icontains=request.GET.get('code'),
         group__icontains=request.GET.get('group'),
     )
+    
+    queryset = queryset.values('code', 'points', 'partial', 'name', 'group')
+    
+    
     #TODO: SE NECESITA HACER FILTRO POR TIPOS 
     if len(queryset)> 0:
         paginator = CustomPagination()
