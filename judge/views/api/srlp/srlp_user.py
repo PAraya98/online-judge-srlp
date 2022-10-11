@@ -24,7 +24,7 @@ def get_ranking(request):
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
-        data = ({username: 
+        data = ({"ranking": {username: 
                     {   'avatar_url': gravatar_username(username),
                         'points': points, #TODO: Ver diferencia entre points y performance_points 
                         'problem_count': problem_count,
@@ -32,7 +32,7 @@ def get_ranking(request):
                         'last_access': last_access,
                         'rank': rank,
                     } 
-            for username, points, performance_points, rank, problem_count, last_access in result_page})
+            for username, points, performance_points, rank, problem_count, last_access in result_page}})
         return paginator.get_paginated_response(data)
     else:
         return Response({})
