@@ -58,8 +58,8 @@ def get_problem_list(request):
             } for res in result_page)
         }
 
-        for problem in data['problems']:            
-            queryset_ = Problem.objects.filter(id=problem['id'])
+        for res in result_page:           
+            queryset_ = Problem.objects.filter(id=res.id)
             queryset_ = queryset_.prefetch_related('types').values()
             print(queryset_)
 
