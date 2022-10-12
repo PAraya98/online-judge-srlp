@@ -40,7 +40,14 @@ def get_problem_list(request):
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
-        
+
+        for res in result_page:     
+            values = ProblemType.objects.filter(id__in=Problem.objects.filter(id=res.id).values('types'))
+            array = []
+            for types in values:
+                array.append(types['types'])
+            res.types = array
+
         data = {
             'problems': ({
                 'id':   res.id,
@@ -53,18 +60,12 @@ def get_problem_list(request):
                 'user_count': res.user_count,
                 'is_public': res.is_public,
                 'is_organization_private': res.is_organization_private,
-                'group_id': res.group_id
+                'group_id': res.group_id,
+                'types': res.types
                 #AGREGAR LOS TIPOS DEL PROBLEMA
             } for res in result_page)
         }
-
-        for res in result_page:     
-            print("types", Problem.objects.filter(id=res.id).values('types'))      
-            
-            #queryset_ = Problem.objects.filter(id=res.id, types=OuterRef('id'))
-            #values = ProblemType.objects.annotate(type=Subquery(queryset_.values('id', 'types'))).values('name')
-            values = ProblemType.objects.filter(id__in=Problem.objects.filter(id=res.id).values('types'))
-            print(res.name, values)
+        
 
         return paginator.get_paginated_response(data)
     else:
