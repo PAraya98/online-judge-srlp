@@ -61,7 +61,7 @@ def get_problem_list(request):
         for res in result_page:           
             queryset_ = Problem.objects.filter(id=res.id, types=OuterRef('id'))
             values = ProblemType.objects.annotate(type=Subquery(queryset_.values('types'))).values('name')
-            print(queryset_)
+            print(values)
 
         return paginator.get_paginated_response(data)
     else:
