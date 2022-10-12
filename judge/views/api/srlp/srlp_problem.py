@@ -33,7 +33,7 @@ def get_problem_list(request):
         is_organization_private = request.GET.get('is_organization_private')
     )
 
-    queryset = queryset.values('id', 'code', 'points', 'partial', 'name', 'group_name', 'user_count', 'ac_rate', 'is_public', 'is_organization_private', 'group_id', 'date')
+    queryset = queryset.values('id', 'code', 'points', 'partial', 'name', 'group_name', 'user_count', 'ac_rate', 'is_public', 'is_organization_private', 'group_id', 'date', 'types')
     
     
     #TODO: SE NECESITA HACER FILTRO POR TIPOS 
