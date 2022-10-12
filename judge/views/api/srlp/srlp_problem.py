@@ -33,7 +33,7 @@ def get_problem_list(request):
         is_organization_private = request.GET.get('is_organization_private')
     )
 
-    queryset = queryset.values('id', 'code', 'points', 'partial', 'name', 'group_name', 'user_count', 'ac_rate', 'is_public', 'is_organization_private', 'group_id', 'date', 'types')
+    queryset = queryset.values('id', 'code', 'points', 'partial', 'name', 'group_name', 'user_count', 'ac_rate', 'is_public', 'is_organization_private', 'group_id', 'date')
     
     
     #TODO: SE NECESITA HACER FILTRO POR TIPOS 
@@ -58,7 +58,9 @@ def get_problem_list(request):
             } for res in result_page)
         }
 
-        for res in result_page:           
+        for res in result_page:     
+            queryset_ = None
+            values = None      
             queryset_ = Problem.objects.filter(id=res.id, types=OuterRef('id'))
             values = ProblemType.objects.annotate(type=Subquery(queryset_.values('id', 'types'))).values('name')
             print(values)
