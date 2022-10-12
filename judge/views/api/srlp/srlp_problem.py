@@ -43,6 +43,7 @@ def get_problem_list(request):
         
         data = {
             'problems': ({
+                'id':   res.id,
                 'code':  res.code,
                 'points': res.points,
                 'partial': res.partial,
@@ -52,12 +53,15 @@ def get_problem_list(request):
                 'user_count': res.user_count,
                 'is_public': res.is_public,
                 'is_organization_private': res.is_organization_private,
-                'group_id': res.group_id,
-                #'types': res.types
+                'group_id': res.group_id
                 #AGREGAR LOS TIPOS DEL PROBLEMA
             } for res in result_page)
         }
 
+        for problem in data['problems']:            
+            queryset = Problem.objects.filter(id=problem['id'])
+            queryset = queryset.prefetch_related('types').values()
+            print(queryset)
 
         return paginator.get_paginated_response(data)
     else:
