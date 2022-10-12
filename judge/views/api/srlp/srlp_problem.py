@@ -42,7 +42,7 @@ def get_problem_list(request):
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
         
         data = {
-            'problems': ({res.id: {
+            'problems': ({
                 'code':  res.code,
                 'points': res.points,
                 'partial': res.partial,
@@ -55,7 +55,7 @@ def get_problem_list(request):
                 'group_id': res.group_id,
                 'types': res.types
                 #AGREGAR LOS TIPOS DEL PROBLEMA
-            }} for res in result_page)
+            } for res in result_page)
         }
 
 
