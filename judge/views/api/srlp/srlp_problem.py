@@ -58,11 +58,6 @@ def get_problem_list(request):
             } for res in result_page)
         }
 
-        for problem in data['problems']:            
-            queryset = Problem.objects.filter(id=problem['id'])
-            queryset = queryset.prefetch_related('types').values()
-            print(queryset)
-
         return paginator.get_paginated_response(data)
     else:
         return Response({})
