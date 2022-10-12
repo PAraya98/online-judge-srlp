@@ -60,7 +60,7 @@ def get_problem_list(request):
 
         for res in result_page:           
             queryset_ = Problem.objects.filter(id=res.id)
-            queryset_ = queryset.types_list()
+            queryset_ = queryset_.prefetch_related('types').values()
             print(queryset_)
 
         return paginator.get_paginated_response(data)
