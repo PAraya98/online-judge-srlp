@@ -42,10 +42,10 @@ def get_problem_list(request):
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
 
         for res in result_page:     
-            values = ProblemType.objects.filter(id__in=Problem.objects.filter(id=res.id).values('types'))
+            values = ProblemType.objects.filter(id__in=Problem.objects.filter(id=res.id).values('types')).values('name')
             array = []
             for types in values:
-                array.append(types['types'])
+                array.append(types['name'])
             res.types = array
 
         data = {
