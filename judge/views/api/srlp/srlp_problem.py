@@ -11,7 +11,8 @@ import json
 from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from django.db.models import F
+from django.db.models import F, OuterRef, Subquery
+from judge.models.problem import ProblemType
 
 from judge.views.api.srlp.utils_srlp_api import get_jwt_user, CustomPagination, filter_if_not_none
 
@@ -32,7 +33,7 @@ def get_problem_list(request):
         is_organization_private = request.GET.get('is_organization_private')
     )
 
-    queryset = queryset.values('code', 'points', 'partial', 'name', 'group_name', 'user_count', 'ac_rate', 'is_public', 'is_organization_private', 'group_id')
+    queryset = queryset.values('id', 'code', 'points', 'partial', 'name', 'group_name', 'user_count', 'ac_rate', 'is_public', 'is_organization_private', 'group_id', 'date', 'types')
     
     
     #TODO: SE NECESITA HACER FILTRO POR TIPOS 
@@ -41,19 +42,22 @@ def get_problem_list(request):
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
         
         data = {
-            'problems': ({
+            'problems': ({res.id: {
                 'code':  res.code,
                 'points': res.points,
                 'partial': res.partial,
                 'name': res.name,
                 'group_name': res.group_name,
+                'date': res.date,
                 'user_count': res.user_count,
                 'is_public': res.is_public,
                 'is_organization_private': res.is_organization_private,
-                'group_id': res.group_id
+                'group_id': res.group_id,
+                'types': res.types
                 #AGREGAR LOS TIPOS DEL PROBLEMA
-            } for res in result_page)
+            }} for res in result_page)
         }
+
 
         return paginator.get_paginated_response(data)
     else:

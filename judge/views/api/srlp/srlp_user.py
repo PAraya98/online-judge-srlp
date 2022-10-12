@@ -37,7 +37,6 @@ def get_ranking(request):
     else:
         return Response({})
 
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_info(request):
