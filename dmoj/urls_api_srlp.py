@@ -13,7 +13,8 @@ user_patterns = [
 
 problem_patterns = [
     path('list', srlp_problem.get_problem_list),
-    path('info', srlp_problem.get_problem_info)
+    path('info', srlp_problem.get_problem_info),
+    path('types', srlp_problem.get_types)
 ]
 
 contest_patterns = [
