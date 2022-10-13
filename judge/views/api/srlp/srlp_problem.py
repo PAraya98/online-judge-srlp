@@ -22,8 +22,6 @@ def get_problem_list(request):
 
     if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): queryset = queryset.order_by(request.GET.get('order_by'))
 
-    if(request.GET.get('type') is not None and request.GET.get('type') is not ""): 
-        queryset.filter(types=request.GET.get('type'))
     queryset = queryset.annotate(group_name=F('group__full_name'))
     
     queryset = filter_if_not_none(
@@ -32,7 +30,8 @@ def get_problem_list(request):
         code__icontains=request.GET.get('code'),
         group_name__icontains=request.GET.get('group_name'),
         is_public = request.GET.get('is_public'),
-        is_organization_private = request.GET.get('is_organization_private')
+        is_organization_private = request.GET.get('is_organization_private'),
+        types=request.GET.get('type')
     )
 
     queryset = queryset.values('id', 'code', 'points', 'partial', 'name', 'group_name', 'user_count', 'ac_rate', 'is_public', 'is_organization_private', 'group_id', 'date')
