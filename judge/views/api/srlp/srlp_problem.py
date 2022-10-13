@@ -21,7 +21,9 @@ def get_problem_list(request):
     queryset = Problem.get_public_problems() #TODO: Cambiar para organizaciones "Curso"
 
     if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): queryset = queryset.order_by(request.GET.get('order_by'))
-    
+
+    if(request.GET.get('type') is not None and request.GET.get('type') is not ""): 
+        queryset.filter(types=request.GET.get('type'))
     queryset = queryset.annotate(group_name=F('group__full_name'))
     
     queryset = filter_if_not_none(
@@ -35,21 +37,16 @@ def get_problem_list(request):
 
     queryset = queryset.values('id', 'code', 'points', 'partial', 'name', 'group_name', 'user_count', 'ac_rate', 'is_public', 'is_organization_private', 'group_id', 'date')
     
-    
-    #TODO: SE NECESITA HACER FILTRO POR TIPOS 
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
 
-        for res in result_page:     
-            p = Problem.objects.get(id=res.id)
-            res.types = list(p.types.values_list('full_name', flat=True))
-            #TODO: PARA HACER JOIN SIN CLAVE FORANEA
-            #values = ProblemType.objects.filter(id__in=Problem.objects.filter(id=res.id).values('types')).values('name')
-            #array = []
-            #for types in values:
-            #    array.append(types['name'])
-            #res.types = array
+        #TODO: PARA HACER JOIN SIN CLAVE FORANEA
+        #values = ProblemType.objects.filter(id__in=Problem.objects.filter(id=res.id).values('types')).values('name')
+        #array = []
+        #for types in values:
+        #    array.append(types['name'])
+        #res.types = array
 
         data = {
             'problems': ({
@@ -64,7 +61,7 @@ def get_problem_list(request):
                 'is_public': res.is_public,
                 'is_organization_private': res.is_organization_private,
                 'group_id': res.group_id,
-                'types': res.types
+                'types': list(res.types.values_list('full_name', flat=True))
                 #AGREGAR LOS TIPOS DEL PROBLEMA
             } for res in result_page)
         }
