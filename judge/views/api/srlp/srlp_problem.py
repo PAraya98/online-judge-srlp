@@ -55,7 +55,6 @@ def get_problem_list(request):
 
         data = {
             'problems': ({
-                'id':   res.id,
                 'code':  res.code,
                 'points': res.points,
                 'partial': res.partial,
@@ -66,18 +65,12 @@ def get_problem_list(request):
                 'is_public': res.is_public,
                 'is_organization_private': res.is_organization_private,
                 'group_id': res.group_id,
-                'types': res.type
-                #AGREGAR LOS TIPOS DEL PROBLEMA
+                'types': res.types
             } for res in result_page)
-        }
-        
-
+        }       
         return paginator.get_paginated_response(data)
     else:
         return Response({})
-
-
-
 
 @api_view(['GET'])
 def get_problem_info(request):
@@ -107,3 +100,32 @@ def get_problem_info(request):
 #    meta = self.metadata_class()
 #    data = meta.determine_metadata(request, self)
 #    return Response(data)
+
+def get_types(request):
+    queryset = ProblemType.objects; #TODO: Cambiar para organizaciones "Curso"
+
+    if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): queryset = queryset.order_by(request.GET.get('order_by'))
+
+    queryset = filter_if_not_none(
+        queryset,
+        name__icontains=request.GET.get('name'),
+        full_name__icontains=request.GET.get('full_name')
+    )
+
+    queryset = queryset.values('id', 'name', 'full_name')
+
+    if len(queryset)> 0:
+        paginator = CustomPagination()
+        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
+
+        data = {
+            'types': ({
+                'id':   res.id,
+                'name':  res.name,
+                'full_name': res.full_name
+                #TODO: AGREGAR ENLACE DE LA WIKI A FUTURO
+            } for res in result_page)
+        }       
+        return paginator.get_paginated_response(data)
+    else:
+        return Response({})
