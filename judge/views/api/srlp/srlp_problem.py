@@ -36,6 +36,8 @@ def get_problem_list(request):
 
     queryset = queryset.values('id', 'code', 'points', 'partial', 'name', 'group_name', 'user_count', 'ac_rate', 'is_public', 'is_organization_private', 'group_id', 'date')
     
+
+
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
@@ -46,6 +48,10 @@ def get_problem_list(request):
         #for types in values:
         #    array.append(types['name'])
         #res.types = array
+
+        for res in result_page:     
+            p = Problem.objects.get(id=res.id)
+            res.types = list(p.types.values_list('full_name', flat=True))
 
         data = {
             'problems': ({
@@ -60,7 +66,7 @@ def get_problem_list(request):
                 'is_public': res.is_public,
                 'is_organization_private': res.is_organization_private,
                 'group_id': res.group_id,
-                'types': list(res.types.values_list('full_name', flat=True))
+                'types': res.type
                 #AGREGAR LOS TIPOS DEL PROBLEMA
             } for res in result_page)
         }
