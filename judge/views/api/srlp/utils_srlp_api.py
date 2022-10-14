@@ -8,6 +8,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view
 
+
+
 def get_jwt_user(request):
     user = JWTAuthentication().authenticate(request)
     return None if user is None else user[0]

@@ -16,6 +16,8 @@ from judge.models.problem import ProblemType
 
 from judge.views.api.srlp.utils_srlp_api import get_jwt_user, CustomPagination, filter_if_not_none
 
+from judge.jinja2.markdown import markdown, MATH_ENGINE
+
 @api_view(['GET'])
 def get_problem_list(request):
     queryset = Problem.get_public_problems() #TODO: Cambiar para organizaciones "Curso"
@@ -93,6 +95,7 @@ def get_problem_info(request):
         'partial': p.partial,
         'languages': list(p.allowed_languages.values_list('key', flat=True)),
         'description': p.description,        
+        'description2': markdown(p.markdown_style, 'problem')
     })
     
 #@action(methods=['GET'], detail=False)

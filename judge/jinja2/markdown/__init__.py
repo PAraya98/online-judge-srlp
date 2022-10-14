@@ -193,5 +193,4 @@ def markdown(value, style, math_engine=None, lazy_load=False, strip_paragraphs=F
     if bleach_params:
         result = get_cleaner(style, bleach_params).clean(result)
     
-    print(Markup(result))
     return Markup(result)
