@@ -95,7 +95,7 @@ def get_problem_info(request):
         'partial': p.partial,
         'languages': list(p.allowed_languages.values_list('key', flat=True)),
         'description': p.description,        
-        'description2': markdown(p.markdown_style, 'problem')
+        'description2': markdown(p.markdown_style, p.description)
     })
     
 #@action(methods=['GET'], detail=False)
