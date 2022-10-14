@@ -192,5 +192,4 @@ def markdown(value, style, math_engine=None, lazy_load=False, strip_paragraphs=F
         result = fragment_tree_to_str(tree)
     if bleach_params:
         result = get_cleaner(style, bleach_params).clean(result)
-    
     return Markup(result)

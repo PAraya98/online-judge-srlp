@@ -16,7 +16,7 @@ from judge.models.problem import ProblemType
 
 from judge.views.api.srlp.utils_srlp_api import get_jwt_user, CustomPagination, filter_if_not_none
 
-from judge.jinja2.markdown import markdown, MATH_ENGINE
+from judge.jinja2.markdown import markdown
 
 @api_view(['GET'])
 def get_problem_list(request):
