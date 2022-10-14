@@ -101,6 +101,7 @@ def get_problem_info(request):
 #    data = meta.determine_metadata(request, self)
 #    return Response(data)
 
+@api_view(['GET'])
 def get_types(request):
     queryset = ProblemType.objects; #TODO: Cambiar para organizaciones "Curso"
 
