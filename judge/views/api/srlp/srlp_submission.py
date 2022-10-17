@@ -130,10 +130,9 @@ def get_info_submission(request):
     problem = get_object_or_404(Problem,code=request.GET.get('problem'))
     submission = get_list_or_404(Submission, user_id=user, problem_id=problem.id)
 
-
-    return Response({
-        'Submissions':
-        {
+    array = []
+    for res in submission:
+        array.append({
             'id': res.id,
             'problem': res.problem.code,
             'user': res.user.user.username,
@@ -143,7 +142,10 @@ def get_info_submission(request):
             'memory': res.memory,
             'points': res.points,
             'result': res.result,
-        } for res in submission
+        })
+
+    return Response({
+        'Submissions': array
     })
 
 
