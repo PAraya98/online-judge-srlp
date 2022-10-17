@@ -125,7 +125,6 @@ def get_contest_submission_count(problem, profile, virtual):
 @permission_classes([isLogueado])
 @api_view(['GET'])
 def get_info_submission(request):
-    data = DefaultMunch.fromDict(json.loads(request.body))
     user = get_jwt_user(request)
     problem = get_object_or_404(Problem,code=request.GET.get('problem'))
     submission = get_list_or_404(Submission, user_id=user, problem_id=problem.id)
