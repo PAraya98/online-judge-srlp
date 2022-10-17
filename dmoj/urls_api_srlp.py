@@ -1,5 +1,5 @@
 from django.urls import include, path, re_path, reverse
-from judge.views.api.srlp import srlp_admin, srlp_auth, srlp_contest, srlp_user, srlp_problem
+from judge.views.api.srlp import srlp_admin, srlp_auth, srlp_contest, srlp_submission, srlp_user, srlp_problem
 
 auth_patterns = [
     path('login', srlp_auth.get_tokens_for_user),
@@ -9,6 +9,11 @@ auth_patterns = [
 user_patterns = [
     path('get_ranking', srlp_user.get_ranking),
     path('info', srlp_user.get_user_info)
+]
+
+submission_patterns = [
+    path('send_solution', srlp_submission.sumbit_solution),
+    path('get_info_submit', srlp_submission.get_info_submit)
 ]
 
 problem_patterns = [
@@ -34,5 +39,6 @@ srlp_patterns= [
     path('user/', include(user_patterns)),
     path('problem/', include(problem_patterns)),
     path('contest/', include(contest_patterns)),
-    path('admin/', include(admin_patterns))
+    path('admin/', include(admin_patterns)),
+    path('submit/', include(submission_patterns))
 ]

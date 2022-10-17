@@ -596,7 +596,7 @@ class ProblemSubmit(LoginRequiredMixin, ProblemMixin, TitleMixin, SingleObjectFo
 
         return kwargs
 
-    def get_form(self, form_class=None):
+    def get_form(self, form_class=None): 
         form = super().get_form(form_class)
 
         form.fields['language'].queryset = (
@@ -614,10 +614,7 @@ class ProblemSubmit(LoginRequiredMixin, ProblemMixin, TitleMixin, SingleObjectFo
     def get_success_url(self):
         return reverse('submission_status', args=(self.new_submission.id,))
 
-    def form_valid(self, form):
-        print("entre!")
-        print(form)
-        print()
+    def form_valid(self, form): #TODO: DE AQUÍ SACAR LA SUBMITION
         if (
             not self.request.user.has_perm('judge.spam_submission') and
             Submission.objects.filter(user=self.request.profile, rejudged_date__isnull=True)
