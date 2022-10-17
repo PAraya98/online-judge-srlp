@@ -13,7 +13,8 @@ user_patterns = [
 
 submission_patterns = [
     path('send_solution', srlp_submission.sumbit_solution),
-    path('get_info_submission', srlp_submission.get_info_submit)
+    path('get_info_for_submit', srlp_submission.get_info_submit),
+    path('get_info_submission', srlp_submission.get_info_submission)
 ]
 
 problem_patterns = [
