@@ -23,7 +23,7 @@ from judge.views.api.srlp.utils_srlp_api import get_jwt_user, CustomPagination, 
 @permission_classes([isLogueado])
 @api_view(['GET'])
 def get_info_submit(request):
-    problem = get_object_or_404(Problem, id=request.GET.get('problem'))
+    problem = get_object_or_404(Problem,code=request.GET.get('problem'))
     judges = Judge.objects.filter(online=True, problems=problem).values('name', 'name')
     languages = problem.usable_languages.order_by('name', 'key').prefetch_related(Prefetch('runtimeversion_set', RuntimeVersion.objects.order_by('priority')))
 
