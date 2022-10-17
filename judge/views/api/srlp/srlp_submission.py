@@ -12,9 +12,10 @@ from django.contrib.auth.models import User
 import json 
 from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404
 from django.db.models import F, OuterRef, Subquery, Prefetch
 from judge.models.problem import ProblemType
+from judge.models.runtime import Language
 
 from judge.views.api.srlp.utils_srlp_api import get_jwt_user, CustomPagination, isLogueado, filter_if_not_none
 
@@ -25,7 +26,7 @@ from judge.views.api.srlp.utils_srlp_api import get_jwt_user, CustomPagination, 
 def get_info_submit(request):
     problem = get_object_or_404(Problem,code=request.GET.get('problem'))
     judges = Judge.objects.filter(online=True, problems=problem.id).values('name', 'name')
-    languages = problem.usable_languages.order_by('name', 'key').values('name', 'key')
+    languages = problem.usable_languages.order_by('name', 'key').values('name', 'key', 'id')
 
     return Response({'judges': judges, 'languages': languages})
 
@@ -35,8 +36,8 @@ def sumbit_solution(request):
     user = get_jwt_user(request)
     profile= Profile.objects.get(user=user)
     data = DefaultMunch.fromDict(json.loads(request.body))
-    
-    # lenguague_id 
+    langague = get_object_or_404(Language, key=data.language_key)
+    # language_key 
     # problem_id
     # source
 
@@ -50,7 +51,7 @@ def sumbit_solution(request):
         return Response({'Message': 'You submitted too many submissions.', 'status': False}, status=429)
         
 
-    if not problem.allowed_languages.filter(id=data.lenguague_id).exists():
+    if not problem.allowed_languages.filter(id=langague.id).exists():
         return Response({'Message': 'Languague unavaible.', 'status': False}, status=429)
     
     if not user.is_superuser and problem.banned_users.filter(id=profile.id).exists():
@@ -64,7 +65,7 @@ def sumbit_solution(request):
 
     with transaction.atomic():
         submission = Submission.objects.create(user=profile, problem=problem)
-        submission.languague = data.languague_id
+        submission.languague = langague.id
 
         contest_problem = profile.current_contest
 
@@ -120,3 +121,14 @@ def get_contest_problem(problem, profile):
 def get_contest_submission_count(problem, profile, virtual):
     return profile.current_contest.submissions.exclude(submission__status__in=['IE']) \
                   .filter(problem__problem=problem, participation__virtual=virtual).count()
+
+@permission_classes([isLogueado])
+@api_view(['GET'])
+def get_info_submission(request):
+    data = DefaultMunch.fromDict(json.loads(request.body))
+    user = get_jwt_user(request)
+    problem = get_object_or_404(Problem,code=request.GET.get('problem'))
+    submission = get_list_or_404(Submission, user_id=user, problem_id=problem.id)
+    return Response({'Submissions':submission})
+
+
