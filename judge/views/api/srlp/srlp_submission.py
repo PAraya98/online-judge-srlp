@@ -127,7 +127,7 @@ def get_contest_submission_count(problem, profile, virtual):
 def get_info_submission(request):
     user = get_jwt_user(request)
     problem = get_object_or_404(Problem,code=request.GET.get('problem'))
-    submission = get_list_or_404(Submission, user_id=user, problem_id=problem.id)
+    submission = get_list_or_404(Submission, user_id=user.id, problem_id=problem.id)
 
     array = []
     for res in submission:
