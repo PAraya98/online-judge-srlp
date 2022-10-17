@@ -615,6 +615,9 @@ class ProblemSubmit(LoginRequiredMixin, ProblemMixin, TitleMixin, SingleObjectFo
         return reverse('submission_status', args=(self.new_submission.id,))
 
     def form_valid(self, form):
+        print("entre!")
+        print(form)
+        print()
         if (
             not self.request.user.has_perm('judge.spam_submission') and
             Submission.objects.filter(user=self.request.profile, rejudged_date__isnull=True)
