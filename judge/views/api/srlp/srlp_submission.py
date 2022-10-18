@@ -41,7 +41,7 @@ def sumbit_solution(request):
     # problem_id
     # source
 
-    problem = Problem.objects.get(id=data.problem_id)
+    problem = Problem.objects.get(code=data.problem_code)
 
     
     if (   not user.has_perm('judge.spam_submission') and
