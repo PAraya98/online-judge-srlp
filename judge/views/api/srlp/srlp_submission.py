@@ -37,6 +37,7 @@ def sumbit_solution(request):
     profile= Profile.objects.get(user=user)
     data = DefaultMunch.fromDict(json.loads(request.body))
     language = get_object_or_404(Language, key=data.language_key)
+    judge = get_object_or_404(Judge, name=data.judge_name)
     # language_key 
     # problem_id
     # source
@@ -88,7 +89,7 @@ def sumbit_solution(request):
 
     # Save a query.
     submission.source = source
-    submission.judge(force_judge=True, judge_id=data.judge_id)
+    submission.judge(force_judge=True, judge_id=judge.id)
 
     return Response({'Message': 'Sumbit ok!','status': True, 'id_sumbit': submission.id})
 
