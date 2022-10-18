@@ -89,7 +89,7 @@ def sumbit_solution(request):
 
     # Save a query.
     submission.source = source
-    submission.judge(force_judge=True, judge_id=judge.id)
+    submission.judge(force_judge=True, judge_id=judge.name)
 
     return Response({'Message': 'Sumbit ok!','status': True, 'id_sumbit': submission.id})
 
