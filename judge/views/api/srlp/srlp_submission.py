@@ -58,7 +58,7 @@ def sumbit_solution(request):
         return Response({'Message': 'Banned from submitting: You have been declared persona non grata for this problem. You are permanently barred from submitting this problem.'}, status=429)
     
     # Must check for zero and not None. None means infinite submissions remaining.
-    if remaining_submission_count(problem, profile) == 0:
+    if remaining_submission_count(profile, problem) == 0:
         return Response({'Message': 'Too many submissions. You have exceeded the submission limit for this problem.'}, status=429)
 
     
