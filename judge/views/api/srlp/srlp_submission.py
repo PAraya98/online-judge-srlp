@@ -36,7 +36,7 @@ def sumbit_solution(request):
     user = get_jwt_user(request)
     profile= Profile.objects.get(user=user)
     data = DefaultMunch.fromDict(json.loads(request.body))
-    langague = get_object_or_404(Language, key=data.language_key)
+    language = get_object_or_404(Language, key=data.language_key)
     # language_key 
     # problem_id
     # source
@@ -51,7 +51,7 @@ def sumbit_solution(request):
         return Response({'Message': 'You submitted too many submissions.', 'status': False}, status=429)
         
 
-    if not problem.allowed_languages.filter(id=langague.id).exists():
+    if not problem.allowed_languages.filter(id=language.id).exists():
         return Response({'Message': 'Languague unavaible.', 'status': False}, status=429)
     
     if not user.is_superuser and problem.banned_users.filter(id=profile.id).exists():
@@ -64,7 +64,7 @@ def sumbit_solution(request):
     
 
     with transaction.atomic():
-        submission = Submission.objects.create(user=profile, problem=problem, lengague=langague.id)
+        submission = Submission.objects.create(user=profile, problem=problem, language=language.id)
 
         contest_problem = profile.current_contest
 
