@@ -18,6 +18,7 @@ from judge.jinja2.gravatar import gravatar_username
 @permission_classes([isLogueado])
 @api_view(['POST'])
 def create_comment(request):
+    #TODO: AGREGAR NIVEL MÁXIMO COMO 3
     data = DefaultMunch.fromDict(json.loads(request.body))
     comment_aux = get_list_or_404(Comment, page=data.page_code)[0]    
     if(comment_aux.is_accessible_by(get_jwt_user(request))):
@@ -52,68 +53,55 @@ def get_comments(request):
         comments = comments.values()
 
         if len(comments)> 0:
-            
-            paginator_comments = CustomPagination()
-            result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
-            array_comments = []
-
             request.GET._mutable = True
-            if not request.GET._mutable: #FIXME: Probablemente haya una mejor forma de cambiar el paginator para la consulta de primeras respuestas
-                request.GET['page'] = 1
-                if(request.GET('response_page_size') is not None): request.GET['page_size'] = request.GET['response_page_size']
-                else: request.GET['page_size'] = 4
+            
+            
+            pass ##AGREGAR CONSULTA RECURSIVA
 
-            for comment in result_page:
-                profile = Profile.objects.get(id=comment.author_id)
-                user = User.objects.get(id=profile.user_id)
-                
-                comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level__gte=1, parent_id=comment.id).exclude(hidden=True).values()
-                paginator_comment_responses = CustomPagination()
-                result_page_responses = DefaultMunch.fromDict(paginator_comment_responses.paginate_queryset(comment_responses, request))
-                array_responses = []
-
-                print(result_page_responses)
-                for comment_response in result_page_responses:
-                    array_responses.append({                    
-                        "id": comment_response.id,
-                        "parent_id": comment_response.parent_id,
-                        "level": comment_response.level,
-                        "lft": comment_response.lft,
-                        "rght": comment_response.rght,
-                        "tree_id": comment_response.tree_id,
-                        "author": {
-                            "username": user.username,
-                            "gravatar": gravatar_username(user.username),
-                            "rank": profile.display_rank
-                        },
-                        "time": comment_response.time,
-                        "score": comment_response.score,
-                        "body": comment_response.body,                    
-                    })
-                    
-
-                array_comments.append({                    
-                    "id": comment.id,
-                    "level": comment.level,
-                    "lft": comment.lft,
-                    "rght": comment.rght,
-                    "tree_id": comment.tree_id,
-                    "author": {
-                        "username": user.username,
-                        "gravatar": gravatar_username(user.username),
-                        "rank": profile.display_rank
-                    },
-                    "time": comment.time,
-                    "score": comment.score,
-                    "body": comment.body,     
-                    "responses": array_responses               
-                })
-            data = {
-                'Comments': array_comments,
-                'response_page_size': paginator_comment_responses.get_num_pages()
-            }       
-            return paginator_comments.get_paginated_response(data)
         else:
             return Response({})
     else:
         return Response({'status': False})
+
+def recursive_comment_query(request, comments, level=0):
+    paginator_comments = CustomPagination()
+    result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
+    array_comments = []
+    if(level == 1):
+        if not request.GET._mutable: #FIXME: Probablemente haya una mejor forma de cambiar el paginator para la consulta de primeras respuestas
+            request.GET['page'] = 1
+            if(request.GET('response_page_size') is not None): request.GET['page_size'] = request.GET['response_page_size']
+            else: request.GET['page_size'] = 4
+    if(level < 3):
+        for comment in result_page:
+            profile = Profile.objects.get(id=comment.author_id)
+            user = User.objects.get(id=profile.user_id)
+            
+            comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level__gte=level, parent_id=comment.id).exclude(hidden=True).values()
+
+            array_responses = recursive_comment_query(request, comment_responses, level=level+1)
+            
+
+            array_comments.append({                    
+                "id": comment.id,
+                "level": comment.level,
+                "lft": comment.lft,
+                "rght": comment.rght,
+                "tree_id": comment.tree_id,
+                "author": {
+                    "username": user.username,
+                    "gravatar": gravatar_username(user.username),
+                    "rank": profile.display_rank
+                },
+                "time": comment.time,
+                "score": comment.score,
+                "body": comment.body,     
+                "responses": array_responses               
+            })
+           
+        return {
+            'comments': array_comments,
+            'num_pages': paginator_comments.get_num_pages()
+        }
+    else: 
+        return []
