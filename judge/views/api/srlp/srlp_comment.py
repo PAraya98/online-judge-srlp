@@ -31,6 +31,7 @@ def create_comment(request):
 def get_comments(request):
     comment_aux = Comment.objects.create(page=request.GET.getlist('page_code')[0], author_id=1)
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
+        comment_aux = None
         queryset = Comment.objects.filter(page=request.GET.getlist('page_code')[0]).exclude(hidden=True).values()
         if len(queryset)> 0:
             paginator = CustomPagination()
