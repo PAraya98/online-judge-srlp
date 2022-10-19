@@ -110,7 +110,7 @@ def get_comments(request):
                 })
             data = {
                 'Comments': array_comments,
-                'response_page_size': responses_paginator.get_num_pages()
+                'response_page_size': result_page_responses.get_num_pages()
             }       
             return paginator_comments.get_paginated_response(data)
         else:
