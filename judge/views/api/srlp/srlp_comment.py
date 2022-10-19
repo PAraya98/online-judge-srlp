@@ -54,6 +54,7 @@ def get_comments(request):
                     "score": comment.score,
                     "body": comment.body,                    
                 })
+                user = None
             data = {
                 'Comments': array
             }       
