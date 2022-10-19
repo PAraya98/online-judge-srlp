@@ -42,17 +42,45 @@ def create_comment(request):
 @api_view(['GET'])
 def get_comments(request):
     comment_aux = get_list_or_404(Comment, page=request.GET.getlist('page_code')[0])[0]
+
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
-        queryset = Comment.objects.filter(page=request.GET.getlist('page_code')[0]).exclude(hidden=True).values()
-        if len(queryset)> 0:
-            paginator = CustomPagination()
-            result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
-            array = []
+        comments = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level=0).exclude(hidden=True).values()
+       
+        if len(comments)> 0:
+            paginator_comments = CustomPagination()
+            result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
+            array_comments = []
+            request.GET._mutable = True
+            if not request.GET._mutable: #FIXME: Probablemente haya una mejor forma de cambiar el paginator para la consulta de primeras respuestas
+                request.GET['page'] = 1
+                request.GET['page_size'] = 4
+
             for comment in result_page:
                 profile = Profile.objects.get(id=comment.author_id)
                 user = User.objects.get(id=profile.user_id)
                 
-                array.append({                    
+                comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level_gte=0, parent_id=comment.id)
+                responses_paginator = CustomPagination()
+                comment_responses = DefaultMunch.fromDict(responses_paginator.paginate_queryset(comment_responses, request))
+                array_responses = []
+                for comment_response in comment_responses:
+                    array_responses.append({                    
+                        "id": comment_response.id,
+                        "parent_id": comment_response.parent_id,
+                        "level": comment_response.level,
+                        "lft": comment_response.lft,
+                        "rght": comment_response.rght,
+                        "tree_id": comment_response.tree_id,
+                        "author": {
+                            "username": user.username,
+                            "gravatar": gravatar_username(user.username),
+                            "rank": profile.display_rank
+                        },
+                        "time": comment_response.time,
+                        "score": comment_response.score,
+                        "body": comment_response.body,                    
+                    })
+                array_comments.append({                    
                     "id": comment.id,
                     "parent_id": comment.parent_id,
                     "level": comment.level,
@@ -66,12 +94,13 @@ def get_comments(request):
                     },
                     "time": comment.time,
                     "score": comment.score,
-                    "body": comment.body,                    
+                    "body": comment.body,     
+                    "responses": array_responses               
                 })
             data = {
-                'Comments': array
+                'Comments': array_comments
             }       
-            return paginator.get_paginated_response(data)
+            return paginator_comments.get_paginated_response(data)
         else:
             return Response({})
     else:
