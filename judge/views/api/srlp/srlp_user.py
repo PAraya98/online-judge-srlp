@@ -18,7 +18,8 @@ from judge.jinja2.gravatar import gravatar_username
 def get_ranking(request):
     queryset = Profile.objects.filter(is_unlisted=False).values_list('user__username', 'points', 'performance_points',
                                                                      'display_rank', 'problem_count', 'last_access')
-    print(queryset.values())
+    if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): queryset = queryset.order_by(request.GET.get('order_by'))
+
     
     if len(queryset)> 0:
         paginator = CustomPagination()
