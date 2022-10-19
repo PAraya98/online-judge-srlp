@@ -1,6 +1,6 @@
 
 from dmoj import settings
-from judge.models import Problem, Judge, Profile, Submission, SubmissionSource, ContestSubmission, Comment
+from judge.models import Problem, Judge, Profile, Submission, SubmissionSource, ContestSubmission, Comment, profile
 
 
 from rest_framework.decorators import api_view, permission_classes
@@ -38,7 +38,8 @@ def get_comments(request):
             array = []
             
             for comment in result_page:
-                user = User.objects.get(id=comment.author.id)
+                user = User.objects.get(id=comment.author)
+                profile = Profile.objects.get(id=comment.author)
                 array.append({                    
                     "id": comment.id,
                     "parent_id": comment.parent_id,
@@ -47,9 +48,10 @@ def get_comments(request):
                     "rght": comment.rght,
                     "tree_id": comment.tree_id,
                     "author": {
-                        "author_id":comment.author.id,
+                        "author_id":comment.author,
                         "username": user.username,
-                        "gravatar": gravatar_username(user.username)
+                        "gravatar": gravatar_username(user.username),
+                        "rank": profile.display_rank
                     },
                     "time": comment.time,
                     "score": comment.score,
