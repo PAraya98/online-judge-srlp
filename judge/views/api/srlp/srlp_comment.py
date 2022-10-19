@@ -29,7 +29,7 @@ def create_comment(request):
 
 @api_view(['GET'])
 def get_comments(request):
-    comment_aux = Comment.objects.create(page=request.GET.getlist('page'))
+    comment_aux = Comment.objects.create(page=request.GET.getlist('page'), author_id=1)
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
         queryset = Comment.objects.filter(page=request.GET.getlist('page')).values()
         if len(queryset)> 0:
