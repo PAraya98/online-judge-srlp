@@ -72,7 +72,7 @@ def get_comments(request):
                 result_page_responses = DefaultMunch.fromDict(paginator_comment_responses.paginate_queryset(comment_responses, request))
                 array_responses = []
 
-                
+                print(result_page_responses)
                 for comment_response in result_page_responses:
                     array_responses.append({                    
                         "id": comment_response.id,
