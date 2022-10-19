@@ -36,7 +36,6 @@ def get_comments(request):
             paginator = CustomPagination()
             result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
             array = []
-            '''
             for comment in result_page:
                 user = User.objects.get(id=comment.author)
                 profile = Profile.objects.get(id=comment.author)
@@ -57,9 +56,8 @@ def get_comments(request):
                     "score": comment.score,
                     "body": comment.body,                    
                 })
-            '''
             data = {
-                'Comments': result_page
+                'Comments': array
             }       
             return paginator.get_paginated_response(data)
         else:
