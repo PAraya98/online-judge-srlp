@@ -44,16 +44,24 @@ def get_comments(request):
     comment_aux = get_list_or_404(Comment, page=request.GET.getlist('page_code')[0])[0]
 
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
-        comments = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level=0).exclude(hidden=True).values()
-       
+        comments = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level=0).exclude(hidden=True)
+        
+        if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): comments = comments.order_by(request.GET.get('order_by'))
+        #if(request.GET.get('order_by') is "score"): comments = comments.order_by('score', 'time')
+        #else: comments = comments.order_by('time')
+        comments = comments.values()
+
         if len(comments)> 0:
+            
             paginator_comments = CustomPagination()
             result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
             array_comments = []
+
             request.GET._mutable = True
             if not request.GET._mutable: #FIXME: Probablemente haya una mejor forma de cambiar el paginator para la consulta de primeras respuestas
                 request.GET['page'] = 1
-                request.GET['page_size'] = 4
+                if(request.GET('response_page_size') is not None): request.GET['page_size'] = request.GET['response_page_size']
+                else: request.GET['page_size'] = 4
 
             for comment in result_page:
                 profile = Profile.objects.get(id=comment.author_id)
@@ -63,23 +71,26 @@ def get_comments(request):
                 responses_paginator = CustomPagination()
                 comment_responses = DefaultMunch.fromDict(responses_paginator.paginate_queryset(comment_responses, request))
                 array_responses = []
-                for comment_response in comment_responses:
-                    array_responses.append({                    
-                        "id": comment_response.id,
-                        "parent_id": comment_response.parent_id,
-                        "level": comment_response.level,
-                        "lft": comment_response.lft,
-                        "rght": comment_response.rght,
-                        "tree_id": comment_response.tree_id,
-                        "author": {
-                            "username": user.username,
-                            "gravatar": gravatar_username(user.username),
-                            "rank": profile.display_rank
-                        },
-                        "time": comment_response.time,
-                        "score": comment_response.score,
-                        "body": comment_response.body,                    
-                    })
+
+                if(comment_response > 0):
+                    for comment_response in comment_responses:
+                        array_responses.append({                    
+                            "id": comment_response.id,
+                            "parent_id": comment_response.parent_id,
+                            "level": comment_response.level,
+                            "lft": comment_response.lft,
+                            "rght": comment_response.rght,
+                            "tree_id": comment_response.tree_id,
+                            "author": {
+                                "username": user.username,
+                                "gravatar": gravatar_username(user.username),
+                                "rank": profile.display_rank
+                            },
+                            "time": comment_response.time,
+                            "score": comment_response.score,
+                            "body": comment_response.body,                    
+                        })
+
                 array_comments.append({                    
                     "id": comment.id,
                     "parent_id": comment.parent_id,
@@ -98,7 +109,8 @@ def get_comments(request):
                     "responses": array_responses               
                 })
             data = {
-                'Comments': array_comments
+                'Comments': array_comments,
+                'response_page_size': responses_paginator.get_num_pages()
             }       
             return paginator_comments.get_paginated_response(data)
         else:
