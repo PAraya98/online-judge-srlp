@@ -47,5 +47,5 @@ srlp_patterns= [
     path('contest/', include(contest_patterns)),
     path('admin/', include(admin_patterns)),
     path('submission/', include(submission_patterns)),
-    path('comment', include(comment_patterns))
+    path('comment/', include(comment_patterns))
 ]
