@@ -38,7 +38,7 @@ def get_comments(request):
             array = []
             
             for comment in result_page:
-                profile = Profile.objects.get(id=comment.id)
+                profile = Profile.objects.get(id=comment.author_id)
                 array.append({                    
                     "id": comment.id,
                     "parent_id": comment.parent_id,
