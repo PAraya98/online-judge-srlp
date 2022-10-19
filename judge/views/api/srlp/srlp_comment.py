@@ -13,7 +13,7 @@ from django.shortcuts import get_list_or_404, get_object_or_404
 from judge.models.runtime import Language
 
 from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, isLogueado, filter_if_not_none
-
+from judge.jinja2.gravatar import gravatar_username
 @permission_classes([isLogueado])
 @api_view(['POST'])
 def create_comment(request):
@@ -35,9 +35,27 @@ def get_comments(request):
         if len(queryset)> 0:
             paginator = CustomPagination()
             result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
-
+            array = []
+            
+            for comment in result_page:
+                profile = Profile.objects.get(id=comment.id)
+                array.append({                    
+                    "id": comment.id,
+                    "parent_id": comment.parent_id,
+                    "level": comment.level,
+                    "lft": comment.lft,
+                    "rght": comment.rght,
+                    "tree_id": comment.tree_id,
+                    "author": {
+                        "username": profile.username,
+                        "gravatar": gravatar_username(profile.username)
+                    },
+                    "time": comment.time,
+                    "score": comment.score,
+                    "body": comment.body,                    
+                })
             data = {
-                'Comments': result_page
+                'Comments': array
             }       
             return paginator.get_paginated_response(data)
         else:
