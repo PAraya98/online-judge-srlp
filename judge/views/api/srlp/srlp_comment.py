@@ -53,13 +53,12 @@ def get_comments(request):
         comments = comments.values()
 
         if len(comments)> 0:
-            request.GET._mutable = True
+            request.GET._mutable = True           
             
-            
-            pass ##AGREGAR CONSULTA RECURSIVA
+            data = recursive_comment_query(request, comments)
 
         else:
-            return Response({})
+            return Response(data)
     else:
         return Response({'status': False})
 
