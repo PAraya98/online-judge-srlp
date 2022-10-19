@@ -37,8 +37,8 @@ def get_comments(request):
             result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
             array = []
             for comment in result_page:
-                user = User.objects.get(id=comment.author)
-                profile = Profile.objects.get(id=comment.author)
+                user = User.objects.get(id=comment.author_id)
+                profile = Profile.objects.get(id=comment.author_id)
                 array.append({                    
                     "id": comment.id,
                     "parent_id": comment.parent_id,
@@ -47,7 +47,6 @@ def get_comments(request):
                     "rght": comment.rght,
                     "tree_id": comment.tree_id,
                     "author": {
-                        "author_id":comment.author,
                         "username": user.username,
                         "gravatar": gravatar_username(user.username),
                         "rank": profile.display_rank
