@@ -72,24 +72,24 @@ def get_comments(request):
                 result_page_responses = DefaultMunch.fromDict(paginator_comment_responses.paginate_queryset(comment_responses, request))
                 array_responses = []
 
-                if(result_page_responses > 0):
-                    for comment_response in result_page_responses:
-                        array_responses.append({                    
-                            "id": comment_response.id,
-                            "parent_id": comment_response.parent_id,
-                            "level": comment_response.level,
-                            "lft": comment_response.lft,
-                            "rght": comment_response.rght,
-                            "tree_id": comment_response.tree_id,
-                            "author": {
-                                "username": user.username,
-                                "gravatar": gravatar_username(user.username),
-                                "rank": profile.display_rank
-                            },
-                            "time": comment_response.time,
-                            "score": comment_response.score,
-                            "body": comment_response.body,                    
-                        })
+                
+                for comment_response in result_page_responses:
+                    array_responses.append({                    
+                        "id": comment_response.id,
+                        "parent_id": comment_response.parent_id,
+                        "level": comment_response.level,
+                        "lft": comment_response.lft,
+                        "rght": comment_response.rght,
+                        "tree_id": comment_response.tree_id,
+                        "author": {
+                            "username": user.username,
+                            "gravatar": gravatar_username(user.username),
+                            "rank": profile.display_rank
+                        },
+                        "time": comment_response.time,
+                        "score": comment_response.score,
+                        "body": comment_response.body,                    
+                    })
 
                 array_comments.append({                    
                     "id": comment.id,
