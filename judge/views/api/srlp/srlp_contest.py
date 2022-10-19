@@ -1,7 +1,7 @@
 
 from dmoj import settings
 from judge.models import Contest, Contest, ContestParticipation, ContestTag, Rating
-from judge.views.api.srlp.utils_srlp_api import *
+from judge.views.api.srlp.srlp_utils_api import *
 from django.db.models import F, OuterRef, Prefetch, Subquery
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import api_view

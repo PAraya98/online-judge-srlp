@@ -4,4 +4,6 @@ from .srlp_problem import *
 from .srlp_contest import *
 from .srlp_admin import *
 from .srlp_submission import *
-from .utils_srlp_api import *
+from .srlp_comment import *
+from .srlp_utils_api import *
+from .urls_api_srlp import *

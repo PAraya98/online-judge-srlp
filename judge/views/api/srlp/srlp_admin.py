@@ -12,7 +12,7 @@ import json
 from munch import DefaultMunch
 from django.shortcuts import get_object_or_404
 
-from judge.views.api.srlp.utils_srlp_api import CustomPagination, isLogueado, IsAdministrador, filter_if_not_none
+from judge.views.api.srlp.srlp_utils_api import CustomPagination, isLogueado, IsAdministrador, filter_if_not_none
 
 
 @api_view(['GET'])

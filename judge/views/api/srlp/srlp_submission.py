@@ -1,20 +1,15 @@
 
 from dmoj import settings
-from judge.models import ContestParticipation, ContestTag, Problem, Judge, Profile, Rating, Submission, SubmissionSource, ContestSubmission, RuntimeVersion
+from judge.models import Problem, Judge, Profile, Submission, SubmissionSource, ContestSubmission
 
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from rest_framework.decorators import api_view, permission_classes
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.response import Response
 from django.db import transaction
-from django.contrib.auth.models import User
 import json 
 from munch import DefaultMunch
-from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_list_or_404, get_object_or_404
-from django.db.models import F, OuterRef, Subquery, Prefetch
-from judge.models.problem import ProblemType
 from judge.models.runtime import Language
 
 from judge.views.api.srlp.utils_srlp_api import get_jwt_user, CustomPagination, isLogueado, filter_if_not_none
@@ -129,9 +124,12 @@ def get_info_submission(request):
     problem = get_object_or_404(Problem,code=request.GET.get('problem'))
     submission = get_list_or_404(Submission, user_id=user.id, problem_id=problem.id)
 
-    array = []
-    for res in submission:
-        array.append({
+    if len(submission)> 0:
+        paginator = CustomPagination()
+        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(submission, request))
+
+        data = {
+            'submissions': ({
             'id': res.id,
             'problem': res.problem.code,
             'user': res.user.user.username,
@@ -141,10 +139,10 @@ def get_info_submission(request):
             'memory': res.memory,
             'points': res.points,
             'result': res.result,
-        })
-
-    return Response({
-        'Submissions': array
-    })
+        } for res in result_page)
+        }       
+        return paginator.get_paginated_response(data)
+    else:
+        return Response({})
 
 

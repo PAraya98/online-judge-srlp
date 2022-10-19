@@ -10,7 +10,7 @@ import json
 from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from judge.jinja2.gravatar import gravatar_username
-from judge.views.api.srlp.utils_srlp_api import get_jwt_user
+from judge.views.api.srlp.srlp_utils_api import get_jwt_user
 
 @api_view(['POST'])
 def get_tokens_for_user(request):

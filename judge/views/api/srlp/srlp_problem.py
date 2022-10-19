@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import F, OuterRef, Subquery
 from judge.models.problem import ProblemType
 
-from judge.views.api.srlp.utils_srlp_api import get_jwt_user, CustomPagination, filter_if_not_none
+from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, filter_if_not_none
 
 from judge.jinja2.markdown import markdown
 

@@ -6,6 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import CASCADE
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
@@ -161,6 +162,14 @@ class Comment(MPTTModel):
                 return True
         except ObjectDoesNotExist:
             return False
+
+    def is_public(self):
+        if self.page.startswith('p:') or self.page.startswith('s:'):
+            return get_object_or_404(Problem, code=self.page[2:]).is_public
+        elif self.page.startswith('c:'):
+            return get_object_or_404(Contest, key=self.page[2:]).is_visible
+        elif self.page.startswith('b:'):
+            return get_object_or_404(BlogPost, id=self.page[2:])
 
     def get_absolute_url(self):
         return '%s#comment-%d' % (self.link, self.id)
