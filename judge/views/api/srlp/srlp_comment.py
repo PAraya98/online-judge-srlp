@@ -47,7 +47,7 @@ def get_comments(request):
                     "rght": comment.rght,
                     "tree_id": comment.tree_id,
                     "author": {
-                        "author_id": comment.author_id,
+                        "author_id":comment.author.id,
                         "username": user.username,
                         "gravatar": gravatar_username(user.username)
                     },
