@@ -11,7 +11,7 @@ import json
 from munch import DefaultMunch
 from django.shortcuts import get_list_or_404, get_object_or_404
 from judge.models.runtime import Language
-
+from django.contrib.auth.models import User
 from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, isLogueado, filter_if_not_none
 from judge.jinja2.gravatar import gravatar_username
 @permission_classes([isLogueado])
@@ -38,7 +38,7 @@ def get_comments(request):
             array = []
             
             for comment in result_page:
-                profile = Profile.objects.get(id=comment.author_id)
+                user = User.objects.get(id=comment.author_id)
                 array.append({                    
                     "id": comment.id,
                     "parent_id": comment.parent_id,
@@ -47,8 +47,8 @@ def get_comments(request):
                     "rght": comment.rght,
                     "tree_id": comment.tree_id,
                     "author": {
-                        "username": profile.username,
-                        "gravatar": gravatar_username(profile.username)
+                        "username": user.username,
+                        "gravatar": gravatar_username(user.username)
                     },
                     "time": comment.time,
                     "score": comment.score,
