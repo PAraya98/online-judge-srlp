@@ -63,14 +63,16 @@ def get_comments(request):
         return Response({'status': False})
 
 def recursive_comment_query(request, comments, level=0):
-    paginator_comments = CustomPagination()
-    result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
-    array_comments = []
     if(level == 1):
         if not request.GET._mutable: #FIXME: Probablemente haya una mejor forma de cambiar el paginator para la consulta de primeras respuestas
             request.GET['page'] = 1
             if(request.GET('response_page_size') is not None): request.GET['page_size'] = request.GET['response_page_size']
             else: request.GET['page_size'] = 4
+            
+    paginator_comments = CustomPagination()
+    result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
+    array_comments = []
+   
     if(level < 3):
         for comment in result_page:
             profile = Profile.objects.get(id=comment.author_id)
