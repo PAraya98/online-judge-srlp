@@ -59,7 +59,7 @@ def get_comments(request):
                 })
                 user = None
             data = {
-                'Comments': array
+                'Comments': result_page
             }       
             return paginator.get_paginated_response(data)
         else:
