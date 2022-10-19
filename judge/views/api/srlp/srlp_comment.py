@@ -67,7 +67,7 @@ def get_comments(request):
                 profile = Profile.objects.get(id=comment.author_id)
                 user = User.objects.get(id=profile.user_id)
                 
-                comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level__gte=0, parent_id=comment.id)
+                comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level__gte=1, parent_id=comment.id).exclude(hidden=True).values()
                 paginator_comment_responses = CustomPagination()
                 result_page_responses = DefaultMunch.fromDict(paginator_comment_responses.paginate_queryset(comment_responses, request))
                 array_responses = []
@@ -90,10 +90,10 @@ def get_comments(request):
                         "score": comment_response.score,
                         "body": comment_response.body,                    
                     })
+                    
 
                 array_comments.append({                    
                     "id": comment.id,
-                    "parent_id": comment.parent_id,
                     "level": comment.level,
                     "lft": comment.lft,
                     "rght": comment.rght,
