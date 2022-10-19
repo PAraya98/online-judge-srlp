@@ -29,9 +29,9 @@ def create_comment(request):
 
 @api_view(['GET'])
 def get_comments(request):
-    comment_aux = Comment.objects.create(page=request.GET.getlist('page')[0], author_id=1)
+    comment_aux = Comment.objects.create(page=request.GET.getlist('page_code')[0], author_id=1)
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
-        queryset = Comment.objects.filter(page=request.GET.getlist('page')[0]).values()
+        queryset = Comment.objects.filter(page=request.GET.getlist('page_code')[0]).values()
         if len(queryset)> 0:
             paginator = CustomPagination()
             result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
