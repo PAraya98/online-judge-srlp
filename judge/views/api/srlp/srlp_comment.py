@@ -54,14 +54,14 @@ def get_comments(request):
 
         if len(comments)> 0:
             request.GET._mutable = True           
-            
-            data = recursive_comment_query(request, comments)
+            Response(recursive_comment_query(request, comments))
 
         else:
-            return Response(data)
+            return Response({})
     else:
         return Response({'status': False})
 
+@api_view(['GET'])
 def recursive_comment_query(request, comments, level=0):
     if(level == 1):
         if not request.GET._mutable: #FIXME: Probablemente haya una mejor forma de cambiar el paginator para la consulta de primeras respuestas
