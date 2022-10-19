@@ -12,7 +12,7 @@ from munch import DefaultMunch
 from django.shortcuts import get_list_or_404, get_object_or_404
 from judge.models.runtime import Language
 
-from judge.views.api.srlp.utils_srlp_api import get_jwt_user, CustomPagination, isLogueado, filter_if_not_none
+from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, isLogueado, filter_if_not_none
 
 @permission_classes([isLogueado])
 @api_view(['POST'])

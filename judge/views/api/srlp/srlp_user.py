@@ -1,6 +1,6 @@
 from dmoj import settings
 from judge.models import ContestParticipation, ContestTag, Problem, Profile, Rating, Submission
-from judge.views.api.srlp.utils_srlp_api import *
+from judge.views.api.srlp.srlp_utils_api import *
 from django.db.models import F, OuterRef, Prefetch, Subquery
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -12,7 +12,6 @@ from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from judge.jinja2.gravatar import gravatar_username
-from judge.views.api.srlp.utils_srlp_api import acces_denied
 
 @api_view(['GET'])
 #@permission_classes([IsAuthenticated])
