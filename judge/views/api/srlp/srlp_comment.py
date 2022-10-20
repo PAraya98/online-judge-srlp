@@ -52,7 +52,8 @@ def get_comments(request):
         #else: comments = comments.order_by('time')
         #if(request.GET.get('order_by') is "score"): comments = comments.order_by('score', 'time')
         order_by_if_not_none(comments,
-            **request.GET.getlist('order_by')        
+            **{ "order_by" : param for param in request.GET.getlist('order_by') }
+                  
         )
 
         if len(comments)> 0:                    
