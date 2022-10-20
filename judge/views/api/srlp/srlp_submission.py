@@ -120,6 +120,7 @@ def get_contest_submission_count(problem, profile, virtual):
 @permission_classes([isLogueado])
 @api_view(['GET'])
 def get_info_submission(request):
+    #TODO: AGREGAR CONDICIONES DE ACCESO A PROBLEMA
     user = get_jwt_user(request)
     problem = get_object_or_404(Problem,code=request.GET.get('problem'))
     submission = Submission.objects.filter(user_id=user.id, problem_id=problem.id)
@@ -151,6 +152,7 @@ def get_info_submission(request):
 @permission_classes([isLogueado])
 @api_view(['GET'])
 def get_problem_info_submissions(request):
+    #TODO: AGREGAR CONDICIONES DE ACCESO A PROBLEMA
     problem = get_object_or_404(Problem,code=request.GET.get('problem'))
     submission = Submission.objects.filter(problem_id=problem.id)
 
