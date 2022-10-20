@@ -26,15 +26,10 @@ def get_contest_list(request):
     queryset = Contest.get_visible_contests(user).prefetch_related(
         Prefetch('tags', queryset=ContestTag.objects.only('name'), to_attr='tag_list'))
 
-    if settings.ENABLE_FTS and 'search' in request.GET:
-            query = ' '.join(request.GET.getlist('search')).strip()
-            if query:
-                queryset = queryset.search(query)
-
     queryset = filter_if_not_none(
         queryset,
         end_time__gte = datetime.datetime.now() if (request.GET.get('not_ended') is "true") else None
-    )
+    )   
 
     if len(queryset)> 0:
         paginator = CustomPagination()
