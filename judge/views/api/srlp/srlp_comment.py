@@ -105,8 +105,7 @@ def recursive_comment_query(request, comments, level):
             })
            
         return {
-            'comments': array_comments,
-            'num_pages': paginator_comments.get_num_pages()
+            paginator_comments.get_paginated_data()
         }
     else: 
         return []

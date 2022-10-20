@@ -35,6 +35,10 @@ class CustomPagination(PageNumberPagination):
         data['pages'] = self.page.paginator.num_pages
         return Response(data)
 
+    def get_paginated_data(self, data):
+        data['pages'] = self.page.paginator.num_pages
+        return data
+        
     def get_num_pages(self):
         return self.page.paginator.num_pages
 
