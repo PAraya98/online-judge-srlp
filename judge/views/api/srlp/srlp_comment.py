@@ -42,7 +42,7 @@ def create_comment(request):
 
 @api_view(['GET'])
 def get_comments(request):
-    return Response({'status': True})
+    
     comment_aux = get_list_or_404(Comment, page=request.GET.getlist('page_code')[0])[0]
 
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
@@ -56,7 +56,7 @@ def get_comments(request):
             print(request)
             print(type(recursive_comment_query(request, comments, 0)))
             print(request)
-            Response({})
+            Response(recursive_comment_query(request, comments, 0))
 
         else:
             return Response({})
@@ -107,7 +107,7 @@ def recursive_comment_query(request, comments, level):
                 "responses": array_responses               
             })
         
-        return paginator_comments.get_paginated_data({'comments': array_comments})
+        return paginator_comments.get_paginated_response({'comments': array_comments})
         
     else: 
         return []
