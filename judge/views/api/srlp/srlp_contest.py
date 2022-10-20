@@ -12,6 +12,7 @@ import json
 from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+import datetime
 
 def sane_time_repr(delta):
     days = delta.days
@@ -29,7 +30,12 @@ def get_contest_list(request):
             query = ' '.join(request.GET.getlist('search')).strip()
             if query:
                 queryset = queryset.search(query)
-                
+
+    queryset = filter_if_not_none(
+        queryset,
+        end_time__gte = datetime.datetime.now().time() if (request.GET.get('ended') is "true") else None
+    )
+
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
