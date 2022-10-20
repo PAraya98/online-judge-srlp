@@ -73,7 +73,7 @@ def recursive_comment_query(page_code, comments, level, response_size):
             user = User.objects.get(id=profile.user_id)
            
             
-            comment_responses = Comment.objects.filter(page=page_code, parent_id=comment.id).exclude(hidden=True).values()[:response_size]
+            comment_responses = Comment.objects.filter(page=page_code, parent_id=comment.id).exclude(hidden=True).values_list()[:response_size]
             
             if(len(comment_responses)):            
                 print("Entre!")                
