@@ -75,8 +75,6 @@ def recursive_comment_query(page_code, comments, level, response_size):
         for comment in comments:            
             profile = Profile.objects.get(id=comment.author_id)
             user = User.objects.get(id=profile.user_id)
-           
-            
             comment_responses =  DefaultMunch.fromDict(Comment.objects.filter(page=page_code, parent_id=comment.id).order_by('-time').exclude(hidden=True))
             
             if(len(comment_responses)):                                         

@@ -16,23 +16,31 @@ from judge.jinja2.gravatar import gravatar_username
 @api_view(['GET'])
 #@permission_classes([IsAuthenticated])
 def get_ranking(request):
-    queryset = Profile.objects.filter(is_unlisted=False).values_list('user__username', 'points', 'performance_points',
-                                                                     'display_rank', 'problem_count', 'last_access')
-    if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): queryset = queryset.order_by(request.GET.get('order_by'))
+    queryset = Profile.objects.filter(is_unlisted=False)
+    queryset = queryset.annotate(username=F('user__username'), rank=F('display_rank'))
 
+    queryset = filter_if_not_none(queryset,
+        username__icontains = request.GET.get('username'),
+        rank__icontains = request.GET.get('rank')
+    )    
+    queryset = order_by_if_not_none(queryset,
+            request.GET.getlist('order_by')                  
+    )
     
+    queryset = queryset.values_list('username', 'points', 'performance_points', 'rank', 'problem_count', 'last_access')
+
     if len(queryset)> 0:
         paginator = CustomPagination()
-        result_page = paginator.paginate_queryset(queryset, request)
-        data = ({"ranking": {username: 
-                    {   'avatar_url': gravatar_username(username),
-                        'points': points, #TODO: Ver diferencia entre points y performance_points 
-                        'problem_count': problem_count,
-                        'performance_points': performance_points,
-                        'last_access': last_access,
-                        'rank': rank,
+        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
+        data = ({"ranking": {res.username: 
+                    {   'avatar_url': gravatar_username(res.username),
+                        'points': res.points, #TODO: Ver diferencia entre points y performance_points 
+                        'problem_count': res.problem_count,
+                        'performance_points': res.performance_points,
+                        'last_access': res.last_access,
+                        'rank': res.rank,
                     } 
-            for username, points, performance_points, rank, problem_count, last_access in result_page}})
+            for res in result_page}})
         return paginator.get_paginated_response(data)
     else:
         return Response({})

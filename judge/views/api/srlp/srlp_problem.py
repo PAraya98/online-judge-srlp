@@ -14,15 +14,13 @@ from django.shortcuts import get_object_or_404
 from django.db.models import F, OuterRef, Subquery
 from judge.models.problem import ProblemType
 
-from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, filter_if_not_none
+from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, order_by_if_not_none, filter_if_not_none
 
 from judge.jinja2.markdown import markdown
 
 @api_view(['GET'])
 def get_problem_list(request):
     queryset = Problem.get_public_problems() #TODO: Cambiar para organizaciones "Curso"
-
-    if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): queryset = queryset.order_by(request.GET.get('order_by'))
 
     queryset = queryset.annotate(group_name=F('group__full_name'))
     
@@ -34,6 +32,10 @@ def get_problem_list(request):
         is_public = request.GET.get('is_public'),
         is_organization_private = request.GET.get('is_organization_private'),
         types=request.GET.get('type')
+    )
+
+    queryset = order_by_if_not_none(queryset,
+            request.GET.getlist('order_by')                  
     )
 
     queryset = queryset.values('id', 'code', 'points', 'partial', 'name', 'group_name', 'user_count', 'ac_rate', 'is_public', 'is_organization_private', 'group_id', 'date')
