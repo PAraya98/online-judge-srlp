@@ -61,9 +61,9 @@ def get_comments(request):
         return Response({'status': False})
 
 def recursive_comment_query(request, comments, level):
-    
+    print(request, comments, level)
     if(level < 3 and len(comments) > 0):
-        print(request, comments, level)
+        
         paginator_comments = CustomPagination()
         if(level > 1):
             if(request.GET['response_page_size'] is not None): paginator_comments.page_size = request.GET['response_page_size']
