@@ -64,23 +64,15 @@ def get_comments(request):
 
 def recursive_comment_query(request, comments, level):
     
-    if(level < 3 and len(comments) > 0):
-        
-        
-        #if(level > 1):
-        #    if(request.GET['response_page_size'] is not None): paginator_comments.page_size = request.GET['response_page_size']
-        #    else: paginator_comments.page_size = 4
-        #    paginator_comments.page = 1
-        
+    if(level < 3 and len(comments) > 0):      
         array_comments = []
         for comment in comments:            
             profile = Profile.objects.get(id=comment.author_id)
             user = User.objects.get(id=profile.user_id)
-            print("eo", comment.parent_id != None)
             if(comment.parent_id != None):            
-                 
-                comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level=level+1, parent=comment.id).exclude(hidden=True)
-                print("respuestas", comment_responses)
+                if(request.GET['response_page_size'] is not None): response_size = request.GET['response_page_size']
+                else: response_size = 4
+                comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], parent=comment.id).exclude(hidden=True)[:response_size]
                 array_responses = recursive_comment_query(request, comment_responses, level+1)
                 
             else:
