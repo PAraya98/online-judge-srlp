@@ -48,8 +48,8 @@ def get_comments(request):
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
         comments = Comment.objects.filter(page=request.GET.getlist('page_code')[0], parent=None).exclude(hidden=True)
         
-        if(request.GET.get('order_by') is not None and request.GET.get('order_by') != ""): comments = comments.order_by(request.GET.get('order_by'))
-        else: comments = comments.order_by('time')
+        #if(request.GET.get('order_by') is not None and request.GET.get('order_by') != ""): comments = comments.order_by(request.GET.get('order_by'))
+        #else: comments = comments.order_by('time')
         #if(request.GET.get('order_by') is "score"): comments = comments.order_by('score', 'time')
         order_by_if_not_none(comments,
             **request.GET.getlist('order_by')        
@@ -76,7 +76,7 @@ def recursive_comment_query(page_code, comments, level, response_size):
             user = User.objects.get(id=profile.user_id)
            
             
-            comment_responses =  DefaultMunch.fromDict(Comment.objects.filter(page=page_code, parent_id=comment.id).exclude(hidden=True))[:response_size]
+            comment_responses =  DefaultMunch.fromDict(Comment.objects.filter(page=page_code, parent_id=comment.id).order_by('-time').exclude(hidden=True))[:response_size]
             
             if(len(comment_responses)):            
                 print("Entre!")                
