@@ -64,11 +64,11 @@ def get_comments(request):
 def recursive_comment_query(request, comments, level):
     
     paginator_comments = CustomPagination()
-
+    print(request.GET['response_page_size'])
     if(level > 1):
         if(request.GET['response_page_size'] is not None): paginator_comments.page_size = request.GET['response_page_size']
         else: paginator_comments.page_size = 4
-        
+
     result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
     array_comments = []
    
