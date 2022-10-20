@@ -20,6 +20,9 @@ def acces_denied(bool_list):
 def filter_if_not_none(qs, **kwargs):
     return qs.filter(**{k: v for k, v in kwargs.items() if v is not None})
 
+def order_by_if_not_none(qs, **kwargs):
+    return qs.order_by(**{k: v for k, v in kwargs.items() if v is not None})
+
 class CustomPagination(PageNumberPagination):
     '''
     Paginación para querys:

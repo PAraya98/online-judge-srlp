@@ -12,7 +12,7 @@ from munch import DefaultMunch
 from django.shortcuts import get_list_or_404, get_object_or_404
 from judge.models.runtime import Language
 from django.contrib.auth.models import User
-from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, isLogueado, filter_if_not_none
+from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, isLogueado, filter_if_not_none, order_by_if_not_none
 from judge.jinja2.gravatar import gravatar_username
 
 @permission_classes([isLogueado])
@@ -49,8 +49,11 @@ def get_comments(request):
         comments = Comment.objects.filter(page=request.GET.getlist('page_code')[0], parent=None).exclude(hidden=True)
         
         if(request.GET.get('order_by') is not None and request.GET.get('order_by') != ""): comments = comments.order_by(request.GET.get('order_by'))
+        else: comments = comments.order_by('time')
         #if(request.GET.get('order_by') is "score"): comments = comments.order_by('score', 'time')
-        #else: comments = comments.order_by('time')
+        order_by_if_not_none(comments,
+            **request.GET.getlist('order_by')        
+        )
 
         if len(comments)> 0:                    
             paginator_comments = CustomPagination()
