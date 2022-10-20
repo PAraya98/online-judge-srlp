@@ -43,7 +43,7 @@ def create_comment(request):
 @api_view(['GET'])
 def get_comments(request):
     
-    comment_aux = get_list_or_404(Comment, page=request.GET.get('page_code'))
+    comment_aux = get_list_or_404(Comment, page=request.GET.get('page_code'))[0]
 
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
         comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
