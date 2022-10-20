@@ -68,7 +68,7 @@ def recursive_comment_query(request, comments, level):
         if not request.GET._mutable: #FIXME: Probablemente haya una mejor forma de cambiar el paginator para la consulta de primeras respuestas
             request.GET._mutable = True   
             request.GET['page'] = 1
-            if(request.GET('response_page_size') is not None): request.GET['page_size'] = request.GET['response_page_size']
+            if(request.GET['response_page_size'] is not None): request.GET['page_size'] = request.GET['response_page_size']
             else: request.GET['page_size'] = 4
             
     paginator_comments = CustomPagination()
