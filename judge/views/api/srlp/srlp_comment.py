@@ -99,7 +99,7 @@ def recursive_comment_query(page_code, comments, level, response_size):
                 "score": comment.score,
                 "body": comment.body,     
                 "responses": array_responses,
-                "response_pages": math.ceil(len(comment_responses)/response_size)          
+                "response_pages": math.ceil(len(comment_responses)/float(response_size))          
             })
         
         return {'comments': array_comments}
