@@ -45,7 +45,7 @@ def get_comments(request):
     comment_aux = get_list_or_404(Comment, page=request.GET.getlist('page_code')[0])[0]
 
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
-        comments = Comment.objects.filter(page=request.GET.getlist('page_code')[0]).exclude(hidden=True)
+        comments = Comment.objects.filter(page=request.GET.getlist('page_code')[0], parent=None).exclude(hidden=True)
         
         if(request.GET.get('order_by') is not None and request.GET.get('order_by') != ""): comments = comments.order_by(request.GET.get('order_by'))
         #if(request.GET.get('order_by') is "score"): comments = comments.order_by('score', 'time')
@@ -80,13 +80,12 @@ def recursive_comment_query(request, comments, level):
             print("eo", comment.parent_id != None)
             if(comment.parent_id != None):            
                  
-                comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level=level+1, parent_id=comment.id).get_descendants(include_self=False).exclude(hidden=True)
+                comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level=level+1, parent=comment.id).exclude(hidden=True)
                 print("respuestas", comment_responses)
                 array_responses = recursive_comment_query(request, comment_responses, level+1)
                 print("xd", array_responses)
             else:
                 array_responses=[]
-            
 
             array_comments.append({                    
                 "id": comment.id,
