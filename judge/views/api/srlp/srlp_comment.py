@@ -81,9 +81,9 @@ def recursive_comment_query(request, comments, level):
         for comment in result_page:
             profile = Profile.objects.get(id=comment.author_id)
             user = User.objects.get(id=profile.user_id)
-            
-            comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level=level+1, parent_id=comment.id).exclude(hidden=True)
-            array_responses = recursive_comment_query(request, comment_responses, level=level+1)
+            if(comment.parent_id != None):
+                comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level=level+1, parent_id=comment.id).exclude(hidden=True)
+                array_responses = recursive_comment_query(request, comment_responses, level=level+1)
             
 
             array_comments.append({                    
