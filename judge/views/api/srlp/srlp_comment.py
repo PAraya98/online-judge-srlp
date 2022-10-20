@@ -1,7 +1,7 @@
 
 from dmoj import settings
 from judge.models import Problem, Judge, Profile, Submission, SubmissionSource, ContestSubmission, Comment, profile
-
+import math 
 
 from rest_framework.decorators import api_view, permission_classes
 from django.core.exceptions import ObjectDoesNotExist
@@ -101,7 +101,7 @@ def recursive_comment_query(page_code, comments, level, response_size):
                 "score": comment.score,
                 "body": comment.body,     
                 "responses": array_responses,
-                "response_pages": int(len(comment_responses)/int(response_size))             
+                "response_pages": math.floor(len(comment_responses)/int(response_size))          
             })
         
         return {'comments': array_comments}
