@@ -73,7 +73,7 @@ def recursive_comment_query(page_code, comments, level, response_size):
             user = User.objects.get(id=profile.user_id)
            
             
-            comment_responses =  DefaultMunch.fromDict(Comment.objects.filter(page=page_code, parent_id=comment.id).exclude(hidden=True).values())[:response_size]
+            comment_responses =  DefaultMunch.fromDict(Comment.objects.filter(page=page_code, parent_id=comment.id).exclude(hidden=True))[:response_size]
             
             if(len(comment_responses)):            
                 print("Entre!")                
