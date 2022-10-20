@@ -124,8 +124,8 @@ def get_info_submission(request):
     user = get_jwt_user(request)
     problem = get_object_or_404(Problem,code=request.GET.get('problem'))
     submission = Submission.objects.filter(user_id=user.id, problem_id=problem.id)
-    queryset = order_by_if_not_none(queryset,
-            request.GET.getlist('order_by')                  
+    submission = order_by_if_not_none(submission,
+        request.GET.getlist('order_by')                  
     )
 
     if len(submission)> 0:
@@ -135,14 +135,13 @@ def get_info_submission(request):
         data = {
             'submissions': ({
             'id': res.id,
-            'user': res.user.user.username,
             'date': res.date.isoformat(),
             'language': res.language.key,
             'time': res.time,
             'memory': res.memory,
             'points': res.points,
             'result': res.result,
-            'source': DefaultMunch.fromDict(get_object_or_404(SubmissionSource, submission_id=res.id))
+            'source': DefaultMunch.fromDict(get_object_or_404(SubmissionSource, submission_id=res.id)).source
         } for res in result_page)
         }       
         return paginator.get_paginated_response(data)
@@ -161,7 +160,7 @@ def get_problem_info_submissions(request):
     )
 
     queryset = filter_if_not_none(queryset, 
-        
+        user__user__username__icontains = request.GET.get('username')
     )
 
     if len(submission)> 0:
