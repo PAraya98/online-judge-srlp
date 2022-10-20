@@ -53,10 +53,10 @@ def get_comments(request):
         #else: comments = comments.order_by('time')
 
         if len(comments)> 0:                    
-            print(request.has_header)
-            print(type(recursive_comment_query(request.GET.copy(), comments, 0)))
-            print(request)
-            Response(recursive_comment_query(request.GET.copy(), comments, 0))
+            paginator_comments = CustomPagination()
+            result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
+            
+            Response(recursive_comment_query(request.GET.copy(), result_page, 0))
 
         else:
             return Response({})
@@ -67,17 +67,14 @@ def recursive_comment_query(request, comments, level):
     
     if(level < 3 and len(comments) > 0):
         
-        paginator_comments = CustomPagination()
-        if(level > 1):
-            if(request.GET['response_page_size'] is not None): paginator_comments.page_size = request.GET['response_page_size']
-            else: paginator_comments.page_size = 4
-            paginator_comments.page = 1
-
-        result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
+        
+        #if(level > 1):
+        #    if(request.GET['response_page_size'] is not None): paginator_comments.page_size = request.GET['response_page_size']
+        #    else: paginator_comments.page_size = 4
+        #    paginator_comments.page = 1
+        
         array_comments = []
-        print(len(result_page), result_page[len(result_page)-1])
-
-        for comment in result_page:            
+        for comment in comments:            
             profile = Profile.objects.get(id=comment.author_id)
             user = User.objects.get(id=profile.user_id)
             print("eo", comment.parent_id != None)
@@ -107,7 +104,7 @@ def recursive_comment_query(request, comments, level):
                 "responses": array_responses               
             })
         
-        return paginator_comments.get_paginated_response({'comments': array_comments})
+        return {'comments': array_comments}
         
     else: 
         return []
