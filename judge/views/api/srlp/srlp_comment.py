@@ -54,7 +54,7 @@ def get_comments(request):
         if len(comments)> 0:                    
             print(request)
             print(type(recursive_comment_query(request, comments, 0)))
-            print(recursive_comment_query(request, comments, 0))
+            print(request)
             Response({})
 
         else:
