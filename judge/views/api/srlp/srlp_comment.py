@@ -54,30 +54,30 @@ def get_comments(request):
 
         if len(comments)> 0:                    
             paginator_comments = CustomPagination()
+            if(request.GET('response_page_size') is not None): response_size = request.GET('response_page_size')
+            else: response_size = 4
             result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
-            return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.copy(), result_page, 0))
+            return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.copy(), result_page, 0, response_size))
 
         else:
             return Response({})
     else:
         return Response({'status': False})
 
-def recursive_comment_query(request, comments, level):
+def recursive_comment_query(request, comments, level, response_size):
     
     if(level < 3 and len(comments) > 0):      
         array_comments = []
         for comment in comments:            
             profile = Profile.objects.get(id=comment.author_id)
             user = User.objects.get(id=profile.user_id)
-            if(request.GET('response_page_size') is not None): response_size = request.GET('response_page_size')
-            else: response_size = 4
-                
+           
+            
             comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], parent_id=comment.id).exclude(hidden=True).values()[:response_size]
             
             if(len(comment_responses)):            
-                print("Entre!")
-                
-                array_responses = recursive_comment_query(request, comment_responses, level+1)
+                print("Entre!")                
+                array_responses = recursive_comment_query(request, comment_responses, level+1, response_size)
                 
             else:
                 array_responses=[]
