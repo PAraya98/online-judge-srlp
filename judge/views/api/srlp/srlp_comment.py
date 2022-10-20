@@ -83,7 +83,7 @@ def recursive_comment_query(request, comments, level):
                 comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level=level+1, parent=comment.id).exclude(hidden=True)
                 print("respuestas", comment_responses)
                 array_responses = recursive_comment_query(request, comment_responses, level+1)
-                print("xd", array_responses)
+                
             else:
                 array_responses=[]
 
@@ -103,7 +103,7 @@ def recursive_comment_query(request, comments, level):
                 "body": comment.body,     
                 "responses": array_responses               
             })
-           
+        print("xd", array_comments)
         return paginator_comments.get_paginated_data({'comments': array_comments})
         
     else: 
