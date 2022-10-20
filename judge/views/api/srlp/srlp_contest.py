@@ -28,7 +28,8 @@ def get_contest_list(request):
 
     queryset = filter_if_not_none(
         queryset,
-        end_time__gte = datetime.datetime.now() if (request.GET.get('not_ended') == "true") else None, #NO FUNCIONA
+        end_time__gte = datetime.datetime.now() if (request.GET.get('has_ended') == "true") else None,
+        end_time__lte = datetime.datetime.now() if (request.GET.get('has_ended') == "false") else None,
         name = request.GET.get('name')
     )   
 
