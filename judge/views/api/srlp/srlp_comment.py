@@ -53,23 +53,22 @@ def get_comments(request):
 
         if len(comments)> 0:                    
             print(request)
-            paginator_comments = CustomPagination()
-            Response(recursive_comment_query(request, comments, paginator_comments, 0))
+            Response(recursive_comment_query(request, comments, 0))
 
         else:
             return Response({})
     else:
         return Response({'status': False})
 
-def recursive_comment_query(request, comments, paginator_comments, level):
+def recursive_comment_query(request, comments, level):
     
     if(level < 3 and len(comments) > 0):
-        
+        print(request, comments, level)
+        paginator_comments = CustomPagination()
         if(level > 1):
             if(request.GET['response_page_size'] is not None): paginator_comments.page_size = request.GET['response_page_size']
             else: paginator_comments.page_size = 4
             paginator_comments.page = 1
-        
 
         result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
         array_comments = []
@@ -81,7 +80,7 @@ def recursive_comment_query(request, comments, paginator_comments, level):
             if(comment.parent_id != None):                
                 comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level=level+1, parent_id=comment.id).exclude(hidden=True)
                 print("respuestas", comment_responses)
-                array_responses = recursive_comment_query(request, comment_responses, paginator_comments, level+1)
+                array_responses = recursive_comment_query(request, comment_responses, level+1)
                 print("xd", array_responses)
             else:
                 array_responses=[]
