@@ -53,10 +53,10 @@ def get_comments(request):
         #else: comments = comments.order_by('time')
 
         if len(comments)> 0:                    
+            print(request.has_header)
+            print(type(recursive_comment_query(request.GET.copy(), comments, 0)))
             print(request)
-            print(type(recursive_comment_query(request, comments, 0)))
-            print(request)
-            Response(recursive_comment_query(request, comments, 0))
+            Response(recursive_comment_query(request.GET.copy(), comments, 0))
 
         else:
             return Response({})
