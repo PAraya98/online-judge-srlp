@@ -26,11 +26,15 @@ def get_contest_list(request):
     queryset = Contest.get_visible_contests(user).prefetch_related(
         Prefetch('tags', queryset=ContestTag.objects.only('name'), to_attr='tag_list'))
 
+    queryset = order_by_if_not_none(queryset,
+            request.GET.getlist('order_by')                  
+    )
+
     queryset = filter_if_not_none(
         queryset,
         end_time__gte = datetime.datetime.now() if (request.GET.get('has_ended') == "false") else None,
         end_time__lte = datetime.datetime.now() if (request.GET.get('has_ended') == "true") else None,
-        name = request.GET.get('name')
+        name__icontains = request.GET.get('name')
     )   
 
     if len(queryset)> 0:

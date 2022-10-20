@@ -110,12 +110,14 @@ def get_problem_info(request):
 def get_types(request):
     queryset = ProblemType.objects; #TODO: Cambiar para organizaciones "Curso"
 
-    if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): queryset = queryset.order_by(request.GET.get('order_by'))
-
     queryset = filter_if_not_none(
         queryset,
         name__icontains=request.GET.get('name'),
         full_name__icontains=request.GET.get('full_name')
+    )
+
+    queryset = order_by_if_not_none(queryset,
+            request.GET.getlist('order_by')                  
     )
 
     queryset = queryset.values('id', 'name', 'full_name')

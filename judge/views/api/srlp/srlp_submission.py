@@ -12,7 +12,7 @@ from munch import DefaultMunch
 from django.shortcuts import get_list_or_404, get_object_or_404
 from judge.models.runtime import Language
 
-from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, isLogueado, filter_if_not_none
+from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, isLogueado, order_by_if_not_none, filter_if_not_none
 
 
 
@@ -122,7 +122,10 @@ def get_contest_submission_count(problem, profile, virtual):
 def get_info_submission(request):
     user = get_jwt_user(request)
     problem = get_object_or_404(Problem,code=request.GET.get('problem'))
-    submission = get_list_or_404(Submission, user_id=user.id, problem_id=problem.id)
+    submission = Submission.objects.filter(user_id=user.id, problem_id=problem.id)
+    queryset = order_by_if_not_none(queryset,
+            request.GET.getlist('order_by')                  
+    )
 
     if len(submission)> 0:
         paginator = CustomPagination()
@@ -131,7 +134,6 @@ def get_info_submission(request):
         data = {
             'submissions': ({
             'id': res.id,
-            'problem': res.problem.code,
             'user': res.user.user.username,
             'date': res.date.isoformat(),
             'language': res.language.key,
@@ -139,7 +141,43 @@ def get_info_submission(request):
             'memory': res.memory,
             'points': res.points,
             'result': res.result,
+            'source': DefaultMunch.fromDict(get_object_or_404(SubmissionSource, submission_id=res.id))
         } for res in result_page)
+        }       
+        return paginator.get_paginated_response(data)
+    else:
+        return Response({})
+
+@permission_classes([isLogueado])
+@api_view(['GET'])
+def get_problem_info_submissions(request):
+    problem = get_object_or_404(Problem,code=request.GET.get('problem'))
+    submission = Submission.objects.filter(problem_id=problem.id)
+
+    queryset = order_by_if_not_none(queryset,
+        request.GET.getlist('order_by')                  
+    )
+
+    queryset = filter_if_not_none(queryset, 
+        
+    )
+
+    if len(submission)> 0:
+        paginator = CustomPagination()
+        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(submission, request))
+
+        data = {
+            'submissions': ({
+                'id': res.id,
+                #'problem': res.problem.code, #TODO: PUEDE SERVIR PARA OBTENER LOS ÚLTIMOS SUBMISSIONS
+                'user': res.user.user.username,
+                'date': res.date.isoformat(),
+                'language': res.language.key,
+                'time': res.time,
+                'memory': res.memory,
+                'points': res.points,
+                'result': res.result,
+            } for res in result_page)
         }       
         return paginator.get_paginated_response(data)
     else:
