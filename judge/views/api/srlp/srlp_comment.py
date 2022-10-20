@@ -53,7 +53,9 @@ def get_comments(request):
 
         if len(comments)> 0:                    
             print(request)
-            Response(recursive_comment_query(request, comments, 0))
+            print(type(recursive_comment_query(request, comments, 0)))
+            print(recursive_comment_query(request, comments, 0))
+            Response({})
 
         else:
             return Response({})
@@ -103,7 +105,7 @@ def recursive_comment_query(request, comments, level):
                 "body": comment.body,     
                 "responses": array_responses               
             })
-        print("xd", array_comments)
+        
         return paginator_comments.get_paginated_data({'comments': array_comments})
         
     else: 
