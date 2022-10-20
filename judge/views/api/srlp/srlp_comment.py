@@ -70,7 +70,7 @@ def recursive_comment_query(request, comments, level):
             profile = Profile.objects.get(id=comment.author_id)
             user = User.objects.get(id=profile.user_id)
             
-            comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], parent_id=comment.id).exclude(hidden=True)[:response_size]
+            comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], parent_id=comment.id).exclude(hidden=True).values()#[:response_size]
             if(len(comment_responses)):            
                 print("Entre!")
                 if(request.GET['response_page_size'] is not None): response_size = request.GET['response_page_size']
