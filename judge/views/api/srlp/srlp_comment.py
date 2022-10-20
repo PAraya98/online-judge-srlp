@@ -43,10 +43,10 @@ def create_comment(request):
 @api_view(['GET'])
 def get_comments(request):
     
-    comment_aux = get_list_or_404(Comment, page=request.GET.getlist('page_code')[0])[0]
+    comment_aux = get_list_or_404(Comment, page=request.GET.get('page_code')[0])
 
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
-        comments = Comment.objects.filter(page=request.GET.getlist('page_code')[0], parent=None).exclude(hidden=True)
+        comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
         
         #if(request.GET.get('order_by') is not None and request.GET.get('order_by') != ""): comments = comments.order_by(request.GET.get('order_by'))
         #else: comments = comments.order_by('time')
@@ -58,10 +58,10 @@ def get_comments(request):
 
         if len(comments)> 0:                    
             paginator_comments = CustomPagination()
-            if(request.GET.getlist('response_page_size')[0] is not None): response_size = request.GET.getlist('response_page_size')[0]
+            if(request.GET.get('response_page_size') is not None): response_size = request.GET.get('response_page_size')
             else: response_size = 4
             result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
-            return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.getlist('page_code')[0], result_page, 0, response_size))
+            return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, 0, response_size))
 
         else:
             return Response({})
