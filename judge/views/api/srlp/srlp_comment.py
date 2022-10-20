@@ -81,7 +81,7 @@ def recursive_comment_query(page_code, comments, level, response_size):
             
             if(len(comment_responses)):            
                              
-                array_responses = recursive_comment_query(page_code, comment_responses[:response_size], level+1, response_size)
+                array_responses = recursive_comment_query(page_code, comment_responses[:int(response_size)], level+1, response_size)
                 
             else:
                 array_responses=[]
