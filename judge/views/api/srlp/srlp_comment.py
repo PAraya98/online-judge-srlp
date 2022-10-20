@@ -61,7 +61,7 @@ def get_comments(request):
         return Response({'status': False})
 
 def recursive_comment_query(request, comments, level):
-    print(request, comments, level)
+    
     if(level < 3 and len(comments) > 0):
         
         paginator_comments = CustomPagination()
@@ -72,8 +72,9 @@ def recursive_comment_query(request, comments, level):
 
         result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
         array_comments = []
+        print(result_page[2])
 
-        for comment in result_page:
+        for comment in result_page:            
             profile = Profile.objects.get(id=comment.author_id)
             user = User.objects.get(id=profile.user_id)
             print("eo", comment.parent_id != None)
