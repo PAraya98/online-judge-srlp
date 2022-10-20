@@ -45,7 +45,7 @@ def get_comments(request):
     comment_aux = get_list_or_404(Comment, page=request.GET.getlist('page_code')[0])[0]
 
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
-        comments = Comment.objects.filter(page=request.GET.getlist('page_code')[0], parent_id=None).exclude(hidden=True)
+        comments = Comment.objects.filter(page=request.GET.getlist('page_code')[0]).exclude(hidden=True)
         
         if(request.GET.get('order_by') is not None and request.GET.get('order_by') != ""): comments = comments.order_by(request.GET.get('order_by'))
         #if(request.GET.get('order_by') is "score"): comments = comments.order_by('score', 'time')
