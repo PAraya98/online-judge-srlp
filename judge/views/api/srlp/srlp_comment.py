@@ -69,7 +69,7 @@ def get_comments(request):
         return Response({'status': False})
 
 def recursive_comment_query(page_code, comments, level, response_size):
-    comments
+    
     if(level < 3 and len(comments) > 0):      
         array_comments = []
         for comment in comments:            
@@ -79,10 +79,8 @@ def recursive_comment_query(page_code, comments, level, response_size):
             
             comment_responses =  DefaultMunch.fromDict(Comment.objects.filter(page=page_code, parent_id=comment.id).order_by('-time').exclude(hidden=True))
             
-            if(len(comment_responses)):            
-                             
+            if(len(comment_responses)):                                         
                 array_responses = recursive_comment_query(page_code, comment_responses[:int(response_size)], level+1, response_size)
-                
             else:
                 array_responses=[]
 
