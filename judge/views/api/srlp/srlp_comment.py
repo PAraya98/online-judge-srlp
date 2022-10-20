@@ -51,8 +51,7 @@ def get_comments(request):
         #if(request.GET.get('order_by') is "score"): comments = comments.order_by('score', 'time')
         #else: comments = comments.order_by('time')
 
-        if len(comments)> 0:
-                    
+        if len(comments)> 0:                    
             print(request)
             Response(recursive_comment_query(request, comments, 0))
 
@@ -63,22 +62,20 @@ def get_comments(request):
 
 def recursive_comment_query(request, comments, level):
     
-    paginator_comments = CustomPagination()
-    print(request.GET['response_page_size'])
-    if(level > 1):
-        if(request.GET['response_page_size'] is not None): paginator_comments.page_size = request.GET['response_page_size']
-        else: paginator_comments.page_size = 4
-
-    result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
-    array_comments = []
-   
     if(level < 3 and len(comments) > 0):
-        print("entre")
-        print(result_page)
+        paginator_comments = CustomPagination()
+        if(level > 1):
+            if(request.GET['response_page_size'] is not None): paginator_comments.page_size = request.GET['response_page_size']
+            else: paginator_comments.page_size = 4
+            paginator_comments.page = 1
 
+        result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
+        array_comments = []
+        
         for comment in result_page:
             profile = Profile.objects.get(id=comment.author_id)
             user = User.objects.get(id=profile.user_id)
+            
             if(comment.parent_id != None):
                 comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level=level+1, parent_id=comment.id).exclude(hidden=True)
                 array_responses = recursive_comment_query(request, comment_responses,level+1)
@@ -95,13 +92,14 @@ def recursive_comment_query(request, comments, level):
                 "author": {
                     "username": user.username,
                     "gravatar": gravatar_username(user.username),
-                    "rank": profile.display_rank
+                    "rank": profile.display_rank    
                 },
                 "time": comment.time,
                 "score": comment.score,
                 "body": comment.body,     
                 "responses": array_responses               
             })
+            print(array_comments)
            
         return {
             'comments': array_comments,
