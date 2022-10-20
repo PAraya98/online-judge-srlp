@@ -47,7 +47,7 @@ def get_comments(request):
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
         comments = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level=0).exclude(hidden=True)
         
-        if(request.GET.get('order_by') is not None and request.GET.get('order_by') is not ""): comments = comments.order_by(request.GET.get('order_by'))
+        if(request.GET.get('order_by') is not None and request.GET.get('order_by') != ""): comments = comments.order_by(request.GET.get('order_by'))
         #if(request.GET.get('order_by') is "score"): comments = comments.order_by('score', 'time')
         #else: comments = comments.order_by('time')
 
@@ -76,8 +76,8 @@ def recursive_comment_query(request, comments, level):
    
     if(level < 3 and len(comments) > 0):
         print("entre")
-        print(request)
-        
+        print(result_page)
+
         for comment in result_page:
             profile = Profile.objects.get(id=comment.author_id)
             user = User.objects.get(id=profile.user_id)
