@@ -54,6 +54,7 @@ def get_comments(request):
 
         if len(comments)> 0:
             request.GET._mutable = True           
+            print(request)
             Response(recursive_comment_query(request, comments, 0))
 
         else:
