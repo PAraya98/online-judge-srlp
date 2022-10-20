@@ -62,8 +62,7 @@ def get_comments(request):
         return Response({'status': False})
 
 def recursive_comment_query(request, comments, level):
-    print("entre")
-    print(request)
+    
     if(level == 1):
         if not request.GET._mutable: #FIXME: Probablemente haya una mejor forma de cambiar el paginator para la consulta de primeras respuestas
             request.GET._mutable = True   
@@ -76,13 +75,15 @@ def recursive_comment_query(request, comments, level):
     array_comments = []
    
     if(level < 3 and len(comments) > 0):
+        print("entre")
+        print(request)
+        
         for comment in result_page:
             profile = Profile.objects.get(id=comment.author_id)
             user = User.objects.get(id=profile.user_id)
             
             comment_responses = Comment.objects.filter(page=request.GET.getlist('page_code')[0], level=level+1, parent_id=comment.id).exclude(hidden=True)
-            if(len(comment_responses) > 0): array_responses = recursive_comment_query(request, comment_responses, level=level+1)
-            else: array_responses = []
+            array_responses = recursive_comment_query(request, comment_responses, level=level+1)
             
 
             array_comments.append({                    
