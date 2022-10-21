@@ -36,7 +36,7 @@ def add_comment(request):
         if(comment_parent.level < 3):
             comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body, parent=comment_parent)
         else:
-            Response({'status': False, 'message': 'El comentario excede el número de hijos.'})
+            return Response({'status': False, 'message': 'El comentario excede el número de hijos.'})
     if(not comment.is_accessible_by(user)):
         return Response({'status': False, 'message': 'No tienes acceso a esta acción.'})
 
@@ -48,9 +48,10 @@ def add_comment(request):
 def get_comments(request):
     
     comment_aux = Comment.objects.filter(page=request.GET.get('page_code'))
-    print(len(comment_aux))
-    if(len(comment_aux) == 0):        
-        Response({'comments': {}, 'pages': 0})
+    
+    if(len(comment_aux) == 0):    
+        print(len(comment_aux))    
+        return Response({'comments': {}, 'pages': 0})
     elif(comment_aux[0].is_public() or comment_aux[0].is_accessible_by(get_jwt_user(request))):
         comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
      
@@ -70,30 +71,6 @@ def get_comments(request):
     else:
         return Response({'status': False})
 
-def get_comments_(request):
-    if(request.GET.get('page_code') is None): Response({'status': False})
-    else:
-        comment_aux = Comment.objects.filter(page=request.GET.get('page_code'))
-        
-        if(not comment_aux): Response({'Comments': {}, 'pages': 0})
-        elif(comment_aux[0].is_public() or comment_aux[0].is_accessible_by(get_jwt_user(request))):
-            comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
-        
-            comments = order_by_if_not_none(comments,
-                request.GET.getlist('order_by')                  
-            )
-            #TODO: AGREGAR FILTROS RANK ...
-            if len(comments)> 0:                    
-                paginator_comments = CustomPagination()
-                if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >0): response_size = request.GET.get('response_page_size')
-                else: response_size = 4
-                result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
-                return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, 0, response_size))
-
-            else:
-                return Response({})
-        else:
-            return Response({'status': False})
 
 def recursive_comment_query(page_code, comments, level, response_size):
     
