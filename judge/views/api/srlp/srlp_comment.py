@@ -45,27 +45,29 @@ def add_comment(request):
 
 @api_view(['GET'])
 def get_comments(request):
-    
-    comment_aux = Comment.objects.filter(page=request.GET.get('page_code'))
-    if(len(comment_aux) == 0): Response({'Comments': {}, 'pages': 0})
-    elif(comment_aux[0].is_public() or comment_aux[0].is_accessible_by(get_jwt_user(request))):
-        comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
-     
-        comments = order_by_if_not_none(comments,
-            request.GET.getlist('order_by')                  
-        )
-        #TODO: AGREGAR FILTROS RANK ...
-        if len(comments)> 0:                    
-            paginator_comments = CustomPagination()
-            if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >0): response_size = request.GET.get('response_page_size')
-            else: response_size = 4
-            result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
-            return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, 0, response_size))
-
-        else:
-            return Response({})
+    if(request.GET.get('page_code') is None): Response({'status': False})
     else:
-        return Response({'status': False})
+        comment_aux = Comment.objects.filter(page=request.GET.get('page_code')).all()
+        
+        if(len(comment_aux) == 0): Response({'Comments': {}, 'pages': 0})
+        elif(comment_aux[0].is_public() or comment_aux[0].is_accessible_by(get_jwt_user(request))):
+            comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
+        
+            comments = order_by_if_not_none(comments,
+                request.GET.getlist('order_by')                  
+            )
+            #TODO: AGREGAR FILTROS RANK ...
+            if len(comments)> 0:                    
+                paginator_comments = CustomPagination()
+                if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >0): response_size = request.GET.get('response_page_size')
+                else: response_size = 4
+                result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
+                return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, 0, response_size))
+
+            else:
+                return Response({})
+        else:
+            return Response({'status': False})
 
 def recursive_comment_query(page_code, comments, level, response_size):
     
