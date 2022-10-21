@@ -74,7 +74,7 @@ def get_comments(request):
     else:
         return Response({'status': False, 'message': 'Acceso denegado.'})
 
-
+@api_view(['GET'])
 def get_comment_responses(request):
     
     comment_aux = get_object_or_404(Comment, page=request.GET.get('page_code'), id=request.GET.get('parent_id'))
