@@ -52,6 +52,14 @@ class CustomPagination(PageNumberPagination):
     def get_num_pages(self):
         return self.page.paginator.num_pages
 
+def RepresentsInt(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
 ######################################################
 #PERMISOS DE USUARIO
 

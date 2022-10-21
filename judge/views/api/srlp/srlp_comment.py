@@ -14,7 +14,7 @@ from munch import DefaultMunch
 from django.shortcuts import get_list_or_404, get_object_or_404
 from judge.models.runtime import Language
 from django.contrib.auth.models import User
-from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, isLogueado, filter_if_not_none, order_by_if_not_none
+from judge.views.api.srlp.srlp_utils_api import RepresentsInt, get_jwt_user, CustomPagination, isLogueado, filter_if_not_none, order_by_if_not_none
 from judge.jinja2.gravatar import gravatar_username
 from judge.dblock import LockModel
 
@@ -59,7 +59,7 @@ def vote_comment(request):
         if comment.author == profile:
             return Response({'status': False, 'message': 'No puedes votar tu propio comentario.'})
         vote_value = request.GET.get('vote')
-        if(vote_value is None or (int(vote_value) != 1 and int(vote_value) != 0)): 
+        if(vote_value is None or (RepresentsInt(vote_value) and int(vote_value) != 1 and int(vote_value) != 0)): 
             return Response({'status': False, 'message': 'Solicitud incorrecta.'})               
         vote = CommentVote()
         vote.comment_id = comment.id
