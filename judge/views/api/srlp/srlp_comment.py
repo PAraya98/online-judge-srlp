@@ -52,7 +52,7 @@ def get_comments(request):
     
     if(len(comment_aux) == 0):    
         print(len(comment_aux))    
-        return Response({'comments': {}, 'pages': 0})
+        return Response({'status': True, 'comments': [], 'pages':0, 'message': "No existen comentarios para mostrar"})
     elif(comment_aux[0].is_public() or comment_aux[0].is_accessible_by(get_jwt_user(request))):
         comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
      
@@ -70,8 +70,34 @@ def get_comments(request):
         else:
             return Response({})
     else:
-        return Response({'status': False})
+        return Response({'status': False, 'message': 'Acceso denegado.'})
 
+
+def get_comments_response(request):
+    
+    comment_aux = Comment.objects.filter(page=request.GET.get('page_code'), id=request.GET.get('parent_id'))
+    
+    if(len(comment_aux) == 0):    
+        print(len(comment_aux))    
+        return Response({'status': False, 'message': "El comentario no existe."})
+    elif(comment_aux[0].is_public() or comment_aux[0].is_accessible_by(get_jwt_user(request))):
+        comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
+     
+        comments = order_by_if_not_none(comments,
+            request.GET.getlist('order_by')                  
+        )
+        #TODO: AGREGAR FILTROS RANK ...
+        if len(comments)> 0:                    
+            paginator_comments = CustomPagination()
+            if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >0): response_size = request.GET.get('response_page_size')
+            else: response_size = 4
+            result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
+            return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, 0, response_size))
+
+        else:
+            return Response({})
+    else:
+        return Response({'status': False, 'message': 'Acceso denegado.'})
 
 def recursive_comment_query(page_code, comments, level, response_size):
     

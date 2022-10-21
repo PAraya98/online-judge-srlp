@@ -32,6 +32,7 @@ def get_ranking(request):
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
+        print(result_page)
         data = ({"ranking": {res.username: 
                     {   'avatar_url': gravatar_username(res.username),
                         'points': res.points, #TODO: Ver diferencia entre points y performance_points 
