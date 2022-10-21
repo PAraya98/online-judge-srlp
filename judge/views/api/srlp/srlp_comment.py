@@ -20,29 +20,26 @@ from judge.jinja2.gravatar import gravatar_username
 def add_comment(request):
     
     data = DefaultMunch.fromDict(json.loads(request.body))
-    comment_aux = get_list_or_404(Comment, page=data.page_code)[0]    
-    if(comment_aux.is_accessible_by(get_jwt_user(request))):
+    user = get_jwt_user(request)
+    profile= Profile.objects.get(user=user)
 
-        user = get_jwt_user(request)
-        profile= Profile.objects.get(user=user)
-
-        if not user.is_staff and not profile.has_any_solves:
-            return Response({'status': False, 'message': 'Debes resolver al menos un problema para poder comentar.'})
-        if profile.mute:
-            return Response({'status': False, 'message': 'Tú cuenta ha sido silenciada por el administrador.'})
-        if(data.parent_id is None):
-            comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body)
+    if not user.is_staff and not profile.has_any_solves:
+        return Response({'status': False, 'message': 'Debes resolver al menos un problema para poder comentar.'})
+    if profile.mute:
+        return Response({'status': False, 'message': 'Tú cuenta ha sido silenciada por el administrador.'})
+    if(data.parent_id is None):
+        comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body)
+    else:
+        comment_parent = get_object_or_404(Comment, id=data.parent_id)
+        if(comment_parent.level < 3):
+            comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body, parent=comment_parent)
         else:
-            comment_parent = get_object_or_404(Comment, id=data.parent_id)
-            if(comment_parent.level < 3):
-                comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body, parent=comment_parent)
-            else:
-                Response({'status': False, 'message': 'El comentario excede el número de hijos.'})
-        if(not comment.is_accessible_by(user)):
-            return Response({'status': False, 'message': 'No tienes acceso a esta acción.'})
-                    
-        comment.save()
-        return Response({'status': True})
+            Response({'status': False, 'message': 'El comentario excede el número de hijos.'})
+    if(not comment.is_accessible_by(user)):
+        return Response({'status': False, 'message': 'No tienes acceso a esta acción.'})
+
+    comment.save()
+    return Response({'status': True})
            
 
 @api_view(['GET'])
