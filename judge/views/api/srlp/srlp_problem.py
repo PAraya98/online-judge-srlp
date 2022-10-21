@@ -30,9 +30,10 @@ def get_problem_list(request):
         code__icontains=request.GET.get('code'),
         group_name__icontains=request.GET.get('group_name'),
         is_public = request.GET.get('is_public'),
-        is_organization_private = request.GET.get('is_organization_private'),
-        types__name = request.GET.getlist('type_name') 
+        is_organization_private = request.GET.get('is_organization_private')
     )
+    queryset = queryset.filter(types__name='test2')
+    queryset = queryset.filter(types__name='Simple Math')
 
     queryset = order_by_if_not_none(queryset,
             request.GET.getlist('order_by')                  
