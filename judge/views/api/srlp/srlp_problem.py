@@ -33,10 +33,10 @@ def get_problem_list(request):
         is_organization_private = request.GET.get('is_organization_private')
     )
 
-    queryset = filter_conjuntive_if_not_none(queryset, 'types__name__icontains',
+    queryset = filter_conjuntive_if_not_none(queryset, 'types__name',
         request.GET.getlist('type_name') 
     )
-    queryset = filter_conjuntive_if_not_none(queryset, 'types__full_name__icontains',
+    queryset = filter_conjuntive_if_not_none(queryset, 'types__full_name',
         request.GET.getlist('type_full_name') 
     )
 
