@@ -84,8 +84,12 @@ def get_comment_responses(request):
         print(comment_aux)
         if len(comments)> 0:                    
             paginator_comments = CustomPagination()
-            if(request.GET.get('page_size') is not None and int(request.GET.get('page_size')) >0): response_size = request.GET.get('page_size') 
-            else: response_size = 4
+            if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >0): 
+                paginator_comments.page_size = request.GET.get('response_page_size') 
+                response_size = request.GET.get('response_page_size') 
+            else: 
+                paginator_comments.page_size = 4
+                response_size = 4
             result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
             return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, comment_aux.level+1, response_size))
 
