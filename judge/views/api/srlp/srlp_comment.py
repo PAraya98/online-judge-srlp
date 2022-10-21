@@ -47,8 +47,7 @@ def add_comment(request):
 @api_view(['GET'])
 def get_comments(request):
     
-    comment_aux = get_objects(Comment, page=request.GET.get('page_code'))
-
+    comment_aux = Comment.objects.filter(page=request.GET.get('page_code')).value_list()
     if(len(comment_aux) == 0):        
         Response({'comments': {}, 'pages': 0})
     elif(comment_aux[0].is_public() or comment_aux[0].is_accessible_by(get_jwt_user(request))):
