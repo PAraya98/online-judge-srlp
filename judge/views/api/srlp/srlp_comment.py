@@ -17,10 +17,10 @@ from judge.jinja2.gravatar import gravatar_username
 
 @permission_classes([isLogueado])
 @api_view(['POST'])
-def create_comment(request):
-    #TODO: AGREGAR NIVEL MÁXIMO COMO 3
+def add_comment(request):
+    
     data = DefaultMunch.fromDict(json.loads(request.body))
-    comment_aux = get_list_or_404(Comment, page=data.page_code)[0]    
+    comment_aux = get_list_or_404(Comment, page=data.page_code, parent=data.parent_id)[0]    
     if(comment_aux.is_accessible_by(get_jwt_user(request))):
 
         user = get_jwt_user(request)
@@ -32,7 +32,7 @@ def create_comment(request):
         if profile.mute:
             return Response({'status': False, 'message': 'Tú cuenta ha sido silenciada por el administrador.'})
 
-        comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body, parent=data.parent)
+        comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body, parent=data.parent_id)
         
         if(comment.is_accessible_by(user)):
             comment.save()
@@ -47,15 +47,11 @@ def get_comments(request):
 
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
         comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
-        
-        #if(request.GET.get('order_by') is not None and request.GET.get('order_by') != ""): comments = comments.order_by(request.GET.get('order_by'))
-        #else: comments = comments.order_by('time')
-        #if(request.GET.get('order_by') is "score"): comments = comments.order_by('score', 'time')
-        print(request.GET.getlist('order_by'))
+     
         comments = order_by_if_not_none(comments,
             request.GET.getlist('order_by')                  
         )
-
+        #TODO: AGREGAR FILTROS RANK ...
         if len(comments)> 0:                    
             paginator_comments = CustomPagination()
             if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >0): response_size = request.GET.get('response_page_size')
