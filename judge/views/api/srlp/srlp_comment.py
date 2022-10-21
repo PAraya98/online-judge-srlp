@@ -20,7 +20,7 @@ from judge.jinja2.gravatar import gravatar_username
 def add_comment(request):
     
     data = DefaultMunch.fromDict(json.loads(request.body))
-    comment_aux = get_list_or_404(Comment, page=data.page_code, parent_id=data.parent_id)[0]    
+    comment_aux = get_list_or_404(Comment, page=data.page_code)[0]    
     if(comment_aux.is_accessible_by(get_jwt_user(request))):
 
         user = get_jwt_user(request)
