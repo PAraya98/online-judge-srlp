@@ -33,6 +33,7 @@ def add_comment(request):
         comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body)
     else:
         comment_parent = get_object_or_404(Comment, id=data.parent_id)
+        print(comment_parent.level)
         if(comment_parent.level < 3):
             comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body, parent=comment_parent)
         else:
