@@ -141,7 +141,8 @@ def get_info_submission(request):
             'memory': res.memory,
             'points': res.points,
             'result': res.result,
-            'source': (res.source.source)
+            'source': res.source.source,
+            'error':  res.error
         } for res in result_page)
         }       
         return paginator.get_paginated_response(data)

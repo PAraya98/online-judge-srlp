@@ -53,9 +53,9 @@ def get_problem_list(request):
         #    array.append(types['name'])
         #res.types = array
 
-        for res in result_page:     
-            p = Problem.objects.get(id=res.id)
-            res.types = list(p.types.values_list('full_name', flat=True))
+        #for res in result_page:     
+        #    p = Problem.objects.get(id=res.id)
+        #    res.types = list(p.types.values_list('full_name', flat=True))
 
         data = {
             'problems': ({
@@ -69,7 +69,7 @@ def get_problem_list(request):
                 'is_public': res.is_public,
                 'is_organization_private': res.is_organization_private,
                 'group_id': res.group_id,
-                'types': res.types
+                'types': list(res.types)
             } for res in result_page)
         }       
         return paginator.get_paginated_response(data)
