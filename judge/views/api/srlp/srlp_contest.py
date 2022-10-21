@@ -36,19 +36,24 @@ def get_contest_list(request):
         end_time__lte = datetime.datetime.now() if (request.GET.get('has_ended') == "true") else None,
         name__icontains = request.GET.get('name')
     )   
+    
 
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
-        data = ({"contests": {
-            'key': c.key,
-            'name': c.name,
-            'summary': c.summary,
-            'start_time': c.start_time.isoformat(),
-            'end_time': c.end_time.isoformat(),
-            'time_limit': c.time_limit and sane_time_repr(c.time_limit),
-            'labels': list(map(attrgetter('name'), c.tag_list)),
-        } for c in result_page})
+
+        array = [] 
+        for c in result_page:
+            array.append({
+                'key': c.key,
+                'name': c.name,
+                'summary': c.summary,
+                'start_time': c.start_time.isoformat(),
+                'end_time': c.end_time.isoformat(),
+                'time_limit': c.time_limit and sane_time_repr(c.time_limit),
+                'labels': list(map(attrgetter('name'), c.tag_list))
+            })
+        data = ({"contests": array})
         return paginator.get_paginated_response(data)
     else:
         return Response({})
