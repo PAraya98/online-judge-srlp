@@ -31,7 +31,7 @@ def get_problem_list(request):
         group_name__icontains=request.GET.get('group_name'),
         is_public = request.GET.get('is_public'),
         is_organization_private = request.GET.get('is_organization_private'),
-        types__name__in = request.GET.getlist('type_name') 
+        types__name = request.GET.getlist('type_name') 
     )
 
     queryset = order_by_if_not_none(queryset,
