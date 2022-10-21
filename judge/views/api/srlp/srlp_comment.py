@@ -48,7 +48,7 @@ def get_comments(request):
     
     comment_aux = Comment.objects.filter(page=request.GET.get('page_code'))
     if(len(comment_aux) == 0): Response({'Comments': {}, 'pages': 0})
-    if(comment_aux[0].is_public() or comment_aux[0].is_accessible_by(get_jwt_user(request))):
+    elif(comment_aux[0].is_public() or comment_aux[0].is_accessible_by(get_jwt_user(request))):
         comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
      
         comments = order_by_if_not_none(comments,
