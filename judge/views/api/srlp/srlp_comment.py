@@ -28,7 +28,6 @@ def add_comment(request):
 
         if not user.is_staff and not profile.has_any_solves:
             return Response({'status': False, 'message': 'Debes resolver al menos un problema para poder comentar.'})
-        
         if profile.mute:
             return Response({'status': False, 'message': 'Tú cuenta ha sido silenciada por el administrador.'})
         if(data.parent_id is None):
@@ -39,11 +38,12 @@ def add_comment(request):
                 comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body, parent=comment_parent)
             else:
                 Response({'status': False, 'message': 'El comentario excede el número de hijos.'})
-        if(comment.is_accessible_by(user)):
-            comment.save()
-            return Response({'status': True})
-        else:
+        if(not comment.is_accessible_by(user)):
             return Response({'status': False, 'message': 'No tienes acceso a esta acción.'})
+                    
+        comment.save()
+        return Response({'status': True})
+           
 
 @api_view(['GET'])
 def get_comments(request):
