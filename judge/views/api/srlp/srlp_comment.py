@@ -1,4 +1,5 @@
 
+from gc import get_objects
 from dmoj import settings
 from judge.models import Problem, Judge, Profile, Submission, SubmissionSource, ContestSubmission, Comment, profile
 import math 
@@ -46,9 +47,11 @@ def add_comment(request):
 @api_view(['GET'])
 def get_comments(request):
     
-    comment_aux = get_list_or_404(Comment, page=request.GET.get('page_code'))[0]
+    comment_aux = get_objects(Comment, page=request.GET.get('page_code'))
 
-    if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
+    if(len(comment_aux) == 0):        
+        Response({'comments': {}, 'pages': 0})
+    elif(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
         comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
      
         comments = order_by_if_not_none(comments,
