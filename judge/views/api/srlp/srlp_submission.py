@@ -155,11 +155,11 @@ def get_problem_info_submissions(request):
     problem = get_object_or_404(Problem,code=request.GET.get('problem'))
     submission = Submission.objects.filter(problem_id=problem.id)
 
-    queryset = order_by_if_not_none(queryset,
+    submission = order_by_if_not_none(submission,
         request.GET.getlist('order_by')                  
     )
 
-    queryset = filter_if_not_none(queryset, 
+    submission = filter_if_not_none(submission, 
         user__user__username__icontains = request.GET.get('username')
     )
 
