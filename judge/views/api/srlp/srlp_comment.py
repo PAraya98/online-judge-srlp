@@ -59,7 +59,7 @@ def vote_comment(request):
         if comment.author == profile:
             return Response({'status': False, 'message': 'No puedes votar tu propio comentario.'})
         vote_value = request.GET.get('vote')
-        if(vote_value is not None and int(vote_value) != 1 and int(vote_value) != 0): 
+        if(vote_value is None and int(vote_value) != 1 and int(vote_value) != 0): 
             return Response({'status': False, 'message': 'Solicitud incorrecta.'})               
         vote = CommentVote()
         vote.comment_id = comment.id
