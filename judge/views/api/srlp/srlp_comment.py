@@ -27,6 +27,7 @@ def add_comment(request):
         return Response({'status': False, 'message': 'Debes resolver al menos un problema para poder comentar.'})
     if profile.mute:
         return Response({'status': False, 'message': 'Tú cuenta ha sido silenciada por el administrador.'})
+    
     if(data.parent_id is None):
         comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body)
     else:
@@ -45,9 +46,9 @@ def add_comment(request):
 @api_view(['GET'])
 def get_comments(request):
     
-    comment_aux = get_list_or_404(Comment, page=request.GET.get('page_code'))[0]
-
-    if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
+    comment_aux = Comment.objects.filter(page=request.GET.get('page_code'))
+    if(len(comment_aux) == 0): Response({'Comments': {}, 'pages': 0})
+    if(comment_aux[0].is_public() or comment_aux[0].is_accessible_by(get_jwt_user(request))):
         comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
      
         comments = order_by_if_not_none(comments,
