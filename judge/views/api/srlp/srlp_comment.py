@@ -47,9 +47,9 @@ def add_comment(request):
 def get_comments(request):
     if(request.GET.get('page_code') is None): Response({'status': False})
     else:
-        comment_aux = Comment.objects.filter(page=request.GET.get('page_code')).all()
+        comment_aux = Comment.objects.filter(page=request.GET.get('page_code'))
         
-        if(len(comment_aux) == 0): Response({'Comments': {}, 'pages': 0})
+        if(not comment_aux): Response({'Comments': {}, 'pages': 0})
         elif(comment_aux[0].is_public() or comment_aux[0].is_accessible_by(get_jwt_user(request))):
             comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
         
