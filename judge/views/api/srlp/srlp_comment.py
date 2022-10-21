@@ -34,7 +34,7 @@ def add_comment(request):
         if(data.parent_id is None):
             comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body)
         else:
-            comment_parent = get_object_or_404(Comment, data.parent_id)
+            comment_parent = get_object_or_404(Comment, id=data.parent_id)
             comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body, parent=comment_parent)
         
         if(comment.is_accessible_by(user)):
