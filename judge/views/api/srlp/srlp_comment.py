@@ -35,8 +35,10 @@ def add_comment(request):
             comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body)
         else:
             comment_parent = get_object_or_404(Comment, id=data.parent_id)
-            comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body, parent=comment_parent)
-        
+            if(comment_parent.level < 3):
+                comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body, parent=comment_parent)
+            else:
+                Response({'status': False, 'message': 'El comentario excede el número de hijos.'})
         if(comment.is_accessible_by(user)):
             comment.save()
             return Response({'status': True})
