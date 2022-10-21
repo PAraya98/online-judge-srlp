@@ -20,7 +20,7 @@ from judge.jinja2.gravatar import gravatar_username
 def add_comment(request):
     
     data = DefaultMunch.fromDict(json.loads(request.body))
-    comment_aux = get_list_or_404(Comment, page=data.page_code, parent=data.parent_id)[0]    
+    comment_aux = get_list_or_404(Comment, page=data.page_code, parent_id=data.parent_id)[0]    
     if(comment_aux.is_accessible_by(get_jwt_user(request))):
 
         user = get_jwt_user(request)
@@ -31,8 +31,11 @@ def add_comment(request):
         
         if profile.mute:
             return Response({'status': False, 'message': 'Tú cuenta ha sido silenciada por el administrador.'})
-
-        comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body, parent=data.parent_id)
+        if(data.parent_id is None):
+            comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body)
+        else:
+            comment_parent = get_object_or_404(Comment, data.parent_id)
+            comment = Comment.objects.create(page=data.page_code, author_id=profile.id, body=data.body, parent=comment_parent)
         
         if(comment.is_accessible_by(user)):
             comment.save()
