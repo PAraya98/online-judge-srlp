@@ -46,7 +46,7 @@ def get_contest_list(request):
         for c in result_page:
             array.append({
                 'key': c.key,
-                'name': c.name,
+                'name': c.name,                
                 'summary': c.summary,
                 'start_time': c.start_time.isoformat(),
                 'end_time': c.end_time.isoformat(),

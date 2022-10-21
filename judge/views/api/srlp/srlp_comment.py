@@ -61,9 +61,13 @@ def get_comments(request):
         )
         #TODO: AGREGAR FILTROS RANK ...
         if len(comments)> 0:                    
-            paginator_comments = CustomPagination()
-            if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >0): response_size = request.GET.get('response_page_size')
-            else: response_size = 4
+            paginator_comments = CustomPagination()            
+            if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >0):
+                response_size = request.GET.get('response_page_size')
+                paginator_comments.page_size = request.GET.get('response_page_size')
+            else: 
+                response_size = 4
+                paginator_comments.page_size = 4
             result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
             return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, 0, response_size))
 
@@ -73,7 +77,7 @@ def get_comments(request):
         return Response({'status': False, 'message': 'Acceso denegado.'})
 
 
-def get_comments_response(request):
+def get_comment_responses(request):
     
     comment_aux = Comment.objects.filter(page=request.GET.get('page_code'), id=request.GET.get('parent_id'))
     
@@ -81,12 +85,9 @@ def get_comments_response(request):
         print(len(comment_aux))    
         return Response({'status': False, 'message': "El comentario no existe."})
     elif(comment_aux[0].is_public() or comment_aux[0].is_accessible_by(get_jwt_user(request))):
-        comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=None).exclude(hidden=True)
+        comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=comment_aux[0]).exclude(hidden=True)
      
-        comments = order_by_if_not_none(comments,
-            request.GET.getlist('order_by')                  
-        )
-        #TODO: AGREGAR FILTROS RANK ...
+        comments = order_by_if_not_none(comments,'time')
         if len(comments)> 0:                    
             paginator_comments = CustomPagination()
             if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >0): response_size = request.GET.get('response_page_size')
@@ -106,7 +107,7 @@ def recursive_comment_query(page_code, comments, level, response_size):
         for comment in comments:            
             profile = Profile.objects.get(id=comment.author_id)
             user = User.objects.get(id=profile.user_id)
-            comment_responses =  DefaultMunch.fromDict(Comment.objects.filter(page=page_code, parent_id=comment.id).order_by('-time').exclude(hidden=True))
+            comment_responses =  DefaultMunch.fromDict(Comment.objects.filter(page=page_code, parent_id=comment.id).order_by('time').exclude(hidden=True))
             
             if(len(comment_responses)):                                         
                 array_responses = recursive_comment_query(page_code, comment_responses[:int(response_size)], level+1, response_size)

@@ -38,6 +38,7 @@ admin_patterns = [
 
 comment_patterns = [
     path('get_comments', srlp_comment.get_comments),
+    path('get_comment_responses', srlp_comment.get_comment_responses),
     path('add_comment', srlp_comment.add_comment)
 ]
 
