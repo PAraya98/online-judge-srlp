@@ -21,7 +21,7 @@ def filter_if_not_none(qs, **kwargs):
     return qs.filter(**{k: v for k, v in kwargs.items() if v is not None})
 
 def filter_conjuntive_if_not_none(qs, key, list_params):
-    if(list_params is not None and len(list_params)>0):
+    if(len(list_params)>0 and list_params[0] != ''):
         element = list_params.pop()
         qs = qs.filter(**{key: element})
         return filter_conjuntive_if_not_none(qs, key, list_params)
