@@ -79,7 +79,7 @@ def get_comment_responses(request):
     
     comment_aux = get_object_or_404(Comment, page=request.GET.get('page_code'), id=request.GET.get('parent_id'))
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
-        comments = Comment.objects.filter(page=request.GET.get('page_code'), parent=comment_aux).order_by('time').exclude(hidden=True)
+        comments = Comment.objects.filter(page=request.GET.get('page_code'), parent_id=comment_aux.id).order_by('time').exclude(hidden=True)
         print(comments)
         print(comment_aux)
         if len(comments)> 0:                    
