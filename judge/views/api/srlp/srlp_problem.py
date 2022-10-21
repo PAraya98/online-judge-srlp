@@ -69,7 +69,7 @@ def get_problem_list(request):
                 'is_public': res.is_public,
                 'is_organization_private': res.is_organization_private,
                 'group_id': res.group_id,
-                'types': list(res.types.all())
+                'types': list(res.types.values())
             } for res in result_page)
         }       
         return paginator.get_paginated_response(data)
