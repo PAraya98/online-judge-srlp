@@ -32,8 +32,9 @@ def get_problem_list(request):
         is_public = request.GET.get('is_public'),
         is_organization_private = request.GET.get('is_organization_private')
     )
-    queryset = queryset.filter(types__name='test2')
-    queryset = queryset.filter(types__name='Simple Math')
+    queryset = filter_conjuntive_if_not_none(queryset, 'types__id',
+        request.GET.get_list('type_id')
+    )
 
     queryset = order_by_if_not_none(queryset,
             request.GET.getlist('order_by')                  
