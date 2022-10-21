@@ -20,6 +20,9 @@ def acces_denied(bool_list):
 def filter_if_not_none(qs, **kwargs):
     return qs.filter(**{k: v for k, v in kwargs.items() if v is not None})
 
+def filter_conjuntive_if_not_none(qs, key, list_params):
+    return qs.filter(**{key: v for v in list_params.items() if v is not None})
+
 def order_by_if_not_none(qs, list_params):
     return qs.order_by(*[v for v in list_params if v is not None])
 

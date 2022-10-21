@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import F, OuterRef, Subquery
 from judge.models.problem import ProblemType
 
-from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, order_by_if_not_none, filter_if_not_none
+from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, filter_conjuntive_if_not_none, order_by_if_not_none, filter_if_not_none
 
 from judge.jinja2.markdown import markdown
 
@@ -30,9 +30,14 @@ def get_problem_list(request):
         code__icontains=request.GET.get('code'),
         group_name__icontains=request.GET.get('group_name'),
         is_public = request.GET.get('is_public'),
-        is_organization_private = request.GET.get('is_organization_private'),
-        types__name__icontains=request.GET.get('type_name'),
-        types__full_name__icontains=request.GET.get('type_full_name')
+        is_organization_private = request.GET.get('is_organization_private')
+    )
+
+    queryset = filter_conjuntive_if_not_none(queryset, 'types__name__icontains__in',
+        request.GET.getlist('type_name') 
+    )
+    queryset = filter_conjuntive_if_not_none(queryset, 'types__full_name__icontains__in',
+        request.GET.getlist('type_full_name') 
     )
 
     queryset = order_by_if_not_none(queryset,
@@ -120,7 +125,7 @@ def get_types(request):
     queryset = order_by_if_not_none(queryset,
             request.GET.getlist('order_by')                  
     )
-
+    
     queryset = queryset.values('id', 'name', 'full_name')
 
     if len(queryset)> 0:
