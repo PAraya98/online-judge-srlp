@@ -141,7 +141,7 @@ def get_info_submission(request):
             'memory': res.memory,
             'points': res.points,
             'result': res.result,
-            'source': DefaultMunch.fromDict(get_object_or_404(SubmissionSource, submission_id=res.id)).source
+            'source': (res.source.source)
         } for res in result_page)
         }       
         return paginator.get_paginated_response(data)
