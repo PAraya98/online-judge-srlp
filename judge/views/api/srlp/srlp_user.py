@@ -27,7 +27,7 @@ def get_ranking(request):
             request.GET.getlist('order_by')                  
     )
     
-    queryset = queryset.values_list('username', 'points', 'performance_points', 'rank', 'problem_count', 'last_access')
+    queryset = queryset.values('username', 'points', 'performance_points', 'rank', 'problem_count', 'last_access')
 
     if len(queryset)> 0:
         paginator = CustomPagination()
