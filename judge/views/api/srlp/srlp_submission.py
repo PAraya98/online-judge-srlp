@@ -205,7 +205,7 @@ def get_all_submissions(request):
     submission = order_by_if_not_none(submission,
         request.GET.getlist('order_by')                 
     )
-    submission.annotate(username=F('user__user__username'), problem_code=F('problem__code'), problem_name=F('problem__name'))
+    submission = submission.annotate(username=F('user__user__username'), problem_code=F('problem__code'), problem_name=F('problem__name'))
     submission = filter_if_not_none(submission, 
         username__icontains = request.GET.get('username'),
         result = request.GET.get('result'),
