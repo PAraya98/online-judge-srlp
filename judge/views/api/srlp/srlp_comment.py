@@ -63,7 +63,7 @@ def vote_comment(request):
             return Response({'status': False, 'message': 'Solicitud incorrecta.'})               
         vote_value = int(vote_value)
         vote = CommentVote()
-        vote.comment_id = comment.id
+        vote.comment_id = int(comment.id)
         vote.voter = profile
         vote.score = vote_value
         while True:
@@ -78,9 +78,9 @@ def vote_comment(request):
                     if -vote.score != vote_value:
                         return Response({'status': False, 'message': 'Ya has votado.'})
                     vote.delete()
-                comment.update(score=F('score') - vote.score)
+                Comment.objects.filter(id=comment.id).update(score=F('score') - vote.score)
             else:
-               comment.update(score=F('score') + vote_value)
+                Comment.objects.filter(id=comment.id).update(score=F('score') + vote_value)
             break
         return Response({'status': True})
     else:
