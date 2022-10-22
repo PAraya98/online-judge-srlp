@@ -298,6 +298,47 @@ class Problem(models.Model):
         return queryset
 
     @classmethod
+    def get_visible_problems_rest(cls, user):
+        # Do unauthenticated check here so we can skip authentication checks later on.
+        if not user:
+            return cls.get_public_problems()
+
+        # Conditions for visible problem:
+        #   - `judge.edit_all_problem` or `judge.see_private_problem`
+        #   - otherwise
+        #       - not is_public problems
+        #           - author or curator or tester
+        #           - is_organization_private and admin of organization
+        #       - is_public problems
+        #           - not is_organization_private or in organization or `judge.see_organization_problem`
+        #           - author or curator or tester
+        queryset = cls.objects.defer('description')
+
+        edit_own_problem = user.has_perm('judge.edit_own_problem')
+        edit_public_problem = edit_own_problem and user.has_perm('judge.edit_public_problem')
+        edit_all_problem = edit_own_problem and user.has_perm('judge.edit_all_problem')
+
+        if not (user.has_perm('judge.see_private_problem') or edit_all_problem):
+            q = Q(is_public=True)
+            if not (user.has_perm('judge.see_organization_problem') or edit_public_problem):
+                # Either not organization private or in the organization.
+                q &= (
+                    Q(is_organization_private=False) |
+                    Q(is_organization_private=True, organizations__in=user.profile.organizations.all())
+                )
+
+            if edit_own_problem:
+                q |= Q(is_organization_private=True, organizations__in=user.profile.admin_of.all())
+
+            # Authors, curators, and testers should always have access, so OR at the very end.
+            q |= Q(authors=user.profile)
+            q |= Q(curators=user.profile)
+            q |= Q(testers=user.profile)
+            queryset = queryset.filter(q)
+
+        return queryset
+
+    @classmethod
     def get_public_problems(cls):
         return cls.objects.filter(is_public=True, is_organization_private=False).defer('description')
 

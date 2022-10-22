@@ -120,9 +120,13 @@ def get_contest_submission_count(problem, profile, virtual):
 @permission_classes([isLogueado])
 @api_view(['GET'])
 def get_info_submission(request):
-    #TODO: AGREGAR CONDICIONES DE ACCESO A PROBLEMA
     user = get_jwt_user(request)
-    problem = get_object_or_404(Problem,code=request.GET.get('problem'))
+
+    problem = Problem.objects.filter(code=request.GET.get('problem')).first()
+    if(not problem or not problem.is_accessible_by(get_jwt_user(request))): 
+        return Response({'status': False, 'message': 'El problema no existe o no tienes acceso.'})
+    
+    
     submission = Submission.objects.filter(user_id=user.id, problem_id=problem.id)
     submission = order_by_if_not_none(submission,
         request.GET.getlist('order_by')                  
@@ -152,8 +156,11 @@ def get_info_submission(request):
 @permission_classes([isLogueado])
 @api_view(['GET'])
 def get_problem_info_submissions(request):
-    #TODO: AGREGAR CONDICIONES DE ACCESO A PROBLEMA
-    problem = get_object_or_404(Problem,code=request.GET.get('problem'))
+       
+    problem = Problem.objects.filter(code=request.GET.get('problem')).first()
+    if(not problem or not problem.is_accessible_by(get_jwt_user(request))): 
+        return Response({'status': False, 'message': 'El problema no existe o no tienes acceso.'})
+    
     submission = Submission.objects.filter(problem_id=problem.id)
 
     submission = order_by_if_not_none(submission,
@@ -185,4 +192,7 @@ def get_problem_info_submissions(request):
     else:
         return Response({})
 
-
+@permission_classes([isLogueado])
+@api_view(['GET'])
+def get_all_submissions(request):
+    pass

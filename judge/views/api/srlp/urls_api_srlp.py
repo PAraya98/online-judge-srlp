@@ -15,7 +15,8 @@ submission_patterns = [
     path('send_solution', srlp_submission.sumbit_solution),
     path('get_info_for_submit', srlp_submission.get_info_submit),
     path('get_info_submission', srlp_submission.get_info_submission),
-    path('get_info_problem_submission', srlp_submission.get_problem_info_submissions)
+    path('get_info_problem_submission', srlp_submission.get_problem_info_submissions),
+    path('get_all_submissions', srlp_submission.get_all_submissions)
 ]
 
 problem_patterns = [

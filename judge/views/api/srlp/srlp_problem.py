@@ -20,7 +20,7 @@ from judge.jinja2.markdown import markdown
 
 @api_view(['GET'])
 def get_problem_list(request):
-    queryset = Problem.get_public_problems() #TODO: Cambiar para organizaciones "Curso"
+    queryset = Problem.get_visible_problems_rest(get_jwt_user(request)) #TODO: Cambiar para organizaciones "Curso"
 
     queryset = queryset.annotate(group_name=F('group__full_name'))
     
@@ -79,11 +79,9 @@ def get_problem_list(request):
 def get_problem_info(request):
     code = request.GET.getlist('code')
     problem_code = '' if not code else code[0]
-    p = get_object_or_404(Problem, code=problem_code)
-    
-    #TODO: CUANDO REQUIERA LOGIN QUITAR COMENTARIOS
-    #if not p.is_accessible_by(get_jwt_user(request), skip_contest_problem_check=True):
-    #    raise Response(status=404)
+    p = Problem.objects.filter(code=problem_code).first()
+    if not p and not p.is_accessible_by(get_jwt_user(request)): 
+        return Response({'status': False, 'message': 'El problema no existe o no se tiene acceso.'})
 
     return Response({
         'name': p.name,
