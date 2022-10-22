@@ -130,6 +130,7 @@ def get_comment_responses(request):
                 paginator_comments.page_size = 4
                 response_size = 4
             profile = Profile.objects.filter(user=get_jwt_user(request)).first()
+            
             result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
             return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, comment_aux.level+1, response_size, profile))
 
@@ -139,6 +140,8 @@ def get_comment_responses(request):
         return Response({'status': False, 'message': 'Acceso denegado.'})
 
 def recursive_comment_query(page_code, comments, level, response_size, profile):
+    print(profile)
+    print(profile.id)
     if(level < 3 and len(comments) > 0):      
         array_comments = []
         for comment in comments:            
