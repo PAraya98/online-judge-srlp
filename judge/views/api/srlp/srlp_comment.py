@@ -169,9 +169,9 @@ def recursive_comment_query(page_code, comments, level, response_size, profile):
                     "responses": array_responses,
                     "response_pages": math.ceil(len(comment_responses)/float(response_size))          
                 }
-            if(not profile): 
-                vote = CommentVote.objects.filter(comment=comment, voter=profile).first()
-                if(not vote): data['vote'] = 0
+            if(profile): 
+                vote = CommentVote.objects.filter(comment_id=comment.id, voter=profile).first()
+                if(vote): data['vote'] = 0
                 else: data['vote'] = vote.score
             array_comments.append(data)        
         return {'comments': array_comments}        
