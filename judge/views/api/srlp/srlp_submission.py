@@ -223,7 +223,7 @@ def get_all_submissions(request):
                 'id': res.id,
                 'problem_code': res.problem_code,
                 'problem_name': res.problem_name,
-                'username': res.user.username,
+                'username': res.username,
                 'date': res.date.isoformat(),
                 'language': res.language.key,
                 'time': res.time,
