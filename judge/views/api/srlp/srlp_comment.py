@@ -75,10 +75,10 @@ def vote_comment(request):
                         vote = CommentVote.objects.get(comment_id=comment.id, voter=profile)
                     except CommentVote.DoesNotExist:                        
                         continue
-                    if vote.score == vote_value:
+                    if -vote.score != vote_value:
                         return Response({'status': False, 'message': 'Ya has votado.'})
                     vote.delete()
-                Comment.objects.filter(id=comment.id).update(score=F('score') - vote.score)
+                Comment.objects.filter(id=comment.id).update(score=F('score') - vote.score)            
             else:
                 Comment.objects.filter(id=comment.id).update(score=F('score') + vote_value)
             break
