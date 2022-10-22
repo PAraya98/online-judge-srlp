@@ -203,14 +203,19 @@ def get_all_submissions(request):
     
     submission = Submission.objects.filter(problem_id__in=Problem.get_visible_problems_rest(get_jwt_user(request)))
     
-    submission = submission.annotate(username=F('user__user__username'), problem_code=F('problem__code'), problem_name=F('problem__name'))
+    submission = submission.annotate(
+            username=F('user__user__username'), 
+            problem_code=F('problem__code'), 
+            problem_name=F('problem__name'),
+            language_key=F('language__key')
+        )
     submission = filter_if_not_none(submission, 
         username__icontains = request.GET.get('username'),
         result = request.GET.get('result'),
-        language = request.GET.get('language'),
+        language_key = request.GET.get('language_key'),
         problem_code__icontains =  request.GET.get('problem_code')
     )
-    submission = submission.values('id', 'problem_code', 'problem_name', 'username', 'language', 'date', 'time', 'memory', 'points', 'result')
+    submission = submission.values('id', 'problem_code', 'problem_name', 'username', 'language_key', 'date', 'time', 'memory', 'points', 'result')
     submission = order_by_if_not_none(submission,
         request.GET.getlist('order_by')                 
     )
@@ -225,7 +230,7 @@ def get_all_submissions(request):
                 'problem_name': res.problem_name,
                 'username': res.username,
                 'date': res.date.isoformat(),
-                'language': res.language.key,
+                'language_key': res.language_key,
                 'time': res.time,
                 'memory': res.memory,
                 'points': res.points,
