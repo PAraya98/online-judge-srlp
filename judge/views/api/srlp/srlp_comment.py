@@ -78,9 +78,9 @@ def vote_comment(request):
                     if -vote.score != vote_value:
                         return Response({'status': False, 'message': 'Ya has votado.'})
                     vote.delete()
-                Comment.objects.filter(id=comment.id).update(score=F('score') - vote.score)
+                comment.update(score=F('score') - vote.score)
             else:
-                Comment.objects.filter(id=comment.id).update(score=F('score') + vote_value)
+               comment.update(score=F('score') + vote_value)
             break
         return Response({'status': True})
     else:
