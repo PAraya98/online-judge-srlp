@@ -140,8 +140,6 @@ def get_comment_responses(request):
         return Response({'status': False, 'message': 'Acceso denegado.'})
 
 def recursive_comment_query(page_code, comments, level, response_size, profile):
-    print(profile)
-    print(profile.id)
     if(level < 3 and len(comments) > 0):      
         array_comments = []
         for comment in comments:            
@@ -171,7 +169,7 @@ def recursive_comment_query(page_code, comments, level, response_size, profile):
                 }
             if(profile): 
                 vote = CommentVote.objects.filter(comment_id=comment.id, voter=profile).first()
-                if(vote): data['vote'] = 0
+                if(not vote): data['vote'] = 0
                 else: data['vote'] = vote.score
             array_comments.append(data)        
         return {'comments': array_comments}        
