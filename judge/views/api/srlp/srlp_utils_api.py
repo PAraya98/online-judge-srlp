@@ -28,7 +28,7 @@ def filter_conjuntive_if_not_none(qs, key, list_params):
     return qs
 
 def order_by_if_not_none(qs, list_params):
-    return qs.order_by(*[v for v in list_params if v is not None or v is not ''])
+    return qs.order_by(*[v for v in list_params if v is not None and v is not ''])
 
 class CustomPagination(PageNumberPagination):
     '''
