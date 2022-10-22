@@ -212,7 +212,7 @@ def get_all_submissions(request):
         language = request.GET.get('language'),
         problem_code__icontains =  request.GET.get('problem_code')
     )
-    submission.values('id', 'problem_code', 'problem_name', 'username', 'language', 'date', 'time', 'memory', 'points', 'result')
+    submission = submission.values('id', 'problem_code', 'problem_name', 'username', 'language', 'date', 'time', 'memory', 'points', 'result')
 
     if len(submission)> 0:
         paginator = CustomPagination()
@@ -221,9 +221,9 @@ def get_all_submissions(request):
         data = {
             'submissions': ({
                 'id': res.id,
-                'problem_code': res.problem.code,
-                'problem_name': res.problem.name,
-                'username': res.user.user.username,
+                'problem_code': res.problem_code,
+                'problem_name': res.problem_name,
+                'username': res.user.username,
                 'date': res.date.isoformat(),
                 'language': res.language.key,
                 'time': res.time,
