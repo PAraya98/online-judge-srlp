@@ -152,10 +152,6 @@ def recursive_comment_query(page_code, comments, level, response_size, profile):
                 array_responses=[]
             data =  {                    
                     "id": comment.id,
-                    "level": comment.level,
-                    "lft": comment.lft,
-                    "rght": comment.rght,
-                    "tree_id": comment.tree_id,
                     "author": {
                         "username": commenter_user.username,
                         "gravatar": gravatar_username(commenter_user.username),
@@ -163,15 +159,18 @@ def recursive_comment_query(page_code, comments, level, response_size, profile):
                     },
                     "time": comment.time,
                     "score": comment.score,
-                    "body": comment.body,     
-                    "responses": array_responses,
-                    "number_of_comments": len(comment_responses),
-                    "response_pages": math.ceil(len(comment_responses)/float(response_size)) if response_size != 0 else 0          
+                    "body": comment.body,                         
+                    "number_of_comments": len(comment_responses)                             
                 }
+            if response_size != 0: 
+                data["response_pages"] = math.ceil(len(comment_responses)/float(response_size)) 
+            else: data["response_pages"] = 0 
+            
             if(profile): 
                 vote = CommentVote.objects.filter(comment_id=comment.id, voter=profile).first()
                 if(not vote): data['vote'] = 0
                 else: data['vote'] = vote.score
+            data['responses'] = array_responses
             array_comments.append(data)        
         return {'comments': array_comments}        
     else: 
