@@ -14,7 +14,7 @@ from django.shortcuts import get_list_or_404, get_object_or_404
 from judge.models.runtime import Language
 
 from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, isLogueado, order_by_if_not_none, filter_if_not_none
-
+from django.db.models import F
 from judge.utils.raw_sql import join_sql_subquery, use_straight_join
 
 
@@ -166,13 +166,14 @@ def get_problem_info_submissions(request):
         return Response({'status': False, 'message': 'El problema no existe o no tienes acceso.'})
     
     submission = Submission.objects.filter(problem_id=problem.id)
+    submission.annotate(username=F('user__user__username'))
 
     submission = order_by_if_not_none(submission,
-        request.GET.getlist('order_by')                  
-    )
-
+        request.GET.getlist('order_by')                 
+    )    
+    
     submission = filter_if_not_none(submission, 
-        user__user__username__icontains = request.GET.get('username')
+        username__icontains = request.GET.get('username')
     )
 
     if len(submission)> 0:
@@ -201,14 +202,17 @@ def get_problem_info_submissions(request):
 def get_all_submissions(request):
     
     submission = Submission.objects.filter(problem_id__in=Problem.get_visible_problems_rest(get_jwt_user(request)))
-
     submission = order_by_if_not_none(submission,
-        request.GET.getlist('order_by')                  
+        request.GET.getlist('order_by')                 
     )
-
+    submission.annotate(username=F('user__user__username', problem_code=F('problem__code'), problem_name=F('problem__name')))
     submission = filter_if_not_none(submission, 
-        user__user__username__icontains = request.GET.get('username')
+        username__icontains = request.GET.get('username'),
+        result = request.GET.get('result'),
+        language = request.GET.get('language'),
+        problem_code__icontains =  request.GET.get('problem_code')
     )
+    submission.values('id', 'problem_code', 'problem_name', 'username', 'language', 'date', 'time', 'memory', 'points', 'result')
 
     if len(submission)> 0:
         paginator = CustomPagination()
@@ -217,9 +221,9 @@ def get_all_submissions(request):
         data = {
             'submissions': ({
                 'id': res.id,
-                'problem': res.problem.code,
+                'problem_code': res.problem.code,
                 'problem_name': res.problem.name,
-                'user': res.user.user.username,
+                'username': res.user.user.username,
                 'date': res.date.isoformat(),
                 'language': res.language.key,
                 'time': res.time,

@@ -50,7 +50,9 @@ def get_ranking(request):
 def get_user_info(request):
     code = request.GET.getlist('username')
     username = '' if not code else code[0]
+    
     profile = get_object_or_404(Profile, user__username=username)
+
     submissions = list(Submission.objects.filter(case_points=F('case_total'), user=profile, problem__is_public=True,
                                                  problem__is_organization_private=False)
                        .values('problem').distinct().values_list('problem__code', flat=True))
