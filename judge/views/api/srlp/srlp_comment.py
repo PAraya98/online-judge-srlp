@@ -72,7 +72,7 @@ def vote_comment(request):
             except IntegrityError:
                 with LockModel(write=(CommentVote,)):
                     try:
-                        vote = CommentVote.objects.get(comment_id=comment.id, voter=request.profile)
+                        vote = CommentVote.objects.get(comment_id=comment.id, voter=profile)
                     except CommentVote.DoesNotExist:                        
                         continue
                     if -vote.score != vote_value:
