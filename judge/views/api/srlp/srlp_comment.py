@@ -106,7 +106,8 @@ def get_comments(request):
             else: 
                 response_size = 4               
             result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
-            return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, 0, response_size))
+            profile = Profile.objects.filter(user=get_jwt_user(request)).first()
+            return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, 0, profile))
 
         else:
             return Response({'status': True, 'comments': []})
@@ -128,42 +129,48 @@ def get_comment_responses(request):
             else: 
                 paginator_comments.page_size = 4
                 response_size = 4
+            profile = Profile.objects.filter(user=get_jwt_user(request)).first()
             result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
-            return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, comment_aux.level+1, response_size))
+            return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, comment_aux.level+1, response_size, profile))
 
         else:
             return Response({'status': True, 'comments': []})
     else:
         return Response({'status': False, 'message': 'Acceso denegado.'})
 
-def recursive_comment_query(page_code, comments, level, response_size):
+def recursive_comment_query(page_code, comments, level, response_size, profile):
     if(level < 3 and len(comments) > 0):      
         array_comments = []
         for comment in comments:            
-            profile = Profile.objects.get(id=comment.author_id)
-            user = User.objects.get(id=profile.user_id)
+            commenter_profile = Profile.objects.get(id=comment.author_id)
+            commenter_user = User.objects.get(id=commenter_profile.user_id)
             comment_responses =  DefaultMunch.fromDict(Comment.objects.filter(page=page_code, parent_id=comment.id).order_by('time').exclude(hidden=True))
             if(len(comment_responses)):                                         
                 array_responses = recursive_comment_query(page_code, comment_responses[:int(response_size)], level+1, response_size)
             else:
                 array_responses=[]
-            array_comments.append({                    
-                "id": comment.id,
-                "level": comment.level,
-                "lft": comment.lft,
-                "rght": comment.rght,
-                "tree_id": comment.tree_id,
-                "author": {
-                    "username": user.username,
-                    "gravatar": gravatar_username(user.username),
-                    "rank": profile.display_rank    
-                },
-                "time": comment.time,
-                "score": comment.score,
-                "body": comment.body,     
-                "responses": array_responses,
-                "response_pages": math.ceil(len(comment_responses)/float(response_size))          
-            })        
+            data =  {                    
+                    "id": comment.id,
+                    "level": comment.level,
+                    "lft": comment.lft,
+                    "rght": comment.rght,
+                    "tree_id": comment.tree_id,
+                    "author": {
+                        "username": commenter_user.username,
+                        "gravatar": gravatar_username(commenter_user.username),
+                        "rank": profile.display_rank    
+                    },
+                    "time": comment.time,
+                    "score": comment.score,
+                    "body": comment.body,     
+                    "responses": array_responses,
+                    "response_pages": math.ceil(len(comment_responses)/float(response_size))          
+                }
+            if(not profile): 
+                vote = CommentVote.objects.filter(comment=comment, voter=profile).first()
+                if(not vote): data['vote'] = 0
+                else: data['vote'] = vote.score
+            array_comments.append(data)        
         return {'comments': array_comments}        
     else: 
         return []
