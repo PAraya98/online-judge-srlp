@@ -107,7 +107,7 @@ def get_comments(request):
                 response_size = 4               
             result_page = DefaultMunch.fromDict(paginator_comments.paginate_queryset(comments, request))
             profile = Profile.objects.filter(user=get_jwt_user(request)).first()
-            return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, 0, profile))
+            return paginator_comments.get_paginated_response(recursive_comment_query(request.GET.get('page_code'), result_page, 0, response_size, profile))
 
         else:
             return Response({'status': True, 'comments': []})
@@ -158,7 +158,7 @@ def recursive_comment_query(page_code, comments, level, response_size, profile):
                     "author": {
                         "username": commenter_user.username,
                         "gravatar": gravatar_username(commenter_user.username),
-                        "rank": profile.display_rank    
+                        "rank": commenter_profile.display_rank    
                     },
                     "time": comment.time,
                     "score": comment.score,
