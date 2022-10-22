@@ -61,6 +61,7 @@ def vote_comment(request):
         vote_value = request.GET.get('vote')
         if(vote_value is None or not RepresentsInt(vote_value) or (int(vote_value) != 1 and int(vote_value) != -1)): 
             return Response({'status': False, 'message': 'Solicitud incorrecta.'})               
+        vote_value = int(vote_value)
         vote = CommentVote()
         vote.comment_id = comment.id
         vote.voter = profile
