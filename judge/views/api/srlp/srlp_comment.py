@@ -101,7 +101,7 @@ def get_comments(request):
         #TODO: AGREGAR FILTROS RANK ...
         if len(comments)> 0:                    
             paginator_comments = CustomPagination()            
-            if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >0):
+            if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >=0):
                 response_size = request.GET.get('response_page_size')
             else: 
                 response_size = 4               
@@ -123,7 +123,7 @@ def get_comment_responses(request):
         comments = Comment.objects.filter(page=request.GET.get('page_code'), parent_id=comment_aux.id).order_by('time').exclude(hidden=True)
         if len(comments)> 0:                    
             paginator_comments = CustomPagination()
-            if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >0): 
+            if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >=0): 
                 paginator_comments.page_size = request.GET.get('response_page_size') 
                 response_size = request.GET.get('response_page_size') 
             else: 
@@ -165,7 +165,8 @@ def recursive_comment_query(page_code, comments, level, response_size, profile):
                     "score": comment.score,
                     "body": comment.body,     
                     "responses": array_responses,
-                    "response_pages": math.ceil(len(comment_responses)/float(response_size))          
+                    "number_of_comments": len(comment_responses),
+                    "response_pages": math.ceil(len(comment_responses)/float(response_size)) if response_size != 0 else 0          
                 }
             if(profile): 
                 vote = CommentVote.objects.filter(comment_id=comment.id, voter=profile).first()
