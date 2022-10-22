@@ -1,4 +1,5 @@
 
+import jwt
 from dmoj import settings
 from judge.models import Problem, Judge, Profile, Submission, SubmissionSource, ContestSubmission
 
@@ -198,8 +199,8 @@ def get_problem_info_submissions(request):
 @permission_classes([isLogueado])
 @api_view(['GET'])
 def get_all_submissions(request):
-   
-    submission = filter_submissions_by_visible_problems(Submission.objects.all(), get_jwt_user(request)) 
+    
+    submission = Submission.objects.filter(problem_id__in=Problem.get_visible_problems_rest(get_jwt_user(request)))
 
     submission = order_by_if_not_none(submission,
         request.GET.getlist('order_by')                  
