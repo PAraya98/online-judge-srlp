@@ -146,7 +146,7 @@ def recursive_comment_query(page_code, comments, level, response_size, profile):
             commenter_user = User.objects.get(id=commenter_profile.user_id)
             comment_responses =  DefaultMunch.fromDict(Comment.objects.filter(page=page_code, parent_id=comment.id).order_by('time').exclude(hidden=True))
             if(len(comment_responses)):                                         
-                array_responses = recursive_comment_query(page_code, comment_responses[:int(response_size)], level+1, response_size)
+                array_responses = recursive_comment_query(page_code, comment_responses[:int(response_size)], level+1, response_size, profile)
             else:
                 array_responses=[]
             data =  {                    
