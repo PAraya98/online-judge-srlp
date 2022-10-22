@@ -14,6 +14,7 @@ from judge.models.runtime import Language
 
 from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, isLogueado, order_by_if_not_none, filter_if_not_none
 
+from judge.utils.raw_sql import join_sql_subquery, use_straight_join
 
 
 @permission_classes([isLogueado])
@@ -39,23 +40,25 @@ def sumbit_solution(request):
 
     problem = Problem.objects.get(code=data.problem_code)
 
+    if not problem.is_accessible_by(get_jwt_user(request)): 
+        return Response({'status': False, 'message': 'El problema no existe o no se tiene acceso.'})
     
     if (   not user.has_perm('judge.spam_submission') and
             Submission.objects.filter(user=profile, rejudged_date__isnull=True)
                               .exclude(status__in=['D', 'IE', 'CE', 'AB']).count() >= settings.DMOJ_SUBMISSION_LIMIT
         ):
-        return Response({'Message': 'You submitted too many submissions.', 'status': False}, status=429)
+        return Response({'message': 'Has subido demasiadas soluciones.', 'status': False}, status=429)
         
 
     if not problem.allowed_languages.filter(id=language.id).exists():
-        return Response({'Message': 'Languague unavaible.', 'status': False}, status=429)
+        return Response({'message': 'Lenguaje de programación no disponible.', 'status': False}, status=429)
     
     if not user.is_superuser and problem.banned_users.filter(id=profile.id).exists():
-        return Response({'Message': 'Banned from submitting: You have been declared persona non grata for this problem. You are permanently barred from submitting this problem.'}, status=429)
+        return Response({'message': 'No puedes subir soluciones, has sido declarado como persona no grata para este problema.'}, status=429)
     
     # Must check for zero and not None. None means infinite submissions remaining.
     if remaining_submission_count(profile, problem) == 0:
-        return Response({'Message': 'Too many submissions. You have exceeded the submission limit for this problem.'}, status=429)
+        return Response({'message': 'Excediste el límite de subida de solución al problema.'}, status=429)
 
     
 
@@ -86,7 +89,7 @@ def sumbit_solution(request):
     submission.source = source
     submission.judge(force_judge=True, judge_id=judge.name)
 
-    return Response({'Message': 'Sumbit ok!','status': True, 'id_sumbit': submission.id})
+    return Response({'message': 'Subida de solución correcta!','status': True, 'id_sumbit': submission.id})
 
 def remaining_submission_count(profile, problem):
     max_subs = contest_problem(profile, problem) and contest_problem(profile, problem).max_submissions
@@ -156,7 +159,7 @@ def get_info_submission(request):
 @permission_classes([isLogueado])
 @api_view(['GET'])
 def get_problem_info_submissions(request):
-       
+    
     problem = Problem.objects.filter(code=request.GET.get('problem')).first()
     if(not problem or not problem.is_accessible_by(get_jwt_user(request))): 
         return Response({'status': False, 'message': 'El problema no existe o no tienes acceso.'})
@@ -195,4 +198,44 @@ def get_problem_info_submissions(request):
 @permission_classes([isLogueado])
 @api_view(['GET'])
 def get_all_submissions(request):
-    pass
+   
+    submission = filter_submissions_by_visible_problems(Submission.objects.all(), get_jwt_user(request)) 
+
+    submission = order_by_if_not_none(submission,
+        request.GET.getlist('order_by')                  
+    )
+
+    submission = filter_if_not_none(submission, 
+        user__user__username__icontains = request.GET.get('username')
+    )
+
+    if len(submission)> 0:
+        paginator = CustomPagination()
+        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(submission, request))
+
+        data = {
+            'submissions': ({
+                'id': res.id,
+                'problem': res.problem.code,
+                'problem_name': res.problem.name,
+                'user': res.user.user.username,
+                'date': res.date.isoformat(),
+                'language': res.language.key,
+                'time': res.time,
+                'memory': res.memory,
+                'points': res.points,
+                'result': res.result,
+            } for res in result_page)
+        }       
+        return paginator.get_paginated_response(data)
+    else:
+        return Response({})
+
+def filter_submissions_by_visible_problems(queryset, user):
+    join_sql_subquery(
+        queryset,
+        subquery=str(Problem.get_visible_problems_rest(user).distinct().only('id').query),
+        params=[],
+        join_fields=[('problem_id', 'id')],
+        alias='visible_problems',
+    )
