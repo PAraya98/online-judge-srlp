@@ -202,9 +202,7 @@ def get_problem_info_submissions(request):
 def get_all_submissions(request):
     
     submission = Submission.objects.filter(problem_id__in=Problem.get_visible_problems_rest(get_jwt_user(request)))
-    submission = order_by_if_not_none(submission,
-        request.GET.getlist('order_by')                 
-    )
+    
     submission = submission.annotate(username=F('user__user__username'), problem_code=F('problem__code'), problem_name=F('problem__name'))
     submission = filter_if_not_none(submission, 
         username__icontains = request.GET.get('username'),
@@ -213,7 +211,9 @@ def get_all_submissions(request):
         problem_code__icontains =  request.GET.get('problem_code')
     )
     submission = submission.values('id', 'problem_code', 'problem_name', 'username', 'language', 'date', 'time', 'memory', 'points', 'result')
-
+    submission = order_by_if_not_none(submission,
+        request.GET.getlist('order_by')                 
+    )
     if len(submission)> 0:
         paginator = CustomPagination()
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(submission, request))
