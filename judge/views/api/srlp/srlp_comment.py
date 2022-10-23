@@ -52,7 +52,7 @@ def vote_comment(request):
         return Response({'status': False, 'message': 'Debes resolver al menos un problema para poder votar.'})
     if profile.mute:
         return Response({'status': False, 'message': 'Tú cuenta ha sido silenciada por mala conducta.'})    
-    comment = Comment.objects.filter(id=request.GET.get('id'), page=request.GET.get('page_code'), hidden=False).first()
+    comment = Comment.objects.filter(id=request.GET.get('id')).first()
     if not comment:
         return Response({'status': False, 'message': 'El comentario no existe.'})
     if(comment.is_public() or comment.is_accessible_by(user)):
@@ -78,7 +78,6 @@ def vote_comment(request):
                     if -vote.score != vote_value:
                         return Response({'status': False, 'message': 'Ya has votado.'})
                     vote.delete()
-                print(vote.score)
                 Comment.objects.filter(id=comment.id).update(score=F('score') - vote.score)            
             else:
                 Comment.objects.filter(id=comment.id).update(score=F('score') + vote_value)
