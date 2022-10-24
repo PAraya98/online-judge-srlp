@@ -143,7 +143,7 @@ def get_info_submission(request):
         data = {
             'submissions': ({
             'id': res.id,
-            'date': res.date.isoformat(),
+            'date': res.date,
             'language': res.language.key,
             'time': res.time,
             'memory': res.memory,
