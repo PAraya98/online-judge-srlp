@@ -52,7 +52,7 @@ def vote_comment(request):
         return Response({'status': False, 'message': 'Debes resolver al menos un problema para poder votar.'})
     if profile.mute:
         return Response({'status': False, 'message': 'Tú cuenta ha sido silenciada por mala conducta.'})    
-    comment = Comment.objects.filter(id=request.GET.get('id')).first()
+    comment = Comment.objects.filter(id=request.GET.get('id'), page=request.GET.get('page_code'), hidden=False).first()
     if not comment:
         return Response({'status': False, 'message': 'El comentario no existe.'})
     if(comment.is_public() or comment.is_accessible_by(user)):

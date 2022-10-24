@@ -94,6 +94,7 @@ def get_contest_info(request):
         'time_limit': contest.time_limit and contest.time_limit.total_seconds(),
         'start_time': contest.start_time.isoformat(),
         'end_time': contest.end_time.isoformat(),
+        'current_time': datetime.datetime.now(),
         'tags': list(contest.tags.values_list('name', flat=True)),
         'is_rated': contest.is_rated,
         'rate_all': contest.is_rated and contest.rate_all,
