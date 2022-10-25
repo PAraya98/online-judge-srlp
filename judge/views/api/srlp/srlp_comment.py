@@ -41,7 +41,24 @@ def add_comment(request):
     if(not comment.is_accessible_by(user)):
         return Response({'status': False, 'message': 'No tienes acceso a esta acción.'})
     comment.save()
-    return Response({'status': True})
+    commenter_profile = Profile.objects.get(id=comment.author_id)
+    commenter_user = User.objects.get(id=commenter_profile.user_id)
+    data =  {                    
+                "id": comment.id,
+                "author": {
+                    "username": commenter_user.username,
+                    "gravatar": gravatar_username(commenter_user.username),
+                    "rank": commenter_profile.display_rank    
+                },
+                "time": comment.time,
+                "score": comment.score,
+                "body": comment.body,                         
+                "number_of_comments": 0,     
+                "response_pages":  0,
+                'responses': [],     
+                'vote': 0                 
+            }
+    return Response({'status': True, 'comment': data})
 
 @permission_classes([isLogueado]) 
 @api_view(['GET'])
