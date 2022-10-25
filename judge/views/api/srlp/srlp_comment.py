@@ -55,7 +55,7 @@ def add_comment(request):
                 "body": comment.body,                         
                 "number_of_comments": 0,     
                 "response_pages":  0,
-                'responses': [],     
+                'responses': { 'comments': []},     
                 'vote': 0                 
             }
     return Response({'status': True, 'comment': data})
@@ -163,9 +163,9 @@ def recursive_comment_query(page_code, comments, level, response_size, profile):
             commenter_user = User.objects.get(id=commenter_profile.user_id)
             comment_responses =  DefaultMunch.fromDict(Comment.objects.filter(page=page_code, parent_id=comment.id).order_by('time').exclude(hidden=True))
             if(len(comment_responses)):                                         
-                array_responses = recursive_comment_query(page_code, comment_responses[:int(response_size)], level+1, response_size, profile)
+                responses = recursive_comment_query(page_code, comment_responses[:int(response_size)], level+1, response_size, profile)
             else:
-                array_responses=[]
+                responses= { 'comments': []}
             data =  {                    
                     "id": comment.id,
                     "author": {
@@ -183,7 +183,7 @@ def recursive_comment_query(page_code, comments, level, response_size, profile):
                 vote = CommentVote.objects.filter(comment_id=comment.id, voter=profile).first()
                 if(not vote): data['vote'] = 0
                 else: data['vote'] = vote.score
-            data['responses'] = array_responses
+            data['responses'] = responses
             array_comments.append(data)        
         return {'comments': array_comments}        
     else: 
