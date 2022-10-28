@@ -136,7 +136,7 @@ def get_comment_responses(request):
     if not comment_aux:
         return Response({'status': False, 'message': 'El comentario no existe.'})
     if(comment_aux.is_public() or comment_aux.is_accessible_by(get_jwt_user(request))):
-        comments = Comment.objects.filter(page=request.GET.get('page_code'), parent_id=comment_aux.id).order_by('time').exclude(hidden=True)
+        comments = Comment.objects.filter(page=request.GET.get('page_code'), parent_id=comment_aux.id).order_by('-time').exclude(hidden=True)
         if len(comments)> 0:                    
             paginator_comments = CustomPagination()
             if(request.GET.get('response_page_size') is not None and int(request.GET.get('response_page_size')) >=0): 
