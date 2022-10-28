@@ -54,7 +54,7 @@ def add_comment(request):
                 "score": comment.score,
                 "body": comment.body,                         
                 "number_of_comments": 0,     
-                "response_pages":  0,
+                "response_pages":  1,
                 'responses': { 'comments': []},     
                 'vote': 0                 
             }
