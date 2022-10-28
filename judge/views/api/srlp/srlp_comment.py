@@ -177,7 +177,7 @@ def recursive_comment_query(page_code, comments, level, response_size, profile):
                     "score": comment.score,
                     "body": comment.body,                         
                     "number_of_comments": len(comment_responses),     
-                    "response_pages":  math.ceil(len(comment_responses)/float(response_size)) if int(response_size) != 0 else 0                       
+                    "response_pages":  math.ceil(len(comment_responses)/float(response_size)) if int(response_size) != 0 else 1                       
                 }
             if(profile): 
                 vote = CommentVote.objects.filter(comment_id=comment.id, voter=profile).first()
