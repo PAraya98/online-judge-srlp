@@ -90,7 +90,7 @@ def sumbit_solution(request):
     submission.source = source
     submission.judge(force_judge=True, judge_id=judge.name)
 
-    return Response({'message': 'Subida de solución correcta!','status': True, 'id_sumbit': submission.id})
+    return Response({'message': 'Subida de solución correcta!','status': True, 'id_submit': submission.id})
 
 def remaining_submission_count(profile, problem):
     max_subs = contest_problem(profile, problem) and contest_problem(profile, problem).max_submissions
