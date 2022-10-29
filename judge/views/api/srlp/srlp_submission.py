@@ -159,7 +159,7 @@ def get_info_submission(request):
                 'source': res.source.source,
                 'error':  res.error
             }
-            query = DefaultMunch.fromDict(SubmissionTestCase.objects.get(submission_id=res.id))
+            query = DefaultMunch.fromDict(SubmissionTestCase.objects.filter(submission_id=res.id).values())
             array_ = []
             for case in query:
                 array_.append(
