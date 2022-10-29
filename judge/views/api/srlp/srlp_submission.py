@@ -128,10 +128,17 @@ def get_info_submission(request):
 
     problem = Problem.objects.filter(code=request.GET.get('problem')).first()
     if(not problem or not problem.is_accessible_by(get_jwt_user(request))): 
-        return Response({'status': False, 'message': 'El problema no existe o no tienes acceso.'})
-    
+        return Response({'status': False, 'message': 'El problema no existe o no tienes acceso.'})    
     
     submission = Submission.objects.filter(user_id=user.id, problem_id=problem.id)
+
+    submission = filter_if_not_none(
+        submission,
+        id = request.GET.get('id'),
+        result = request.GET.get('result'),
+        language = request.GET.get('language')
+    )
+
     submission = order_by_if_not_none(submission,
         request.GET.getlist('order_by')                  
     )
