@@ -1,7 +1,7 @@
 
 import jwt
 from dmoj import settings
-from judge.models import Problem, Judge, Profile, Submission, SubmissionSource, ContestSubmission
+from judge.models import Problem, Judge, Profile, Submission, SubmissionSource, ContestSubmission, SubmissionTestCase
 
 
 from rest_framework.decorators import api_view, permission_classes
@@ -146,20 +146,38 @@ def get_info_submission(request):
     if len(submission)> 0:
         paginator = CustomPagination()
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(submission, request))
+        array = []
+        for res in result_page:
+            res_data = {
+                'id': res.id,
+                'date': res.date,
+                'language': res.language.key,
+                'time': res.time,
+                'memory': res.memory,
+                'points': res.points,
+                'result': res.result,
+                'source': res.source.source,
+                'error':  res.error
+            }
+            query = DefaultMunch.fromDict(SubmissionTestCase.objects.get(submission_id=res.id).values())
+            array_ = []
+            for case in query:
+                array_.append(
+                    {   "case": case.case,
+                        "status": case.status,
+                        "time": case.time,
+                        "memory": case.memory,
+                        "points": case.points,
+                        "total_points": case.total,
+                        "feedback": case.feedback,
+                        "output":   case.output
+                    }
+                )
 
-        data = {
-            'submissions': ({
-            'id': res.id,
-            'date': res.date,
-            'language': res.language.key,
-            'time': res.time,
-            'memory': res.memory,
-            'points': res.points,
-            'result': res.result,
-            'source': res.source.source,
-            'error':  res.error
-        } for res in result_page)
-        }       
+            res_data['test_cases'] = array_
+            array.append(res_data)     
+
+        data = { "submissions": array }
         return paginator.get_paginated_response(data)
     else:
         return Response({})
