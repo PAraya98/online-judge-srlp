@@ -125,12 +125,12 @@ def get_contest_submission_count(problem, profile, virtual):
 @api_view(['GET'])
 def get_info_submission(request):
     user = get_jwt_user(request)
-
+    profile = Profile.objects.get(user_id=user.id).first()
     problem = Problem.objects.filter(code=request.GET.get('problem')).first()
     if(not problem or not problem.is_accessible_by(get_jwt_user(request))): 
         return Response({'status': False, 'message': 'El problema no existe o no tienes acceso.'})    
     
-    submission = Submission.objects.filter(user_id=user.id, problem_id=problem.id)
+    submission = Submission.objects.filter(user_id=profile.id, problem_id=problem.id)
 
     submission = filter_if_not_none(
         submission,
