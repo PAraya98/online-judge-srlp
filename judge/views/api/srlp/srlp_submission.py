@@ -123,6 +123,7 @@ def get_contest_submission_count(problem, profile, virtual):
 
 @permission_classes([isLogueado])
 @api_view(['GET'])
+
 def get_info_submission(request):
     user = get_jwt_user(request)
     profile = Profile.objects.filter(user_id=user.id).first()
@@ -155,6 +156,7 @@ def get_info_submission(request):
                 'time': res.time,
                 'memory': res.memory,
                 'points': res.points,
+                'total_points': problem.points,
                 'result': res.result,
                 'source': res.source.source,
                 'error':  res.error
@@ -215,6 +217,7 @@ def get_problem_info_submissions(request):
                 'time': res.time,
                 'memory': res.memory,
                 'points': res.points,
+                'total_points': res.problem.points,
                 'result': res.result,
             } for res in result_page)
         }       
@@ -232,6 +235,7 @@ def get_all_submissions(request):
             username=F('user__user__username'), 
             problem_code=F('problem__code'), 
             problem_name=F('problem__name'),
+            total_points=F('problem__points'),
             language_key=F('language__key')
         )
     submission = filter_if_not_none(submission, 
@@ -240,7 +244,7 @@ def get_all_submissions(request):
         language_key = request.GET.get('language_key'),
         problem_code__icontains =  request.GET.get('problem_code')
     )
-    submission = submission.values('id', 'problem_code', 'problem_name', 'username', 'language_key', 'date', 'time', 'memory', 'points', 'result')
+    submission = submission.values('id', 'problem_code', 'problem_name', 'username', 'language_key', 'date', 'time', 'memory', 'points', 'result', 'total_points')
     submission = order_by_if_not_none(submission,
         request.GET.getlist('order_by')                 
     )
@@ -259,6 +263,7 @@ def get_all_submissions(request):
                 'time': res.time,
                 'memory': res.memory,
                 'points': res.points,
+                'total_points': res.total_points,
                 'result': res.result,
             } for res in result_page)
         }       
