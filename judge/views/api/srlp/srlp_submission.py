@@ -135,7 +135,7 @@ def get_info_submission(request):
     submission = Submission.objects.filter(user_id=profile.id, problem_id=problem.id).annotate(
     num=Window(
         expression=Rank(),
-        order_by=F('id').desc(),
+        order_by=F('id').asc(),
     )
 )
 
