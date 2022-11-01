@@ -14,7 +14,8 @@ from django.shortcuts import get_list_or_404, get_object_or_404
 from judge.models.runtime import Language
 
 from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, isLogueado, order_by_if_not_none, filter_if_not_none
-from django.db.models import F
+from django.db.models import F, Window
+from django.db.models.functions import Rank
 from judge.utils.raw_sql import join_sql_subquery, use_straight_join
 
 
@@ -131,7 +132,12 @@ def get_info_submission(request):
     if(not problem or not problem.is_accessible_by(get_jwt_user(request))): 
         return Response({'status': False, 'message': 'El problema no existe o no tienes acceso.'})    
     
-    submission = Submission.objects.filter(user_id=profile.id, problem_id=problem.id)
+    submission = Submission.objects.filter(user_id=profile.id, problem_id=problem.id).annotate(
+    num=Window(
+        expression=Rank(),
+        order_by=F('id').desc(),
+    )
+)
 
     submission = filter_if_not_none(
         submission,
@@ -153,7 +159,8 @@ def get_info_submission(request):
             count -= 1
             res_data = {
                 'id': res.id,
-                'num': count+(int(paginator.get_page_number(request, paginator))-1)*paginator.page_size,
+                'num': res.num, 
+                #count+(int(paginator.get_page_number(request, paginator))-1)*paginator.page_size,
                 'date': res.date,
                 'language': res.language.key,
                 'time': res.time,
