@@ -148,7 +148,7 @@ def get_info_submission(request):
         paginator = CustomPagination()
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(submission, request))
         array = []
-        count = paginator.get_num_pages()*paginator.page_size
+        count = submission.count()
         for res in result_page:
             count -= 1
             res_data = {
