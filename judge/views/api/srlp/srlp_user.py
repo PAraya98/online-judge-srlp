@@ -18,9 +18,9 @@ from judge.jinja2.gravatar import gravatar_username
 #@permission_classes([IsAuthenticated])
 def get_ranking(request):
     queryset = Profile.objects.filter(is_unlisted=False).annotate(
-        rank=Window(
+        ranking=Window(
             expression=Rank(),
-            order_by=F('points').asc(),
+            order_by=F('points').desc(),
     ))
     queryset = queryset.annotate(username=F('user__username'), rank=F('display_rank'))
 
@@ -40,6 +40,7 @@ def get_ranking(request):
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
         data = ({"ranking": {res.username: 
                     {   'avatar_url': gravatar_username(res.username),
+                        'ranking': res.ranking,
                         'points': res.points, #TODO: Ver diferencia entre points y performance_points 
                         'problem_count': res.problem_count,
                         'performance_points': res.performance_points,
