@@ -153,7 +153,7 @@ def get_info_submission(request):
             count += 1
             res_data = {
                 'id': res.id,
-                'num': count+(int(CustomPagination.get_page_number(request, paginator)-1)*paginator.page_size,
+                'num': count+(CustomPagination.get_page_number(request, paginator)-1)*paginator.page_size,
                 'date': res.date,
                 'language': res.language.key,
                 'time': res.time,
