@@ -133,9 +133,9 @@ def get_info_submission(request):
         return Response({'status': False, 'message': 'El problema no existe o no tienes acceso.'})    
     
     submission = Submission.objects.filter(user_id=profile.id, problem_id=problem.id).annotate(
-    num=Window(
-        expression=Rank(),
-        order_by=F('id').asc(),
+        num=Window(
+            expression=Rank(),
+            order_by=F('id').asc(),
     )
 )
 
@@ -154,13 +154,10 @@ def get_info_submission(request):
         paginator = CustomPagination()
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(submission, request))
         array = []
-        count = submission.count()
         for res in result_page:
-            count -= 1
             res_data = {
                 'id': res.id,
                 'num': res.num, 
-                #count+(int(paginator.get_page_number(request, paginator))-1)*paginator.page_size,
                 'date': res.date,
                 'language': res.language.key,
                 'time': res.time,

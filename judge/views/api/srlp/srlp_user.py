@@ -1,7 +1,8 @@
 from dmoj import settings
 from judge.models import ContestParticipation, ContestTag, Problem, Profile, Rating, Submission
 from judge.views.api.srlp.srlp_utils_api import *
-from django.db.models import F, OuterRef, Prefetch, Subquery
+from django.db.models import F, Window
+from django.db.models.functions import Rank
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import api_view, permission_classes
@@ -16,13 +17,18 @@ from judge.jinja2.gravatar import gravatar_username
 @api_view(['GET'])
 #@permission_classes([IsAuthenticated])
 def get_ranking(request):
-    queryset = Profile.objects.filter(is_unlisted=False)
+    queryset = Profile.objects.filter(is_unlisted=False).annotate(
+        rank=Window(
+            expression=Rank(),
+            order_by=F('points').asc(),
+    ))
     queryset = queryset.annotate(username=F('user__username'), rank=F('display_rank'))
 
     queryset = filter_if_not_none(queryset,
         username__icontains = request.GET.get('username'),
         rank__icontains = request.GET.get('rank')
     )    
+    
     queryset = order_by_if_not_none(queryset,
             request.GET.getlist('order_by')                  
     )
