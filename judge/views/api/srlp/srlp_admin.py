@@ -36,7 +36,7 @@ def get_users_info(request):
         rol=request.GET.get('rank')
     )
     
-    queryset = queryset.values('username', 'email', 'nombre', 'apellidos', 'last_access', 'rol')
+    queryset = queryset.values('id', 'username', 'email', 'nombre', 'apellidos', 'last_access', 'rol')
 
     if len(queryset)> 0:
         paginator = CustomPagination()
@@ -136,7 +136,7 @@ def modify_user(request):
             profile.display_rank = "Invitado"        
         
         user = User.objects.get(username=data.old_username)
-        user.active = data.active
+        user.is_active = data.active
         if(data.password != ""): User.set_password(user, data.password)        
         user.first_name = data.nombre
         user.last_name = data.apellidos
