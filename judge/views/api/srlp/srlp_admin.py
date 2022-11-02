@@ -131,10 +131,10 @@ def modify_user(request):
         elif(data.rol == "Alumno"):
             profile.display_rank = "Alumno"
         elif(data.rol == "Invitado"):
-            profile.display_rank = "Invitado"
+            profile.display_rank = "Invitado"        
         
-        user.active = data.active
         user = User.objects.get(username=data.old_username)
+        user.active = data.active
         if(data.password != ""): User.set_password(user, data.password)        
         user.first_name = data.nombre
         user.last_name = data.apellidos
