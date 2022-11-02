@@ -39,7 +39,7 @@ def get_problem_list(request):
     queryset = order_by_if_not_none(queryset,
         request.GET.getlist('order_by')                  
     )
-    queryset = queryset.values('id', 'code', 'points', 'partial', 'name', 'group_name', 'user_count', 'ac_rate', 'is_public', 'is_organization_private', 'group_id', 'date', 'types')
+    #queryset = queryset.values('id', 'code', 'points', 'partial', 'name', 'group_name', 'user_count', 'ac_rate', 'is_public', 'is_organization_private', 'group_id', 'date', 'types')
 
     if len(queryset)> 0:
         paginator = CustomPagination()
