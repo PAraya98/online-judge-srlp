@@ -36,7 +36,7 @@ def get_users_info(request):
         rol=request.GET.get('rank')
     )
     
-    queryset = queryset.values('username', 'email', 'nombre', 'apellidos', 'last_access', 'rol')
+    queryset = queryset.values('username', 'email', 'nombre', 'apellidos', 'last_access', 'rol', 'is_active')
 
     if len(queryset)> 0:
         paginator = CustomPagination()
@@ -50,7 +50,7 @@ def get_users_info(request):
                             'avatar_url': gravatar_username(res.username),
                             'last_access': res.last_access,
                             'rol': res.rol,
-                            'active': res.active
+                            'active': res.is_active
                         })        
         data = {'usuarios':  array}
         return paginator.get_paginated_response(data)
