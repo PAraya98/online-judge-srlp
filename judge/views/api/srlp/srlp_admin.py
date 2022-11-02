@@ -36,7 +36,7 @@ def get_users_info(request):
         rol=request.GET.get('rank')
     )
     
-    queryset = queryset.values('id', 'username', 'email', 'nombre', 'apellidos', 'last_access', 'rol')
+    queryset = queryset.values('user_id', 'username', 'email', 'nombre', 'apellidos', 'last_access', 'rol')
 
     if len(queryset)> 0:
         paginator = CustomPagination()
