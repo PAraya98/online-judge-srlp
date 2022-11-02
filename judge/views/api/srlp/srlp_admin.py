@@ -77,6 +77,7 @@ def get_user_data(request):
         'rol': profile.display_rank,
         'solved_problems': submissions,
         'organizations': list(profile.organizations.values_list('id', flat=True)),
+        'active': user.active
     }
 
     return Response(resp)
