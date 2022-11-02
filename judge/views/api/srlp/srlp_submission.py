@@ -189,7 +189,7 @@ def get_info_submission(request):
         data = { "submissions": array }
         return paginator.get_paginated_response(data)
     else:
-        return Response({})
+        return Response({ "submissions": [], "pages": 0})
 
 @permission_classes([isLogueado])
 @api_view(['GET'])
@@ -230,7 +230,7 @@ def get_problem_info_submissions(request):
         }       
         return paginator.get_paginated_response(data)
     else:
-        return Response({})
+        return Response({ "submissions": [], "pages": 0})
 
 @permission_classes([isLogueado])
 @api_view(['GET'])
