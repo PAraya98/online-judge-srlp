@@ -133,6 +133,7 @@ def modify_user(request):
         elif(data.rol == "Invitado"):
             profile.display_rank = "Invitado"
         
+        user.active = data.active
         user = User.objects.get(username=data.old_username)
         if(data.password != ""): User.set_password(user, data.password)        
         user.first_name = data.nombre
