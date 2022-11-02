@@ -50,6 +50,7 @@ def get_users_info(request):
                             'avatar_url': gravatar_username(res.username),
                             'last_access': res.last_access,
                             'rol': res.rol,
+                            'active': res.active
                         })        
         data = {'usuarios':  array}
         return paginator.get_paginated_response(data)
@@ -77,7 +78,6 @@ def get_user_data(request):
         'rol': profile.display_rank,
         'solved_problems': submissions,
         'organizations': list(profile.organizations.values_list('id', flat=True)),
-        'active': user.active
     }
 
     return Response(resp)
