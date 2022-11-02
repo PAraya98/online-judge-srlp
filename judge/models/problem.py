@@ -334,7 +334,6 @@ class Problem(models.Model):
             q |= Q(curators=user.profile)
             q |= Q(testers=user.profile)
             queryset = queryset.filter(q)
-            print(queryset.values())
         return queryset
 
     @classmethod
