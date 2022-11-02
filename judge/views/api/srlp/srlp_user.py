@@ -20,7 +20,7 @@ def get_ranking(request):
     queryset = Profile.objects.filter(is_unlisted=False).annotate(
         ranking=Window(
             expression=Rank(),
-            order_by=F('points').desc() | F('user__username').desc(),
+            order_by=F('points').desc(),
     ))
     queryset = queryset.annotate(username=F('user__username'), rank=F('display_rank'))
 
