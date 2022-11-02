@@ -41,9 +41,9 @@ def get_users_info(request):
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
-        array = []
-        user = User.objects.filter(id=res.user_id).first()
+        array = []       
         for res in result_page:
+            user = User.objects.filter(id=res.user_id).first()
             array.append({  'username': res.username,
                             'email': res.email,
                             'Nombre':  res.nombre, 
