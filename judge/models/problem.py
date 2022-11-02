@@ -302,7 +302,6 @@ class Problem(models.Model):
         # Do unauthenticated check here so we can skip authentication checks later on.
         if not user:
             return cls.get_public_problems()
-        print(user.profile)
         # Conditions for visible problem:
         #   - `judge.edit_all_problem` or `judge.see_private_problem`
         #   - otherwise
@@ -335,7 +334,7 @@ class Problem(models.Model):
             q |= Q(curators=user.profile)
             q |= Q(testers=user.profile)
             queryset = queryset.filter(q)
-
+            print(queryset.values())
         return queryset
 
     @classmethod
