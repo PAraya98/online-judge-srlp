@@ -36,12 +36,13 @@ def get_users_info(request):
         rol=request.GET.get('rank')
     )
     
-    queryset = queryset.values('username', 'email', 'nombre', 'apellidos', 'last_access', 'rol', 'is_active')
+    queryset = queryset.values('username', 'email', 'nombre', 'apellidos', 'last_access', 'rol')
 
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
         array = []
+        user = User.objects.filter(id=res.user_id).first()
         for res in result_page:
             array.append({  'username': res.username,
                             'email': res.email,
@@ -50,7 +51,7 @@ def get_users_info(request):
                             'avatar_url': gravatar_username(res.username),
                             'last_access': res.last_access,
                             'rol': res.rol,
-                            'active': res.is_active
+                            'active': user.is_active
                         })        
         data = {'usuarios':  array}
         return paginator.get_paginated_response(data)
