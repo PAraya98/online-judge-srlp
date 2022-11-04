@@ -21,7 +21,7 @@ from judge.jinja2.markdown import markdown
 @api_view(['GET'])
 def get_problem_list(request):
     queryset = Problem.get_visible_problems_rest(get_jwt_user(request)).distinct() 
-    
+
     queryset = queryset.annotate(group_name=F('group__full_name'))
     
     queryset = filter_if_not_none(
