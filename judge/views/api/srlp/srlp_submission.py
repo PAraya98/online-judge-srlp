@@ -60,9 +60,7 @@ def sumbit_solution(request):
     
     # Must check for zero and not None. None means infinite submissions remaining.
     if remaining_submission_count(profile, problem) == 0:
-        return Response({'message': 'Excediste el límite de subida de solución al problema.'}, status=429)
-
-    
+        return Response({'message': 'Excediste el límite de subida de solución al problema.'}, status=429)   
 
     with transaction.atomic():
         submission = Submission.objects.create(user=profile, problem=problem, language=language)
@@ -92,6 +90,33 @@ def sumbit_solution(request):
     submission.judge(force_judge=True, judge_id=judge.name)
 
     return Response({'message': 'Subida de solución correcta!','status': True, 'id_submit': submission.id})
+
+
+@permission_classes([isLogueado])
+@api_view(['POST'])
+def rejudge_solution(request):
+    user = get_jwt_user(request)
+    profile= Profile.objects.get(user=user)
+    data = DefaultMunch.fromDict(json.loads(request.body))
+
+    # problem_code, data.submission_id
+
+    problem = Problem.objects.get(code=data.problem_code)
+
+    if not problem.is_accessible_by(get_jwt_user(request)): 
+        return Response({'status': False, 'message': 'El problema no existe o no se tiene acceso.'})
+    
+    if (   not user.has_perm('judge.spam_submission') and
+            Submission.objects.filter(user=profile, rejudged_date__isnull=False)
+                              .exclude(status__in=['D', 'IE', 'CE', 'AB']).count() >= settings.DMOJ_SUBMISSION_LIMIT
+        ):
+        return Response({'message': 'Has subido demasiadas soluciones.', 'status': False}, status=429)
+
+    submission = Submission.objects.filter(user=profile, problem=problem, id=data.submission_id).first()
+
+    if(submission):
+        submission.judge(rejudge=True, batch_rejudge=True, rejudge_user=user)
+        return Response({'message': 'Re-Subida de solución correcta!','status': True, 'id_submit': submission.id})
 
 def remaining_submission_count(profile, problem):
     max_subs = contest_problem(profile, problem) and contest_problem(profile, problem).max_submissions
