@@ -676,8 +676,7 @@ def get_contest_ranking_list(request, contest, participation=None, ranking_list=
             if participation is None or participation.contest_id != contest.id:
                 participation = None
         if participation is not None and participation.virtual:
-            users = chain([('-', make_contest_ranking_profile(contest, participation, problems))], users)
-    print(users, problems)        
+            users = chain([('-', make_contest_ranking_profile(contest, participation, problems))], users)      
     return users, problems
 
 
@@ -722,6 +721,7 @@ class ContestRankingBase(ContestMixin, TitleMixin, DetailView):
         context['problems'] = problems
         context['last_msg'] = event.last()
         context['tab'] = self.tab
+        print(context)
         return context
 
 
