@@ -2,17 +2,18 @@
 from dmoj import settings
 from judge.models import Contest, Contest, ContestParticipation, ContestTag, Rating
 from judge.views.api.srlp.srlp_utils_api import *
-from django.db.models import F, OuterRef, Prefetch, Subquery
+from django.db.models import BooleanField, Case, Count, F, FloatField, IntegerField, Max, Min, Q, Sum, Value, When
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from operator import attrgetter
 from django.contrib.auth.models import User
 import json 
+from django.db import IntegrityError
 from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-import datetime
+from datetime import datetime, timedelta, timezone, tzinfo
 
 def sane_time_repr(delta):
     days = delta.days
@@ -124,3 +125,117 @@ def get_contest_info(request):
                 'solutions': contest.format.get_problem_breakdown(participation, problems),
             } for participation in participations],
     })
+
+
+
+@api_view(['POST'])
+def join_contest(request):
+    data = DefaultMunch.fromDict(json.loads(request.body))
+    contest_code = data.contest_code
+    access_code = data.acces_code
+    contest = Contest.objects.filter(key=contest_code).first()
+    user = get_jwt_user(request)
+    profile= Profile.objects.get(user=user)
+
+    if not contest:
+        return Response({'status': False, 'message': 'El concurso no existe'})
+
+    if not contest.started and not (is_editor(user, profile, contest) or is_tester(user, profile, contest)):
+        return Response({'status': False, 'message': 'El concurso no está en progreso.'}) 
+
+    if not user.is_superuser and contest.banned_users.filter(id=profile.id).exists():
+        return Response({'status': False, 'message': 'Has sido declarado persona no grata para este concurso, no tienes permitido permitirte.'})
+
+    requires_access_code = (not can_edit(user, contest) and contest.access_code and access_code != contest.access_code)
+    if contest.ended:
+        if requires_access_code:
+            return Response({'status': False, 'message': 'Acceso denegado.'})
+
+        while True:
+            virtual_id = max((ContestParticipation.objects.filter(contest=contest, user=profile)
+                                .aggregate(virtual_id=Max('virtual'))['virtual_id'] or 0) + 1, 1)
+            try:
+                participation = ContestParticipation.objects.create(
+                    contest=contest, user=profile, virtual=virtual_id,
+                    real_start=timezone.now(),
+                )
+            # There is obviously a race condition here, so we keep trying until we win the race.
+            except IntegrityError:
+                pass
+            else:
+                break
+    else:
+        SPECTATE = ContestParticipation.SPECTATE
+        LIVE = ContestParticipation.LIVE
+
+        if contest.is_live_joinable_by(user):
+            participation_type = LIVE
+        elif contest.is_spectatable_by(user):
+            participation_type = SPECTATE
+        else:
+            return Response({'status': False, 'message': 'No tienes permitido entrar a este concurso.'})
+        try:
+            participation = ContestParticipation.objects.get(
+                contest=contest, user=profile, virtual=participation_type,
+            )
+        except ContestParticipation.DoesNotExist:
+            if requires_access_code:
+               return Response({'status': False, 'message': 'Acceso denegado.'})
+
+            participation = ContestParticipation.objects.create(
+                contest=contest, user=profile, virtual=participation_type,
+                real_start=timezone.now(),
+            )
+        else:
+            if participation.ended:
+                participation = ContestParticipation.objects.get_or_create(
+                    contest=contest, user=profile, virtual=SPECTATE,
+                    defaults={'real_start': timezone.now()},
+                )[0]
+
+    profile.current_contest = participation
+    profile.save()
+    contest._updating_stats_only = True
+    contest.update_user_count()
+    
+    return Response({'status': True, 'message': 'Has entrado al concurso '+contest.name+"."})
+
+def is_editor(user, profile, contest):
+        if not user.is_authenticated:
+            return False 
+        return profile.id in contest.editor_ids
+
+def is_tester(user, profile, contest):
+    if not user.is_authenticated:
+        return False
+    return profile.id in contest.object.tester_ids
+
+def is_spectator(user, profile, contest):
+    if not user.is_authenticated:
+        return False
+    return profile.id in contest.object.spectator_ids
+
+def can_edit(user, contest):
+    return contest.is_editable_by(user)
+
+
+@api_view(['POST'])
+def leave_contest(request):
+    data = DefaultMunch.fromDict(json.loads(request.body))
+    contest_code = data.contest_code
+    user = get_jwt_user(request)
+    profile= Profile.objects.get(user=user)
+    contest = Contest.objects.filter(key=contest_code).first()
+ 
+    if profile.current_contest is None or profile.current_contest.contest_id != contest.id:
+        return Response({'status': False, 'message': 'No estás inscrito en ningún concurso!!'})
+
+    profile.remove_contest()
+    return Response({'status': True, 'message': 'Has salido del concurso '+contest.name+"."})
+
+@api_view(['GET'])
+def get_ranking(request):
+    pass
+
+
+

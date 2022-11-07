@@ -125,7 +125,9 @@ def modify_user(request):
     try:
         data = DefaultMunch.fromDict(json.loads(request.body))
        
-        profile = get_object_or_404(Profile, user__username=data.old_username)
+        profile = Profile.objects.filter(user__username=data.old_username).first()
+        if not profile: return Response({'status': False, 'message': 'El usuario no existe.'})
+        
         if(data.rol == "Administrador"):
             profile.display_rank = "Administrador"
         elif(data.rol == "Profesor"):

@@ -677,6 +677,7 @@ def get_contest_ranking_list(request, contest, participation=None, ranking_list=
                 participation = None
         if participation is not None and participation.virtual:
             users = chain([('-', make_contest_ranking_profile(contest, participation, problems))], users)
+    print(users, problems)        
     return users, problems
 
 
