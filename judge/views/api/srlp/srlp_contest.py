@@ -12,10 +12,11 @@ import json
 from django.db import IntegrityError
 from munch import DefaultMunch
 from django.shortcuts import get_object_or_404
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta, tzinfo
 from functools import partial
 from judge.utils.ranker import ranker
 from itertools import chain
+from django.utils import timezone
 
 def sane_time_repr(delta):
     days = delta.days
@@ -39,13 +40,13 @@ def get_contest_list(request):
     if not request.GET.get('type'): return Response({'status': False, 'message': 'Consulta erronéa.'}) 
 
     elif(request.GET.get('type') == 'started'):
-        queryset.filter(start_time__lte=datetime.now())
+        queryset.filter(start_time__lte = timezone.now())
 
     elif(request.GET.get('type') == 'ended'):
-        queryset.filter(end_time__lt = datetime.now())
+        queryset.filter(end_time__lt = timezone.now())
    
     elif(request.GET.get('type') == 'coming_soon'):
-        queryset.filter(start_time__gt = datetime.now())
+        queryset.filter(start_time__gt = timezone.now())
 
     elif(not user and request.GET.get('type') == 'participating'):
         pass
