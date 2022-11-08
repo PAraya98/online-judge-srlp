@@ -35,9 +35,6 @@ def get_contest_list(request):
             request.GET.getlist('order_by')                  
     )
 
-    queryset = filter_if_not_none(queryset,        
-        name__icontains = request.GET.get('name')
-    )   
 
     if not request.GET.get('type'): return Response({'status': False, 'message': 'Consulta erronéa.'}) 
 
@@ -53,6 +50,10 @@ def get_contest_list(request):
     elif(not user and request.GET.get('type') == 'participating'):
         pass
     #is_in_contest_rest TODO: sirve
+    
+    queryset = filter_if_not_none(queryset,        
+        name__icontains = request.GET.get('name')
+    )   
 
     if len(queryset)> 0:
         paginator = CustomPagination()
