@@ -50,6 +50,7 @@ def get_contest_list(request):
 
     elif(not user and request.GET.get('type') == 'participating'):
         pass
+    else: return Response({'status': False, 'message': 'Consulta erronéa.'}) 
     #is_in_contest_rest TODO: sirve
     
     queryset = filter_if_not_none(queryset,        
