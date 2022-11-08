@@ -46,7 +46,7 @@ def get_contest_list(request):
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
-        current_contest = Contest.objects.filter(id=profile.current_contest.contest.id).first().key if profile.current_contest is not None else None
+        current_contest = profile.current_contest.contest.key if profile.current_contest is not None else None
         array = [] 
         for c in result_page:
             array.append({
@@ -60,7 +60,7 @@ def get_contest_list(request):
             })
         data = ({"contests": array, 'current_contest': current_contest})
         return paginator.get_paginated_response(data)
-    else:
+    else:   
         return Response({'status': True, 'pages': 0, 'contests': [], 'current_contest': current_contest})
 
 
