@@ -159,7 +159,7 @@ def join_contest(request):
             try:
                 participation = ContestParticipation.objects.create(
                     contest=contest, user=profile, virtual=virtual_id,
-                    real_start=timezone.now(),
+                    real_start= datetime.now(),
                 )
             # There is obviously a race condition here, so we keep trying until we win the race.
             except IntegrityError:
@@ -186,13 +186,13 @@ def join_contest(request):
 
             participation = ContestParticipation.objects.create(
                 contest=contest, user=profile, virtual=participation_type,
-                real_start=timezone.now(),
+                real_start=datetime.now(),
             )
         else:
             if participation.ended:
                 participation = ContestParticipation.objects.get_or_create(
                     contest=contest, user=profile, virtual=SPECTATE,
-                    defaults={'real_start': timezone.now()},
+                    defaults={'real_start': datetime.now()},
                 )[0]
 
     profile.current_contest = participation
