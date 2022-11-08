@@ -35,13 +35,28 @@ def get_contest_list(request):
             request.GET.getlist('order_by')                  
     )
 
-    queryset = filter_if_not_none(
-        queryset,
-        end_time__gte = datetime.now() if (request.GET.get('has_ended') == "false") else None,
-        end_time__lte = datetime.now() if (request.GET.get('has_ended') == "true") else None,
+    queryset = filter_if_not_none(       
         name__icontains = request.GET.get('name')
     )   
+
     
+    if not request.GET.get('type'): return Response({'status': False, 'message': 'Consulta erronéa.'}) 
+
+    elif(request.GET.get('type') == 'started'):
+        queryset.filter(start_time__gte=datetime.now())
+
+    elif(request.GET.get('type') == 'ended'):
+        queryset.filter(end_time__lt = datetime.now())
+   
+    elif(request.GET.get('type') == 'coming soon'):
+        queryset.filter(start_time__lt = datetime.now())
+
+    elif(request.GET.get('type') == 'coming soon'):
+        queryset.filter(start_time__lt = datetime.now())
+
+    elif(not user and request.GET.get('type') == 'participating'):
+        pass
+    #is_in_contest_rest TODO: sirve
 
     if len(queryset)> 0:
         paginator = CustomPagination()
