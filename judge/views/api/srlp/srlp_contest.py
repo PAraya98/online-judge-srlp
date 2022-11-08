@@ -37,9 +37,7 @@ def get_contest_list(request):
     )
 
 
-    if not request.GET.get('type'): return Response({'status': False, 'message': 'Consulta erronéa.'}) 
-
-    elif(request.GET.get('type') == 'started'):
+    if(request.GET.get('type') == 'started'):
         queryset.filter(start_time__lte = timezone.now())
 
     elif(request.GET.get('type') == 'ended'):
