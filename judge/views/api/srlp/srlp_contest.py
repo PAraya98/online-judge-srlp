@@ -245,8 +245,10 @@ def get_ranking(request):
     code = request.GET.getlist('code')
     contest_code = '' if not code else code[0]
     contest = Contest.objects.filter(key=contest_code).first()
-    print(get_ranking_list(contest, user, profile))
-    return Response({'ranking': get_ranking_list(contest, user, profile)})
+    if not contest: return Response({'status': False, 'message': 'El concurso no'})
+    users, problems = get_ranking_list(contest, user, profile)
+    print(users, problems)
+    return Response({'ranking': problems})
     
 
 def get_ranking_list(contest, user, profile):
@@ -257,7 +259,6 @@ def get_ranking_list(contest, user, profile):
                 ranking_list= partial(base_contest_ranking_list, queryset=queryset),
                 ranker=lambda users, key: ((('???'), user) for user in users),
             )
-
     return get_contest_ranking_list(user, profile, contest)
 
 def contest_ranking_list(contest, problems):
