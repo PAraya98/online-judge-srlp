@@ -246,7 +246,7 @@ def get_ranking(request):
     contest_code = '' if not code else code[0]
     contest = Contest.objects.filter(key=contest_code).first()
     print(get_ranking_list(contest, user, profile))
-    return Response(get_ranking_list(contest, user, profile))
+    return Response({'ranking': get_ranking_list(contest, user, profile)})
     
 
 def get_ranking_list(contest, user, profile):
