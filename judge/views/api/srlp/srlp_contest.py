@@ -247,8 +247,9 @@ def get_ranking(request):
     contest = Contest.objects.filter(key=contest_code).first()
     if not contest: return Response({'status': False, 'message': 'El concurso no'})
     users, problems = get_ranking_list(contest, user, profile)
+
     print(users, problems)
-    return Response({'ranking': problems})
+    return Response({'ranking': problems.values()})
     
 
 def get_ranking_list(contest, user, profile):
