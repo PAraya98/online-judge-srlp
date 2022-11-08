@@ -61,7 +61,7 @@ def get_contest_list(request):
         data = ({"contests": array, 'actual_contest': Contest.objects.filter(id=profile.current_contest).first().key})
         return paginator.get_paginated_response(data)
     else:
-        return Response({'status': True, 'pages': 0, 'contests': [], 'actual_contest': Contest.objects.filter(id=profile.current_contest).first().key})
+        return Response({'status': True, 'pages': 0, 'contests': [], 'actual_contest': Contest.objects.filter(id=profile.current_contest.contest_id).first().key})
 
 
 @api_view(['GET'])
