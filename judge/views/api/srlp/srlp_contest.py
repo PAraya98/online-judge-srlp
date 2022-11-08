@@ -26,6 +26,8 @@ def sane_time_repr(delta):
 @api_view(['GET'])
 def get_contest_list(request):
     user = get_jwt_user(request)
+    profile = Profile.objects.get(user=user) 
+
     queryset = Contest.get_visible_contests(user).prefetch_related(
         Prefetch('tags', queryset=ContestTag.objects.only('name'), to_attr='tag_list'))
 
@@ -56,10 +58,10 @@ def get_contest_list(request):
                 'time_limit': c.time_limit and sane_time_repr(c.time_limit),
                 'labels': list(map(attrgetter('name'), c.tag_list))
             })
-        data = ({"contests": array})
+        data = ({"contests": array, 'actual_contest': Contest.objects.filter(id=profile.current_contest).first().key})
         return paginator.get_paginated_response(data)
     else:
-        return Response({'status': True, 'pages': 0, 'contests': []})
+        return Response({'status': True, 'pages': 0, 'contests': [], 'actual_contest': Contest.objects.filter(id=profile.current_contest).first().key})
 
 
 @api_view(['GET'])
