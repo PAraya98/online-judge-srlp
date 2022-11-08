@@ -2,7 +2,7 @@
 from dmoj import settings
 from judge.models import Contest, Contest, ContestParticipation, ContestTag, Rating
 from judge.views.api.srlp.srlp_utils_api import *
-from django.db.models import BooleanField, Case, Count, F, FloatField, IntegerField, Max, Min, Q, Sum, Value, When, Prefetch
+from django.db.models import OuterRef, Subquery, BooleanField, Case, Count, F, FloatField, IntegerField, Max, Min, Q, Sum, Value, When, Prefetch
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -35,8 +35,8 @@ def get_contest_list(request):
 
     queryset = filter_if_not_none(
         queryset,
-        end_time__gte = datetime.datetime.now() if (request.GET.get('has_ended') == "false") else None,
-        end_time__lte = datetime.datetime.now() if (request.GET.get('has_ended') == "true") else None,
+        end_time__gte = datetime.now() if (request.GET.get('has_ended') == "false") else None,
+        end_time__lte = datetime.now() if (request.GET.get('has_ended') == "true") else None,
         name__icontains = request.GET.get('name')
     )   
     
@@ -59,7 +59,7 @@ def get_contest_list(request):
         data = ({"contests": array})
         return paginator.get_paginated_response(data)
     else:
-        return Response({})
+        return Response({'status': True, 'pages': 0, 'contests': []})
 
 
 @api_view(['GET'])
@@ -97,7 +97,7 @@ def get_contest_info(request):
         'time_limit': contest.time_limit and contest.time_limit.total_seconds(),
         'start_time': contest.start_time.isoformat(),
         'end_time': contest.end_time.isoformat(),
-        'current_time': datetime.datetime.now(),
+        'current_time': datetime.now(),
         'tags': list(contest.tags.values_list('name', flat=True)),
         'is_rated': contest.is_rated,
         'rate_all': contest.is_rated and contest.rate_all,
@@ -245,22 +245,23 @@ def get_ranking(request):
     code = request.GET.getlist('code')
     contest_code = '' if not code else code[0]
     contest = Contest.objects.filter(key=contest_code).first()
-    if not contest: return Response({'status': False, 'message': 'El concurso no'})
-    users, problems = get_ranking_list(contest, user, profile)
-
-    print(users, problems)
-    return Response({'ranking': problems.values()})
+    if not contest: return Response({'status': False, 'message': 'El concurso no existe.'})
     
-
-def get_ranking_list(contest, user, profile):
     if not contest.can_see_full_scoreboard(user):
             queryset = contest.users.filter(user=profile, virtual=ContestParticipation.LIVE)
-            return get_contest_ranking_list(
-                user, profile, contest,
-                ranking_list= partial(base_contest_ranking_list, queryset=queryset),
-                ranker=lambda users, key: ((('???'), user) for user in users),
-            )
-    return get_contest_ranking_list(user, profile, contest)
+            if(len(queryset) > 0):
+                paginator = CustomPagination()
+                result_page = paginator.paginate_queryset(queryset, request)
+                print(result_page) #TODO: Revisar si son objetos, sino no sirve para pasar como queryset
+                return get_contest_ranking_list(
+                    user, profile, contest,
+                    ranking_list= partial(base_contest_ranking_list, queryset=result_page),
+                    ranker=lambda users, key: ((('???'), user) for user in users),
+                )
+    users, problems = get_contest_ranking_list(user, profile, contest)
+    print(users, problems)
+    return Response({'status': True, 'ranking': ''})
+    
 
 def contest_ranking_list(contest, problems):
     return base_contest_ranking_list(contest, problems, contest.users.filter(virtual=0)
