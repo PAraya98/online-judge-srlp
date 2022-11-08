@@ -42,16 +42,13 @@ def get_contest_list(request):
     if not request.GET.get('type'): return Response({'status': False, 'message': 'Consulta erronéa.'}) 
 
     elif(request.GET.get('type') == 'started'):
-        queryset.filter(start_time__gte=datetime.now())
+        queryset.filter(start_time__lte=datetime.now())
 
     elif(request.GET.get('type') == 'ended'):
         queryset.filter(end_time__lt = datetime.now())
    
-    elif(request.GET.get('type') == 'coming soon'):
-        queryset.filter(start_time__lt = datetime.now())
-
-    elif(request.GET.get('type') == 'coming soon'):
-        queryset.filter(start_time__lt = datetime.now())
+    elif(request.GET.get('type') == 'coming_soon'):
+        queryset.filter(start_time__gt = datetime.now())
 
     elif(not user and request.GET.get('type') == 'participating'):
         pass
