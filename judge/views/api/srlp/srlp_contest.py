@@ -230,8 +230,8 @@ def leave_contest(request):
     contest = Contest.objects.filter(key=contest_code).first()
 
     if profile.current_contest is None or profile.current_contest.contest_id != contest.id:
-        return Response({'status': False, 'message': 'No estás inscrito en ningún concurso!!'})
-        
+        return Response({'status': False, 'message': 'No estás inscrito al concurso o no estás inscrito en algún concurso.'})
+
     profile.remove_contest()
     return Response({'status': True, 'message': 'Has salido del concurso '+contest.name+"."})
 
