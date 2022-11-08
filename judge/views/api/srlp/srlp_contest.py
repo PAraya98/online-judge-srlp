@@ -36,18 +36,21 @@ def get_contest_list(request):
             request.GET.getlist('order_by')                  
     )
 
+    current_time = timezone.now()  # change this
+    time_threshold = current_time - timedelta(seconds=60)
 
     if(request.GET.get('type') == 'started'):
-        queryset.filter(start_time__lte = timezone.now())
+        queryset.filter(start_time__lte = time_threshold)
 
     elif(request.GET.get('type') == 'ended'):
-        queryset.filter(end_time__lt = timezone.now())
+        queryset.filter(end_time__lt = time_threshold)
    
     elif(request.GET.get('type') == 'coming_soon'):
-        queryset.filter(start_time__gt = timezone.now())
+        queryset.filter(start_time__gt = time_threshold)
 
     elif(not user and request.GET.get('type') == 'participating'):
         pass
+
     else: return Response({'status': False, 'message': 'Consulta erronéa.'}) 
     #is_in_contest_rest TODO: sirve
     
