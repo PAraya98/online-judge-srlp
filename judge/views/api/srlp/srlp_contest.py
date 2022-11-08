@@ -4,16 +4,18 @@ from judge.models import Contest, Contest, ContestParticipation, ContestTag, Rat
 from judge.views.api.srlp.srlp_utils_api import *
 from django.db.models import BooleanField, Case, Count, F, FloatField, IntegerField, Max, Min, Q, Sum, Value, When, Prefetch
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from operator import attrgetter
 from django.contrib.auth.models import User
 import json 
 from django.db import IntegrityError
 from munch import DefaultMunch
-from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from datetime import datetime, timedelta, timezone, tzinfo
+from functools import partial
+from judge.utils.ranker import ranker
+from itertools import chain
 
 def sane_time_repr(delta):
     days = delta.days
@@ -127,7 +129,7 @@ def get_contest_info(request):
     })
 
 
-
+@permission_classes([isLogueado]) 
 @api_view(['POST'])
 def join_contest(request):
     data = DefaultMunch.fromDict(json.loads(request.body))
@@ -218,24 +220,100 @@ def is_spectator(user, profile, contest):
 def can_edit(user, contest):
     return contest.is_editable_by(user)
 
-
+@permission_classes([isLogueado]) 
 @api_view(['POST'])
 def leave_contest(request):
     data = DefaultMunch.fromDict(json.loads(request.body))
     contest_code = data.contest_code
     user = get_jwt_user(request)
     profile= Profile.objects.get(user=user)
-    contest = Contest.objects.filter(key=contest_code).first()
- 
+    
     if profile.current_contest is None or profile.current_contest.contest_id != contest.id:
         return Response({'status': False, 'message': 'No estás inscrito en ningún concurso!!'})
+
+    
+    contest = Contest.objects.filter(key=contest_code).first()
 
     profile.remove_contest()
     return Response({'status': True, 'message': 'Has salido del concurso '+contest.name+"."})
 
+@permission_classes([isLogueado]) 
 @api_view(['GET'])
 def get_ranking(request):
-    pass
+    user = get_jwt_user(request)
+    profile = Profile.objects.get(user=user) 
+    code = request.GET.getlist('code')
+    contest_code = '' if not code else code[0]
+    contest = Contest.objects.filter(key=contest_code).first()
+    print(get_ranking_list(contest, user, profile))
+    return Response(get_ranking_list(contest, user, profile))
+    
+
+def get_ranking_list(contest, user, profile):
+    if not contest.can_see_full_scoreboard(user):
+            queryset = contest.users.filter(user=profile, virtual=ContestParticipation.LIVE)
+            return get_contest_ranking_list(
+                user, profile, contest,
+                ranking_list= partial(base_contest_ranking_list, queryset=queryset),
+                ranker=lambda users, key: ((('???'), user) for user in users),
+            )
+
+    return get_contest_ranking_list(user, profile, contest)
+
+def contest_ranking_list(contest, problems):
+    return base_contest_ranking_list(contest, problems, contest.users.filter(virtual=0)
+                                     .prefetch_related('user__organizations')
+                                     .order_by('is_disqualified', '-score', 'cumtime', 'tiebreaker'))
+
+def get_contest_ranking_list(user, profile, contest, participation=None, ranking_list=contest_ranking_list,
+                             show_current_virtual=True, ranker=ranker):
+    problems = list(contest.contest_problems.select_related('problem').defer('problem__description').order_by('order'))
+
+    users = ranker(ranking_list(contest, problems), key=attrgetter('points', 'cumtime', 'tiebreaker'))
+
+    if show_current_virtual:
+        if participation is None and user.is_authenticated:
+            participation = profile.current_contest
+            if participation is None or participation.contest_id != contest.id:
+                participation = None
+        if participation is not None and participation.virtual:
+            users = chain([('-', make_contest_ranking_profile(contest, participation, problems))], users)      
+    return users, problems
+
+def base_contest_ranking_list(contest, problems, queryset):
+    return [make_contest_ranking_profile(contest, participation, problems) for participation in
+            queryset.select_related('user__user', 'rating').defer('user__about', 'user__organizations__about')]
 
 
 
+ContestRankingProfile = namedtuple(
+    'ContestRankingProfile',
+    'id user css_class username points cumtime tiebreaker organization participation '
+    'participation_rating problem_cells result_cell display_name',
+)
+
+def make_contest_ranking_profile(contest, participation, contest_problems):
+    def display_user_problem(contest_problem):
+        # When the contest format is changed, `format_data` might be invalid.
+        # This will cause `display_user_problem` to error, so we display '???' instead.
+        try:
+            return contest.format.display_user_problem(participation, contest_problem)
+        except (KeyError, TypeError, ValueError):
+            return '???'
+
+    user = participation.user
+    return ContestRankingProfile(
+        id=user.id,
+        user=user.user,
+        css_class=user.css_class,
+        username=user.username,
+        points=participation.score,
+        cumtime=participation.cumtime,
+        tiebreaker=participation.tiebreaker,
+        organization=user.organization,
+        participation_rating=participation.rating.rating if hasattr(participation, 'rating') else None,
+        problem_cells=[display_user_problem(contest_problem) for contest_problem in contest_problems],
+        result_cell=contest.format.display_participation_result(participation),
+        participation=participation,
+        display_name=user.display_name,
+    )
