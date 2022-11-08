@@ -58,7 +58,7 @@ def get_contest_list(request):
                 'time_limit': c.time_limit and sane_time_repr(c.time_limit),
                 'labels': list(map(attrgetter('name'), c.tag_list))
             })
-        data = ({"contests": array, 'actual_contest': Contest.objects.filter(id=id=profile.current_contest.contest.id).first().key})
+        data = ({"contests": array, 'actual_contest': Contest.objects.filter(id=profile.current_contest.contest.id).first().key})
         return paginator.get_paginated_response(data)
     else:
         return Response({'status': True, 'pages': 0, 'contests': [], 'actual_contest': Contest.objects.filter(id=profile.current_contest.contest.id).first().key})
