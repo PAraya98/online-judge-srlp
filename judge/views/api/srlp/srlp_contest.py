@@ -35,11 +35,10 @@ def get_contest_list(request):
             request.GET.getlist('order_by')                  
     )
 
-    queryset = filter_if_not_none(       
+    queryset = filter_if_not_none(queryset,        
         name__icontains = request.GET.get('name')
     )   
 
-    
     if not request.GET.get('type'): return Response({'status': False, 'message': 'Consulta erronéa.'}) 
 
     elif(request.GET.get('type') == 'started'):
