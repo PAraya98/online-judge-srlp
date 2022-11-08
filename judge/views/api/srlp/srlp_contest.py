@@ -227,13 +227,11 @@ def leave_contest(request):
     contest_code = data.contest_code
     user = get_jwt_user(request)
     profile= Profile.objects.get(user=user)
-    
-    if profile.current_contest is None or profile.current_contest.contest_id != contest.id:
-        return Response({'status': False, 'message': 'No estás inscrito en ningún concurso!!'})
-
-    
     contest = Contest.objects.filter(key=contest_code).first()
 
+    if profile.current_contest is None or profile.current_contest.contest_id != contest.id:
+        return Response({'status': False, 'message': 'No estás inscrito en ningún concurso!!'})
+        
     profile.remove_contest()
     return Response({'status': True, 'message': 'Has salido del concurso '+contest.name+"."})
 
