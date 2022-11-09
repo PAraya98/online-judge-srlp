@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import F, OuterRef, Subquery
 from judge.models.problem import ProblemType
 
-from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, filter_conjuntive_if_not_none, order_by_if_not_none, filter_if_not_none, IsAdministrador
+from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, filter_conjuntive_if_not_none, order_by_if_not_none, filter_if_not_none, isProfesor
 
 from judge.jinja2.markdown import markdown
 
@@ -139,25 +139,55 @@ def get_types(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAdministrador])
+@permission_classes([isProfesor])
 def create_wiki(request):
     data = DefaultMunch.fromDict(json.loads(request.body))
     problem_type_name = data.problem_type_name
     wiki_title = data.wiki_title
     wiki_content = data.wiki_content
     language_key = data.wiki_language_key
+    user = get_jwt_user(request)
+    profile= Profile.objects.get(user=user)
 
     language = Language.objects.filter(key = language_key).first()
     problem_type = ProblemType.objects.filter(name = problem_type_name).first()
 
     if(language and problem_type and wiki_title and wiki_content):
-        wiki = JupyterWiki.objects.create(title=wiki_title, content=wiki_content, language=language)
+        
+        if(not JupyterWiki.objects.filter(title=wiki_title, language=language).first()): 
+            return Response({'status': False, 'message': 'Esta wiki ya existe, intenta con otro título.'})
+        #if(user.is_superuser): #TODO:TODO:TODO: En caso de modificar, consultar si es admin TODO:TODO:TODO:
+        
+        wiki = JupyterWiki.objects.create(author= profile,title=wiki_title, content=wiki_content, language=language)
         wiki.save()
-        try:
-            problem_type.wikis.add(wiki)
-        except:
-            wiki.delete()
-            return Response({'status': False, 'message': 'Solicitud de creación de Wiki incorrecta. (2)'})
+        problem_type.wikis.add(wiki)
+        return Response({'status': True, 'message': 'Wiki añadida correctamente.'})
+    else:
+        return Response({'status': False, 'message': 'Solicitud de creación de Wiki incorrecta.'})
+
+@api_view(['POST'])
+@permission_classes([isProfesor])
+def create_wiki(request):
+    data = DefaultMunch.fromDict(json.loads(request.body))
+    problem_type_name = data.problem_type_name
+    wiki_title = data.wiki_title
+    wiki_content = data.wiki_content
+    language_key = data.wiki_language_key
+    user = get_jwt_user(request)
+    profile= Profile.objects.get(user=user)
+
+    language = Language.objects.filter(key = language_key).first()
+    problem_type = ProblemType.objects.filter(name = problem_type_name).first()
+
+    if(language and problem_type and wiki_title and wiki_content):
+        
+        if(not JupyterWiki.objects.filter(title=wiki_title, language=language).first()): 
+            return Response({'status': False, 'message': 'Esta wiki ya existe, intenta con otro título.'})
+        #if(user.is_superuser): #TODO:TODO:TODO: En caso de modificar, consultar si es admin TODO:TODO:TODO:
+        
+        wiki = JupyterWiki.objects.create(author= profile,title=wiki_title, content=wiki_content, language=language)
+        wiki.save()
+        problem_type.wikis.add(wiki)
         return Response({'status': True, 'message': 'Wiki añadida correctamente.'})
     else:
         return Response({'status': False, 'message': 'Solicitud de creación de Wiki incorrecta.'})
