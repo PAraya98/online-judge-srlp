@@ -94,16 +94,6 @@ def get_contest_info(request):
     problems = list(contest.contest_problems.select_related('problem')
                     .defer('problem__description').order_by('order'))
 
-    new_ratings_subquery = Rating.objects.filter(participation=OuterRef('pk'))
-    old_ratings_subquery = (Rating.objects.filter(user=OuterRef('user__pk'),
-                                                  contest__end_time__lt=OuterRef('contest__end_time'))
-                            .order_by('-contest__end_time'))
-    #participations = (contest.users.filter(virtual=0)
-    #                  .annotate(new_rating=Subquery(new_ratings_subquery.values('rating')[:1]))
-    #                  .annotate(old_rating=Subquery(old_ratings_subquery.values('rating')[:1]))
-    #                  .prefetch_related('user__organizations')
-    #                  .annotate(username=F('user__user__username'))
-    #                  .order_by('-score', 'cumtime', 'tiebreaker') if can_see_rankings else [])
     can_see_problems = (in_contest or contest.ended or contest.is_editable_by(user))
 
 
@@ -121,8 +111,10 @@ def get_contest_info(request):
         'description': contest.description,
         'summary': contest.summary,
         'time_limit': contest.time_limit and contest.time_limit.total_seconds(),
+        'is_started': contest.started(),
         'start_time': contest.start_time.isoformat(),
         'end_time': contest.end_time.isoformat(),
+        'is_ended': contest.ended(),
         'current_time': datetime.now(),
         'tags': list(contest.tags.values_list('name', flat=True)),
         'is_rated': contest.is_rated,
@@ -142,19 +134,64 @@ def get_contest_info(request):
                 'code': problem.problem.code,
             } for problem in problems] if can_see_problems else [],
         'user_context': user_context
-        #'rankings': [
-        #    {
-        #        'user': participation.username,
-        #        'points': participation.score,
-        #        'cumtime': participation.cumtime,
-        #        'tiebreaker': participation.tiebreaker,
-        #        'old_rating': participation.old_rating,
-        #        'new_rating': participation.new_rating,
-        #        'is_disqualified': participation.is_disqualified,
-        #        'solutions': contest.format.get_problem_breakdown(participation, problems),
-        #    } for participation in participations],
     })
 
+@api_view(['GET'])
+def get_contest_ranking(request):
+    user = get_jwt_user(request)
+    profile = Profile.objects.get(user=user) 
+    code = request.GET.getlist('code')
+    contest_code = '' if not code else code[0]
+    contest = Contest.objects.filter(key=contest_code).first()
+    if contest and (not user or not contest.is_accessible_by(user)):
+       return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso a este concurso.'})
+
+    if not contest.can_see_full_scoreboard_rest(user) or contest.can_see_own_scoreboard(user): 
+        return Response({'status': False, 'message': 'No tienes acceso para ver el ranking.'})
+
+    problems = list(contest.contest_problems.select_related('problem')
+                .defer('problem__description').order_by('order'))
+    new_ratings_subquery = Rating.objects.filter(participation=OuterRef('pk'))
+    old_ratings_subquery = (Rating.objects.filter(user=OuterRef('user__pk'),
+                            contest__end_time__lt=OuterRef('contest__end_time'))
+                        .order_by('-contest__end_time'))
+
+    queryset = (contest.users
+                    .annotate(new_rating=Subquery(new_ratings_subquery.values('rating')[:1]))
+                    .annotate(old_rating=Subquery(old_ratings_subquery.values('rating')[:1]))
+                    .prefetch_related('user__organizations')
+                    .annotate(username=F('user__user__username'))
+                    .order_by('-score', 'cumtime', 'tiebreaker') if contest.can_see_full_scoreboard_rest(user) else [])
+    
+    queryset = filter_if_not_none(queryset, 
+        user_id = profile.id if not contest.can_see_full_scoreboard_rest(user) else None
+    )
+    if request.GET.get('virtual') == 'true':
+        queryset.exclude(virtual = 0)
+    else:
+        queryset = filter_if_not_none(queryset,        
+            virtual = 0 if request.GET.get('virtual') == 'false' else None
+        )  
+
+    if(len(queryset) > 0):
+        paginator = CustomPagination()
+        result_page = paginator.paginate_queryset(queryset, request)
+
+        ranking = [
+            {
+                'user': participation.username,
+                'points': participation.score,
+                'cumtime': participation.cumtime,
+                'tiebreaker': participation.tiebreaker,
+                'old_rating': participation.old_rating,
+                'new_rating': participation.new_rating,
+                'is_disqualified': participation.is_disqualified,
+                'solutions': contest.format.get_problem_breakdown(participation, problems),
+            } for participation in result_page]
+        data = {'ranking': ranking}
+        return paginator.get_paginated_response(data)
+    else:
+        return Response({'ranking': [], 'pages': 0})
 
 @permission_classes([isLogueado]) 
 @api_view(['POST'])
@@ -263,7 +300,7 @@ def leave_contest(request):
 
     profile.remove_contest()
     return Response({'status': True, 'message': 'Has salido del concurso '+contest.name+"."})
-
+'''
 @permission_classes([isLogueado]) 
 @api_view(['GET'])
 def get_ranking(request):
@@ -347,3 +384,4 @@ def make_contest_ranking_profile(contest, participation, contest_problems):
         participation=participation,
         display_name=user.display_name,
     )
+'''
