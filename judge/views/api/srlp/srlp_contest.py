@@ -37,15 +37,15 @@ def get_contest_list(request):
     )
 
     current_time = timezone.now() 
-
+    
     if(request.GET.get('type') == 'started'):
-        queryset.filter(start_time = current_time)
+        queryset = queryset.filter(start_time__lte = current_time)
 
     elif(request.GET.get('type') == 'ended'):
-        queryset.filter(end_time__lt = current_time)
+        queryset = queryset.filter(end_time__lt = current_time)
    
     elif(request.GET.get('type') == 'coming_soon'):
-        queryset.filter(start_time__gt = current_time)
+        queryset = queryset.filter(start_time__gt = current_time)
 
     elif(not user and request.GET.get('type') == 'participating'):
         pass
