@@ -174,7 +174,7 @@ def get_contest_ranking(request):
         )  
 
     if(not contest.is_editable_by(user)):
-        queryset.exclude(virtual__lt = 0)
+        queryset = queryset.exclude(virtual__lt = 0)
 
     if(len(queryset) > 0):
         paginator = CustomPagination()
