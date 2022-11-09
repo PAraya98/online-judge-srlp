@@ -519,7 +519,7 @@ class Problem(models.Model):
 
 class ProblemTranslation(models.Model):
     problem = models.ForeignKey(Problem, verbose_name=_('problem'), related_name='translations', on_delete=CASCADE)
-    language = models.CharField(verbose_name=_('language'), max_length=7, choices=settings.LANGUAGES)
+    language = models.ForeignKey(Language, verbose_name=_('language'), on_delete=CASCADE)
     name = models.CharField(verbose_name=_('translated name'), max_length=100, db_index=True)
     description = models.TextField(verbose_name=_('translated description'),
                                    validators=[disallowed_characters_validator])
