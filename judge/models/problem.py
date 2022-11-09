@@ -31,7 +31,7 @@ def disallowed_characters_validator(text):
                               params={'value': ''.join(common_disallowed_characters)})
 
 class JupyterWiki(models.Model):
-    title = models.CharField(max_extlength=100, verbose_name=('Wiki jupyter title'))
+    title = models.CharField(max_length=100, verbose_name=('Wiki jupyter title'))
     language = models.ForeignKey(Language, verbose_name=_('language'), on_delete=CASCADE)
     content = models.TextField(verbose_name=('Wiki jupyter content'))
 
