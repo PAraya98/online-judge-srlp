@@ -76,7 +76,7 @@ class IsAdministrador(permissions.BasePermission):
 class isProfesor(permissions.BasePermission):
     def has_permission(self, request, view):
         if(bool(request.user and request.user.is_authenticated)):
-            return bool(request.user.staff)
+            return bool(request.user.is_staff)
         else: return False
 
 class isAlumno(permissions.BasePermission):
