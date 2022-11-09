@@ -146,7 +146,7 @@ def get_contest_ranking(request):
     if contest and (not user or not contest.is_accessible_by(user)):
        return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso a este concurso.'})
 
-    if not contest.can_see_full_scoreboard_rest(user) or contest.can_see_own_scoreboard(user): 
+    if not contest.can_see_full_scoreboard_rest(user) or not contest.can_see_own_scoreboard(user): 
         return Response({'status': False, 'message': 'No tienes acceso para ver el ranking.'})
 
     problems = list(contest.contest_problems.select_related('problem')
