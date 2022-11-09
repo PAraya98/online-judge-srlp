@@ -173,6 +173,9 @@ def get_contest_ranking(request):
             virtual = 0 if request.GET.get('virtual') == 'false' else None
         )  
 
+    if(not contest.is_editable_by(user)):
+        queryset.exclude(virtual__lt = 0)
+
     if(len(queryset) > 0):
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
@@ -180,6 +183,7 @@ def get_contest_ranking(request):
         ranking = [
             {
                 'user': participation.username,
+                'virtual': participation.virtual,
                 'points': participation.score,
                 'cumtime': participation.cumtime,
                 'tiebreaker': participation.tiebreaker,
