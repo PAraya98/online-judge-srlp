@@ -48,7 +48,7 @@ def get_contest_list(request):
 
     elif(user and request.GET.get('type') == 'participating'):
         if(profile.current_contest): 
-            queryset = queryset.filter(id= profile.current_contest)
+            queryset = queryset.filter(id= profile.current_contest.contest.id)
         else: return Response({'status': False, 'message': 'El usuario no está participando en ningún concurso.'})
 
     else: return Response({'status': False, 'message': 'Consulta erronéa.'}) 
