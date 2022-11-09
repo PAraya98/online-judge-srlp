@@ -153,7 +153,7 @@ def create_wiki(request):
     if(language and problem_type and wiki_title and wiki_content):
         wiki = JupyterWiki.objects.create(title=wiki_title, content=wiki_content, language=language)
         wiki.save()
-        problem_type.wikis_set.add(wiki)
+        problem_type.jupyterwiki_set.add(wiki)
         return Response({'status': True, 'message': 'Wiki añadida correctamente.'})
     else:
         return Response({'status': False, 'message': 'Solicitud de creación de Wiki incorrecta.'})
