@@ -117,7 +117,7 @@ def get_types(request):
             request.GET.getlist('order_by')                  
     )
     
-    queryset = queryset.values('id', 'name', 'full_name')
+    #queryset = queryset.values('id', 'name', 'full_name')
 
     if len(queryset)> 0:
         paginator = CustomPagination()
@@ -127,7 +127,8 @@ def get_types(request):
             'types': ({
                 'id':   res.id,
                 'name':  res.name,
-                'full_name': res.full_name
+                'full_name': res.full_name,
+                'wikis': [{wiki.title, wiki.language.name} for wiki in res.wikis]
                 #TODO: AGREGAR ENLACE DE LA WIKI A FUTURO
             } for res in result_page)
         }       
