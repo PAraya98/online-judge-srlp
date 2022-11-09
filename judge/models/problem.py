@@ -32,7 +32,7 @@ def disallowed_characters_validator(text):
 
 class JupyterWiki(models.Model):
     title = models.CharField(max_length=100, verbose_name=('Wiki jupyter title'))
-    language = models.OneToOneField(Language, verbose_name=('Wiki language topic') )
+    language = models.ForeignKey(Language, verbose_name=_('language'), on_delete=CASCADE)
     content = models.CharField(max_length=10000000, verbose_name=('Wiki jupyter content'))
 
     def __str__(self):
@@ -519,7 +519,7 @@ class Problem(models.Model):
 
 class ProblemTranslation(models.Model):
     problem = models.ForeignKey(Problem, verbose_name=_('problem'), related_name='translations', on_delete=CASCADE)
-    language = models.ForeignKey(Language, verbose_name=_('language'), on_delete=CASCADE)
+    language = models.CharField(verbose_name=_('language'), max_length=7, choices=settings.LANGUAGES)
     name = models.CharField(verbose_name=_('translated name'), max_length=100, db_index=True)
     description = models.TextField(verbose_name=_('translated description'),
                                    validators=[disallowed_characters_validator])
