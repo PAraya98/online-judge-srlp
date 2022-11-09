@@ -129,7 +129,11 @@ def get_types(request):
                 'id':   res.id,
                 'name':  res.name,
                 'full_name': res.full_name,
-                'wikis': [{wiki.author.user.username, wiki.title, wiki.language.name} for wiki in res.wikis.all()]
+                'wikis':    [   {   'aurhor': wiki.author.user.username, 
+                                    'title': wiki.title, 
+                                    'language': wiki.language.name
+                                } for wiki in res.wikis.all()
+                            ]
                 #TODO: AGREGAR ENLACE DE LA WIKI A FUTURO
             } for res in result_page)
         }       
