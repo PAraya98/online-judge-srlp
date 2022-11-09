@@ -122,6 +122,7 @@ def get_contest_info(request):
         'has_rating': contest.ratings.exists(),
         'rating_floor': contest.rating_floor,
         'rating_ceiling': contest.rating_ceiling,
+        'has_access_code': True if contest.access_code is not None else False,
         'format': {
             'name': contest.format_name,
             'config': contest.format_config,
