@@ -73,10 +73,10 @@ def get_contest_list(request):
                 'time_limit': c.time_limit and sane_time_repr(c.time_limit),
                 'labels': list(map(attrgetter('name'), c.tag_list))
             })
-        data = ({"contests": array})
+        data = ({"contests": array, 'is_connected': bool(user)})
         return paginator.get_paginated_response(data)
     else:   
-        return Response({'status': True, 'pages': 0, 'contests': []})
+        return Response({'status': True, 'pages': 0, 'contests': [], 'is_connected': bool(user)})
 
 
 @api_view(['GET'])
