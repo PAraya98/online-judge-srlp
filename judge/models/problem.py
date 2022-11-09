@@ -29,24 +29,24 @@ def disallowed_characters_validator(text):
     if common_disallowed_characters:
         raise ValidationError(_('Disallowed characters: %(value)s'),
                               params={'value': ''.join(common_disallowed_characters)})
-'''
+
 class JupyterWiki(models.Model):
-    title = models.CharField(max_length=100, verbose_name=_('Wiki jupyter title'))
-    language = models.OneToOneField(Language, verbose_name=_('Wiki language topic') )
-    content = models.CharField(max_length=10000000, verbose_name=_('Wiki jupyter content'))
+    title = models.CharField(max_length=100, verbose_name=('Wiki jupyter title'))
+    language = models.OneToOneField(Language, verbose_name=('Wiki language topic') )
+    content = models.CharField(max_length=10000000, verbose_name=('Wiki jupyter content'))
 
     def __str__(self):
         return self.title
 
     class Meta:
-        verbose_name = _('jupyter wiki')
-        verbose_name_plural = _('jupyter wikis')
-'''
+        verbose_name = ('jupyter wiki')
+        verbose_name_plural = ('jupyter wikis')
+
 class ProblemType(models.Model):
-    name = models.CharField(max_length=20, verbose_name=_('problem category ID'), unique=True)
-    full_name = models.CharField(max_length=100, verbose_name=_('problem category name'))
-    #wikis = models.ManyToManyField(JupyterWiki, verbose_name=_('language wikis'),
-    #                               help_text=_("Wiki in Jupyter notebooks for each language."))
+    name = models.CharField(max_length=20, verbose_name=('problem category ID'), unique=True)
+    full_name = models.CharField(max_length=100, verbose_name=('problem category name'))
+    wikis = models.ManyToManyField(JupyterWiki, verbose_name=('language wikis'),
+                                  help_text=("Wiki in Jupyter notebooks for each language."))
 
     def __str__(self):
         return self.full_name
