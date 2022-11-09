@@ -129,7 +129,7 @@ def get_types(request):
                 'id':   res.id,
                 'name':  res.name,
                 'full_name': res.full_name,
-                'wikis':    [   {   'aurhor': wiki.author.user.username, 
+                'wikis':    [   {   'author': wiki.author.user.username, 
                                     'title': wiki.title, 
                                     'language': wiki.language.name
                                 } for wiki in res.wikis.all()
