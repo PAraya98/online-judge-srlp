@@ -36,18 +36,17 @@ def get_contest_list(request):
             request.GET.getlist('order_by')                  
     )
 
-    current_time = timezone.now() 
     
     if(request.GET.get('type') == 'started'):
-        queryset = queryset.filter(start_time__lte = current_time)
+        queryset = queryset.filter(start_time__lte = timezone.now(), end_time__gt = timezone.now())
 
     elif(request.GET.get('type') == 'ended'):
-        queryset = queryset.filter(end_time__lt = current_time)
+        queryset = queryset.filter(end_time__lt = timezone.now())
    
     elif(request.GET.get('type') == 'coming_soon'):
-        queryset = queryset.filter(start_time__gt = current_time)
+        queryset = queryset.filter(start_time__gt = timezone.now())
 
-    elif(not user and request.GET.get('type') == 'participating'):
+    elif(user and request.GET.get('type') == 'participating'):
         pass
 
     else: return Response({'status': False, 'message': 'Consulta erronéa.'}) 
@@ -60,7 +59,7 @@ def get_contest_list(request):
     if len(queryset)> 0:
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
-        current_contest = profile.current_contest.contest.key if profile.current_contest is not None else None
+        #current_contest = profile.current_contest.contest.key if profile.current_contest is not None else None
         array = [] 
         for c in result_page:
             array.append({
@@ -72,10 +71,10 @@ def get_contest_list(request):
                 'time_limit': c.time_limit and sane_time_repr(c.time_limit),
                 'labels': list(map(attrgetter('name'), c.tag_list))
             })
-        data = ({"contests": array, 'current_contest': current_contest})
+        data = ({"contests": array})
         return paginator.get_paginated_response(data)
     else:   
-        return Response({'status': True, 'pages': 0, 'contests': [], 'current_contest': current_contest})
+        return Response({'status': True, 'pages': 0, 'contests': []})
 
 
 @api_view(['GET'])
