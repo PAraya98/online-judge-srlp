@@ -84,13 +84,12 @@ def get_contest_info(request):
     user = get_jwt_user(request)
     code = request.GET.getlist('code')
     contest_code = '' if not code else code[0]
-    contest = get_object_or_404(Contest, key=contest_code)
+    contest = Contest.objects.filter(key=contest_code).first()
 
-    if not contest.is_accessible_by(user):
-       return Response(status=404)
+    if contest and (not user or not contest.is_accessible_by(user)):
+       return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso a este concurso.'})
 
-    in_contest = contest.is_in_contest(user)
-    can_see_rankings = contest.can_see_full_scoreboard(user)
+    in_contest = contest.is_in_contest_rest(user)
 
     problems = list(contest.contest_problems.select_related('problem')
                     .defer('problem__description').order_by('order'))
@@ -106,6 +105,16 @@ def get_contest_info(request):
                       .annotate(username=F('user__user__username'))
                       .order_by('-score', 'cumtime', 'tiebreaker') if can_see_rankings else [])
     can_see_problems = (in_contest or contest.ended or contest.is_editable_by(user))
+
+
+    user_context = {}
+    user_context['is_in_contest'] = contest.is_in_contest_rest(user)
+    user_context['can_see_full_scoreboard'] = contest.can_see_full_scoreboard_rest(user)   
+    user_context['can_see_own_scoreboard'] = contest.can_see_own_scoreboard(user)
+    user_context['has_completed_contest'] = contest.has_completed_contest_rest(user)
+    user_context['live_joinable'] = contest.is_live_joinable_by(user)
+    user_context['editable'] = contest.is_editable_by(user)
+
 
     return Response({
         'name': contest.name,
@@ -132,17 +141,18 @@ def get_contest_info(request):
                 'name': problem.problem.name,
                 'code': problem.problem.code,
             } for problem in problems] if can_see_problems else [],
-        'rankings': [
-            {
-                'user': participation.username,
-                'points': participation.score,
-                'cumtime': participation.cumtime,
-                'tiebreaker': participation.tiebreaker,
-                'old_rating': participation.old_rating,
-                'new_rating': participation.new_rating,
-                'is_disqualified': participation.is_disqualified,
-                'solutions': contest.format.get_problem_breakdown(participation, problems),
-            } for participation in participations],
+        'user_context': user_context
+        #'rankings': [
+        #    {
+        #        'user': participation.username,
+        #        'points': participation.score,
+        #        'cumtime': participation.cumtime,
+        #        'tiebreaker': participation.tiebreaker,
+        #        'old_rating': participation.old_rating,
+        #        'new_rating': participation.new_rating,
+        #        'is_disqualified': participation.is_disqualified,
+        #        'solutions': contest.format.get_problem_breakdown(participation, problems),
+        #    } for participation in participations],
     })
 
 

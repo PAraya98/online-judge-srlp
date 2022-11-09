@@ -250,8 +250,34 @@ class Contest(models.Model):
             return True
         return False
 
+    def can_see_full_scoreboard_rest(self, user):
+        if self.show_scoreboard:
+            return True
+        if user is None:
+            return False
+        if user.has_perm('judge.see_private_contest') or user.has_perm('judge.edit_all_contest'):
+            return True
+        if user.profile.id in self.editor_ids:
+            return True
+        if self.tester_see_scoreboard and user.profile.id in self.tester_ids:
+            return True
+        if self.started and user.profile.id in self.spectator_ids:
+            return True
+        if self.view_contest_scoreboard.filter(id=user.profile.id).exists():
+            return True
+        if self.scoreboard_visibility == self.SCOREBOARD_AFTER_PARTICIPATION and self.has_completed_contest(user):
+            return True
+        return False
+
     def has_completed_contest(self, user):
         if user.is_authenticated:
+            participation = self.users.filter(virtual=ContestParticipation.LIVE, user=user.profile).first()
+            if participation and participation.ended:
+                return True
+        return False
+
+    def has_completed_contest_rest(self, user):
+        if user:
             participation = self.users.filter(virtual=ContestParticipation.LIVE, user=user.profile).first()
             if participation and participation.ended:
                 return True
