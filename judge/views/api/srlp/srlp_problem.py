@@ -1,10 +1,11 @@
 
 from dmoj import settings
-from judge.models import ContestParticipation, ContestTag, Problem, Profile, Rating, Submission
+from judge.models import ContestParticipation, ContestTag, Problem, Profile, Rating, Submission, Language, JupyterWiki
+
 
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 import json 
@@ -14,7 +15,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import F, OuterRef, Subquery
 from judge.models.problem import ProblemType
 
-from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, filter_conjuntive_if_not_none, order_by_if_not_none, filter_if_not_none
+from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, filter_conjuntive_if_not_none, order_by_if_not_none, filter_if_not_none, IsAdministrador
 
 from judge.jinja2.markdown import markdown
 
@@ -135,3 +136,24 @@ def get_types(request):
         return paginator.get_paginated_response(data)
     else:
         return Response({})
+
+
+@api_view(['POST'])
+@permission_classes([IsAdministrador])
+def create_wiki(request):
+    data = DefaultMunch.fromDict(json.loads(request.body))
+    problem_type_name = data.problem_type_name
+    wiki_title = data.wiki_title
+    wiki_content = data.wiki_content
+    language_key = data.wiki_language_key
+
+    language = Language.objects.filter(key = language_key).first()
+    problem_type = ProblemType.objects.filter(name = problem_type_name).first()
+
+    if(language and problem_type and wiki_title and wiki_content):
+        wiki = JupyterWiki.objects.create(title=wiki_title, content=wiki_content, language=language)
+        wiki.save()
+        problem_type.wikis_set.add(wiki)
+        return Response({'status': True, 'message': 'Wiki añadida correctamente.'})
+    else:
+        return Response({'status': False, 'message': 'Solicitud de creación de Wiki incorrecta.'})
