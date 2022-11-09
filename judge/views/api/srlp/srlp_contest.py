@@ -134,7 +134,8 @@ def get_contest_info(request):
                 'name': problem.problem.name,
                 'code': problem.problem.code,
             } for problem in problems] if can_see_problems else [],
-        'user_context': user_context
+        'user_context': user_context,
+        'status': True
     })
 
 @api_view(['GET'])
@@ -193,10 +194,10 @@ def get_contest_ranking(request):
                 'is_disqualified': participation.is_disqualified,
                 'solutions': contest.format.get_problem_breakdown(participation, problems),
             } for participation in result_page]
-        data = {'ranking': ranking}
+        data = {'ranking': ranking, 'status': True}
         return paginator.get_paginated_response(data)
     else:
-        return Response({'ranking': [], 'pages': 0})
+        return Response({'ranking': [], 'pages': 0, 'status': True})
 
 @permission_classes([isLogueado]) 
 @api_view(['POST'])
