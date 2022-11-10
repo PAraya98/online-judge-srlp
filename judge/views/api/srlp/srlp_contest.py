@@ -28,7 +28,7 @@ def sane_time_repr(delta):
 @api_view(['GET'])
 def get_contest_list(request):
     user = get_jwt_user(request)
-    profile = Profile.objects.get(user=user) 
+    if(user): profile = Profile.objects.get(user=user) 
 
     queryset = Contest.get_visible_contests(user).prefetch_related(
         Prefetch('tags', queryset=ContestTag.objects.only('name'), to_attr='tag_list'))
