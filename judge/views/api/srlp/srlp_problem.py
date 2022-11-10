@@ -203,7 +203,7 @@ def modify_wiki(request):
         wiki.title = data.new_wiki_title if data.new_wiki_title else wiki.title
         wiki.content = data.new_wiki_content if data.new_wiki_content else wiki.content
         language = Language.objects.filter(key = data.new_wiki_language_key).first()
-        wiki.active = data.new_wiki_active if data.new_wiki_active else wiki.active
+        wiki.active = data.new_wiki_active if data.new_wiki_active is not None else wiki.active
         wiki.language = wiki.language if not language else language
         if(data.new_wiki_title or data.new_wiki_content or data.new_wiki_language_key):
             wiki.date = timezone.now()
