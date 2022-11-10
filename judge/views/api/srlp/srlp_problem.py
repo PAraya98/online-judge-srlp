@@ -64,6 +64,7 @@ def get_problem_list(request):
                 'partial': res.partial,
                 'name': res.name,
                 'group_name': res.group_name,
+                'ac_rate': res.ac_rate,
                 'date': res.date,
                 'user_count': res.user_count,
                 'is_public': res.is_public,
