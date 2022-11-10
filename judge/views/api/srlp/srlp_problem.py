@@ -158,9 +158,8 @@ def create_wiki(request):
 
     if(language and problem_type and wiki_title and wiki_content):
         
-        if(not JupyterWiki.objects.filter(title=wiki_title, language=language).first()): 
+        if(JupyterWiki.objects.filter(title=wiki_title, language=language).first()): 
             return Response({'status': False, 'message': 'Esta wiki ya existe, intenta con otro título.'})
-        #if(user.is_superuser): #TODO:TODO:TODO: En caso de modificar, consultar si es admin TODO:TODO:TODO:
         
         wiki = JupyterWiki.objects.create(author= profile,title=wiki_title, content=wiki_content, language=language)
         wiki.save()
