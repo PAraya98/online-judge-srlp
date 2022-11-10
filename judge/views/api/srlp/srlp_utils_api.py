@@ -18,7 +18,7 @@ def acces_denied(bool_list):
     return Response({'status': "Acceso denegado"})
 
 def filter_if_not_none(qs, **kwargs):
-    return qs.filter(**{k: v for k, v in kwargs.items() if not v})
+    return qs.filter(**{k: v for k, v in kwargs.items() if v is not None})
 
 def filter_conjuntive_if_not_none(qs, key, list_params):
     if(len(list_params)>0 and list_params[0] != ''):
@@ -28,7 +28,7 @@ def filter_conjuntive_if_not_none(qs, key, list_params):
     return qs
 
 def order_by_if_not_none(qs, list_params):
-    return qs.order_by(*[v for v in list_params if v is not None or v is not ''])
+    return qs.order_by(*[v for v in list_params if v is not None and v is not ''])
 
 class CustomPagination(PageNumberPagination):
     '''
