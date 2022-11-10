@@ -35,7 +35,9 @@ class JupyterWiki(models.Model):
     language = models.ForeignKey(Language, verbose_name=_('language'), on_delete=CASCADE)
     content = models.TextField(verbose_name=('Wiki jupyter content'))
     author = models.ForeignKey(Profile, verbose_name=('author'), on_delete=CASCADE, default=None)
-   
+    date = models.DateTimeField(verbose_name=_('clarification timestamp'), auto_now_add=True)
+    active = models.BooleanField(verbose_name=('If wiki is public'), db_index=True, default=False)
+    
     def __str__(self):
         return self.title
 
