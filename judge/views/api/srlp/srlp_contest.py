@@ -71,6 +71,8 @@ def get_contest_list(request):
                 'start_time': c.start_time.isoformat(),
                 'end_time': c.end_time.isoformat(),
                 'time_limit': c.time_limit and sane_time_repr(c.time_limit),
+                'time_before_start': c.time_before_start,
+                'time_before_end': c.time_before_end,
                 'labels': list(map(attrgetter('name'), c.tag_list))
             })
         data = ({"contests": array, 'current_time': datetime.now(), 'is_connected': bool(user), 'status': True})
@@ -123,6 +125,8 @@ def get_contest_info(request):
         'rating_floor': contest.rating_floor,   
         'rating_ceiling': contest.rating_ceiling,
         'has_access_code': True if contest.access_code is not '' else False,
+        'time_before_start': contest.time_before_start,
+        'time_before_end': contest.time_before_end,
         'format': {
             'name': contest.format_name,
             'config': contest.format_config,
