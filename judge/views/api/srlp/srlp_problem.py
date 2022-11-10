@@ -303,3 +303,13 @@ def list_wiki(request):
         return paginator.get_paginated_response({'wikis': data, 'status': True})
     else:
         return Response({'wikis': [], 'status': True, 'pages': 0})
+
+@api_view(['GET'])
+def list_languages(request):
+    queryset = Language.objects.all()
+    return Response([{
+        'key': language.key,
+        'name': language.name,
+        'common_name': language.common_name,
+        'ace': language.ace
+    }] for language in queryset)
