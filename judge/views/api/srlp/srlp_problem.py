@@ -142,7 +142,7 @@ def get_types(request):
                                         author__user__username__icontains = request.GET.get('wiki_author'),
                                         language__key = request.GET.get('wiki_language_key')
                                     ).all()
-                            ]
+                            ] if res.wikis is not None else []
                 #TODO: AGREGAR ENLACE DE LA WIKI A FUTURO
             } for res in result_page]
               
