@@ -109,18 +109,9 @@ def get_problem_info(request):
 def get_types(request):
     queryset = ProblemType.objects
 
-    wiki_queryset = JupyterWiki.objects
-    
-    wiki_queryset = filter_if_not_none(wiki_queryset,
-                title__icontains = request.GET.get('wiki_title'),
-                author__user__username__icontains = request.GET.get('wiki_author'),
-                language__key = request.GET.get('wiki_language_key')
-            )
-    
     queryset = filter_if_not_none(queryset,
         name__icontains = request.GET.get('name'),
-        full_name__icontains = request.GET.get('full_name'),
-        wikis__in = wiki_queryset
+        full_name__icontains = request.GET.get('full_name')
     )
 
     queryset = order_by_if_not_none(queryset,
@@ -137,17 +128,6 @@ def get_types(request):
                 'id':   res.id,
                 'name':  res.name,
                 'full_name': res.full_name,
-                'wikis':    [   {   'id':       wiki.id,
-                                    'author':   wiki.author.user.username, 
-                                    'title':    wiki.title, 
-                                    'language': wiki.language.name
-                                } for wiki in filter_if_not_none(res.wikis,
-                                        title__icontains = request.GET.get('wiki_title'),
-                                        author__user__username__icontains = request.GET.get('wiki_author'),
-                                        language__key = request.GET.get('wiki_language_key')
-                                    ).all()
-                            ] if res.wikis is not None else []
-                #TODO: AGREGAR ENLACE DE LA WIKI A FUTURO
             } for res in result_page]
               
         return paginator.get_paginated_response({'types': data, 'status': True})
