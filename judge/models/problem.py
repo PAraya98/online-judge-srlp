@@ -30,7 +30,18 @@ def disallowed_characters_validator(text):
         raise ValidationError(_('Disallowed characters: %(value)s'),
                               params={'value': ''.join(common_disallowed_characters)})
 
+class JupyterWiki(models.Model):
+    title = models.CharField(max_length=100, verbose_name=('Wiki jupyter title'))
+    language = models.ForeignKey(Language, verbose_name=_('language'), on_delete=CASCADE)
+    content = models.TextField(verbose_name=('Wiki jupyter content'))
+    author = models.ForeignKey(Profile, verbose_name=('author'), on_delete=CASCADE, default=None)
+   
+    def __str__(self):
+        return self.title
 
+    class Meta:
+        verbose_name = ('jupyter wiki')
+        verbose_name_plural = ('jupyter wikis')
 
 class ProblemType(models.Model):
     name = models.CharField(max_length=20, verbose_name=('problem category ID'), unique=True)
@@ -46,19 +57,7 @@ class ProblemType(models.Model):
         verbose_name = _('problem type')
         verbose_name_plural = _('problem types')
 
-class JupyterWiki(models.Model):
-    title = models.CharField(max_length=100, verbose_name=('Wiki jupyter title'))
-    language = models.ForeignKey(Language, verbose_name=_('language'), on_delete=CASCADE)
-    content = models.TextField(verbose_name=('Wiki jupyter content'))
-    author = models.ForeignKey(Profile, verbose_name=('author'), on_delete=CASCADE, default=None)
-    problem_type = models.ForeignKey(ProblemType, verbose_name=('problem_type'), on_delete=CASCADE, default=None)
-    
-    def __str__(self):
-        return self.title
 
-    class Meta:
-        verbose_name = ('jupyter wiki')
-        verbose_name_plural = ('jupyter wikis')
 
 class ProblemGroup(models.Model):
     name = models.CharField(max_length=20, verbose_name=_('problem group ID'), unique=True)
