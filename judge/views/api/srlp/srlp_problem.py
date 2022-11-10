@@ -190,9 +190,9 @@ def modify_wiki(request):
         wiki.title = data.new_wiki_title if data.new_wiki_title else wiki.title
         wiki.content = data.new_wiki_content if data.new_wiki_content else wiki.content
         language = Language.objects.filter(key = data.new_wiki_language_key).first()
-        wiki.language = wiki.language if language is not None else language
+        wiki.language = wiki.language if not language else language
         wiki.save()
-        
+
         return Response({'status': True, 'message': 'Wiki modificada correctamente.'})
     else:   
         return Response({'status': False, 'message': 'Solicitud de modificación de Wiki incorrecta.'})
