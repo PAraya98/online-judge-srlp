@@ -274,13 +274,13 @@ def list_wiki(request):
                 problem_type__in = type_queryset
             )
 
-    queryset = order_by_if_not_none(queryset,
+    wiki_queryset = order_by_if_not_none(wiki_queryset,
             request.GET.getlist('order_by')                  
     )
 
-    if len(queryset)> 0:
+    if len(wiki_queryset)> 0:
         paginator = CustomPagination()
-        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
+        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(wiki_queryset, request))
 
         data = [{   'title': wiki.title,
                     'author': wiki.author.user.username,
