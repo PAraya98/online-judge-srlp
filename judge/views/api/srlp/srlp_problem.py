@@ -187,13 +187,12 @@ def modify_wiki(request):
         if(not wiki):
             return Response({'status': False, 'message': 'Esta wiki no existe o no puedes modificarla.'})
 
-        new_wiki_title = data.new_wiki_title if data.new_wiki_title else wiki.title
-        new_wiki_content = data.new_wiki_content if data.new_wiki_content else wiki.content
+        wiki.title = data.new_wiki_title if data.new_wiki_title else wiki.title
+        wiki.content = data.new_wiki_content if data.new_wiki_content else wiki.content
         language = Language.objects.filter(key = data.new_wiki_language_key).first()
-        new_wiki_language = wiki.language if language is not None else language
-
-        wiki.update(title=new_wiki_title, content=new_wiki_content, language=new_wiki_language)
-
+        wiki.language = wiki.language if language is not None else language
+        wiki.save()
+        
         return Response({'status': True, 'message': 'Wiki modificada correctamente.'})
     else:   
         return Response({'status': False, 'message': 'Solicitud de modificación de Wiki incorrecta.'})
