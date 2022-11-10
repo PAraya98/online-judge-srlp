@@ -115,7 +115,7 @@ def get_types(request):
         wikis__in= filter_if_not_none(JupyterWiki.objects,
                 title__icontains = request.GET.get('wiki_title'),
                 author__user__username__icontains = request.GET.get('wiki_author'),
-                language__key = request.GET.get('wiki_language_key').all()
+                language__key = request.GET.get('wiki_language_key')
             ) 
     )
 
