@@ -25,7 +25,10 @@ problem_patterns = [
     path('list', srlp_problem.get_problem_list),
     path('info', srlp_problem.get_problem_info),
     path('types', srlp_problem.get_types),
-    path('create_wiki', srlp_problem.create_wiki)
+    path('create_wiki', srlp_problem.create_wiki),
+    path('modify_wiki', srlp_problem.modify_wiki),
+    path('delete_wiki', srlp_problem.delete_wiki),
+    path('get_wiki', srlp_problem.get_wiki)
 ]
 
 contest_patterns = [

@@ -197,3 +197,39 @@ def modify_wiki(request):
         return Response({'status': True, 'message': 'Wiki modificada correctamente.'})
     else:   
         return Response({'status': False, 'message': 'Solicitud de modificación de Wiki incorrecta.'})
+
+@api_view(['POST'])
+@permission_classes([isProfesor])
+def delete_wiki(request):
+    data = DefaultMunch.fromDict(json.loads(request.body))
+    wiki_id = data.wiki_id   
+    user = get_jwt_user(request)
+    profile= Profile.objects.get(user=user)
+
+    if(user.is_superuser):
+        wiki = JupyterWiki.objects.filter(id=wiki_id).first()
+    else:
+        wiki = JupyterWiki.objects.filter(id=wiki_id, author=profile).first()
+
+    if(not wiki):
+        return Response({'status': False, 'message': 'Esta wiki no existe o no puedes modificarla.'})
+    wiki.delete()
+    return Response({'status': True, 'message': 'Wiki eliminada correctamente.'})
+
+@api_view(['GET'])
+def get_wiki(request):
+    data = DefaultMunch.fromDict(json.loads(request.body))
+    wiki_id = data.wiki_id 
+    wiki = JupyterWiki.objects.filter(id=wiki_id).first()
+    if(not wiki):
+        return Response({'status': False, 'message': 'Esta wiki no existe.'})
+    
+    return Response({
+        'status': True, 
+        'wiki': {
+            'title': wiki.title,
+            'author': wiki.author.user.username,
+            'content': wiki.content,
+            'language': wiki.language.name
+        }
+    })
