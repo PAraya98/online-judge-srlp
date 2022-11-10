@@ -228,6 +228,7 @@ def get_wiki(request):
             'title': wiki.title,
             'author': wiki.author.user.username,
             'content': wiki.content,
-            'language': wiki.language.name
+            'language': wiki.language.name,
+            'type': wiki.problemtype.name
         }
     })
