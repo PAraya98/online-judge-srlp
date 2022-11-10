@@ -236,8 +236,16 @@ def get_wiki(request):
     user = get_jwt_user(request)
     profile= Profile.objects.get(user=user)
     data = DefaultMunch.fromDict(json.loads(request.body))
-    wiki_id = data.wiki_id 
-    wiki = JupyterWiki.objects.filter(id=wiki_id).first()
+
+    problemtype = ProblemType.objects.filter(name=data.type_name).first()    
+    if not problemtype: 
+        return Response({'status': False, 'message': 'El tipo de problema no existe.'})
+    language = Language.objects.filter(key=data.language_key).first()
+    if not language:
+        return Response({'status': False, 'message': 'El lenguaje no existe.'})
+
+    wiki = JupyterWiki.objects.filter(language=language, title=data.wiki_title, problemtype=problemtype).first()
+
     if(not wiki or (not wiki.active and (not user or not user.is_superuser or not wiki.author == profile))):
         return Response({'status': False, 'message': 'Esta wiki no existe o no tienes acceso.'})
     
