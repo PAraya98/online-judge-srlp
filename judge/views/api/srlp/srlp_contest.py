@@ -176,11 +176,9 @@ def get_contest_ranking(request):
     
 
     if request.GET.get('virtual') == 'true':
-        queryset.exclude(virtual__lte = 0)
+        queryset.filter(virtual__gt = 0)
     else:
-        queryset = filter_if_not_none(queryset,        
-            virtual = 0 if request.GET.get('virtual') == 'false' else None
-        )  
+       queryset.filter(virtual = 0)
 
     if(not contest.is_editable_by(user)):
         queryset = queryset.exclude(virtual__lt = 0)
