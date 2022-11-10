@@ -307,9 +307,13 @@ def list_wiki(request):
 @api_view(['GET'])
 def list_languages(request):
     queryset = Language.objects.all()
-    return Response([{
-        'key': language.key,
-        'name': language.name,
-        'common_name': language.common_name,
-        'ace': language.ace
-    }] for language in queryset)
+    return Response({
+        'status': True,
+        'languages': [{
+            'key': language.key,
+            'name': language.name,
+            'common_name': language.common_name,
+            'ace': language.ace
+        } for language in queryset]    
+        }
+    )
