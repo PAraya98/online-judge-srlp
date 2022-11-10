@@ -108,15 +108,19 @@ def get_problem_info(request):
 def get_types(request):
     queryset = ProblemType.objects; #TODO: Cambiar para organizaciones "Curso"
 
-    queryset = filter_if_not_none(
-        queryset,
-        name__icontains = request.GET.get('name'),
-        full_name__icontains = request.GET.get('full_name'),
-        wikis__in = filter_if_not_none(JupyterWiki.objects,
+    wiki_queryset = JupyterWiki.objects
+    
+    wiki_queryset = filter_if_not_none(wiki_queryset,
                 title__icontains = request.GET.get('wiki_title'),
                 author__user__username__icontains = request.GET.get('wiki_author'),
                 language__key = request.GET.get('wiki_language_key')
             )
+    
+    queryset = filter_if_not_none(
+        queryset,
+        name__icontains = request.GET.get('name'),
+        full_name__icontains = request.GET.get('full_name'),
+        wikis__in = wiki_queryset
     )
 
     queryset = order_by_if_not_none(queryset,
