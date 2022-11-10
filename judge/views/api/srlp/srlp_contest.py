@@ -138,6 +138,7 @@ def get_contest_info(request):
                 'partial': problem.partial,
                 'name': problem.problem.name,
                 'code': problem.problem.code,
+                'ac_rate': problem.problem.ac_rate
             } for problem in problems] if can_see_problems else [],
         'user_context': user_context,
         'status': True
