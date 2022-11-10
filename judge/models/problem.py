@@ -47,7 +47,8 @@ class ProblemType(models.Model):
     name = models.CharField(max_length=20, verbose_name=('problem category ID'), unique=True)
     full_name = models.CharField(max_length=100, verbose_name=('problem category name'))
     wikis = models.ManyToManyField(JupyterWiki, verbose_name=('language wikis'),
-                                  help_text=("Wiki in Jupyter notebooks for each language."))
+                                  help_text=("Wiki in Jupyter notebooks for each language."),
+                                  related_name='problemtype')
 
     def __str__(self):
         return self.full_name
