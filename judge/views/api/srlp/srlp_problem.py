@@ -272,7 +272,8 @@ def list_wiki(request):
         paginator = CustomPagination()
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(wiki_queryset, request))
 
-        data = [{   'title': wiki.title,
+        data = [{   'id':   wiki.id,
+                    'title': wiki.title,
                     'author': wiki.author.user.username,
                     'language': wiki.language.name,
                     'type': wiki.problemtype.first().name,
