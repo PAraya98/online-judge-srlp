@@ -112,10 +112,10 @@ def get_types(request):
         queryset,
         name__icontains = request.GET.get('name'),
         full_name__icontains = request.GET.get('full_name'),
-        wikis = filter_if_not_none(JupyterWiki.objects,
+        wikis__in= filter_if_not_none(JupyterWiki.objects,
                 title__icontains = request.GET.get('wiki_title'),
                 author__user__username__icontains = request.GET.get('wiki_author'),
-                language__key = request.GET.get('wiki_language_key')
+                language__key = request.GET.get('wiki_language_key').distinct()
             ) 
     )
 
