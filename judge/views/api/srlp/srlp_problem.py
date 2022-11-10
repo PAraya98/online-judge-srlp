@@ -271,7 +271,7 @@ def list_wiki(request):
                 title__icontains = request.GET.get('wiki_title'),
                 author__user__username__icontains = request.GET.get('wiki_author'),
                 language__key = request.GET.get('wiki_language_key'),
-                problem_type = type_queryset
+                problemtype = type_queryset
             )
 
     wiki_queryset = order_by_if_not_none(wiki_queryset,
