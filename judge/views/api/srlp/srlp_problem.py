@@ -12,7 +12,8 @@ import json
 from munch import DefaultMunch
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from django.db.models import F, OuterRef, Subquery
+from django.db.models import F, OuterRef, Subquery, Window
+from django.db.models.functions import Rank
 from judge.models.problem import ProblemType
 
 from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, filter_conjuntive_if_not_none, order_by_if_not_none, filter_if_not_none, isProfesor
@@ -106,7 +107,11 @@ def get_problem_info(request):
 
 @api_view(['GET'])
 def get_types(request):
-    queryset = ProblemType.objects
+    queryset = ProblemType.objects.annotate(
+        position=Window(
+            expression=Rank(),
+            order_by=F('points').desc(),
+    ))
 
     wiki_queryset = JupyterWiki.objects
     
@@ -133,6 +138,7 @@ def get_types(request):
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
 
         data = [{
+                'position': res.position,
                 'id':   res.id,
                 'name':  res.name,
                 'full_name': res.full_name,
