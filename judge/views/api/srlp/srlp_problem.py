@@ -260,6 +260,7 @@ def list_wiki(request):
     user = get_jwt_user(request)
     profile= Profile.objects.get(user=user)
 
+    type_queryset = None
     if(request.GET.get('problem_type')):
         type_queryset = ProblemType.objects.filter(full_name=request.GET.get('problem_type'))
 
