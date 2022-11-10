@@ -111,7 +111,8 @@ def get_types(request):
     queryset = filter_if_not_none(
         queryset,
         name__icontains=request.GET.get('name'),
-        full_name__icontains=request.GET.get('full_name')
+        full_name__icontains=request.GET.get('full_name'),
+        wikis__title__icontains=request.GET.get('wiki_title')
     )
 
     queryset = order_by_if_not_none(queryset,
@@ -232,3 +233,23 @@ def get_wiki(request):
             'type': wiki.problemtype.first().name
         }
     })
+
+@api_view(['GET'])
+def list_wiki(request):
+    data = DefaultMunch.fromDict(json.loads(request.body))
+    wiki_id = data.wiki_id 
+    wiki = JupyterWiki.objects.filter(id=wiki_id).first()
+    if(not wiki):
+        return Response({'status': False, 'message': 'Esta wiki no existe.'})
+    
+    return Response({
+        'status': True, 
+        'wiki': {
+            'title': wiki.title,
+            'author': wiki.author.user.username,
+            'content': wiki.content,
+            'language': wiki.language.name,
+            'type': wiki.problemtype.first().name
+        }
+    })
+
