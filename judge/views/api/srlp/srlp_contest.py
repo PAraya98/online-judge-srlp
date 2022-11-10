@@ -173,10 +173,10 @@ def get_contest_ranking(request):
         user_id = profile.id if not contest.can_see_full_scoreboard_rest(user) else None
     )
 
-    print(request.GET.get('virtual'))
+    
 
     if request.GET.get('virtual') == 'true':
-        queryset.exclude(virtual__gt = 0)
+        queryset.exclude(virtual__lte = 0)
     else:
         queryset = filter_if_not_none(queryset,        
             virtual = 0 if request.GET.get('virtual') == 'false' else None
