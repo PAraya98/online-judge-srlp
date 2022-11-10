@@ -238,7 +238,7 @@ def get_wiki(request):
     data = DefaultMunch.fromDict(json.loads(request.body))
     wiki_id = data.wiki_id 
     wiki = JupyterWiki.objects.filter(id=wiki_id).first()
-    if(not wiki or not wiki.active or not user or not user.is_superuser or not wiki.author == profile):
+    if(not wiki or (not wiki.active and (not user or not user.is_superuser or not wiki.author == profile))):
         return Response({'status': False, 'message': 'Esta wiki no existe o no tienes acceso.'})
     
     return Response({
