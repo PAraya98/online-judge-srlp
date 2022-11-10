@@ -262,9 +262,7 @@ def list_wiki(request):
 
     type_queryset = None
     if(request.GET.get('problem_type')):
-        type_queryset = filter_if_not_none(ProblemType.objects, 
-                            name=request.GET.get('problem_type')
-                        )
+        type_queryset = ProblemType.objects.filter(name=request.GET.get('problem_type')).first()
 
     if(not user or not user.is_superuser or not profile.display_rank == 'Profesor'):
         wiki_queryset.exclude(active=False) 
@@ -273,7 +271,7 @@ def list_wiki(request):
                 title__icontains = request.GET.get('wiki_title'),
                 author__user__username__icontains = request.GET.get('wiki_author'),
                 language__key = request.GET.get('wiki_language_key'),
-                problem_type__in = type_queryset
+                problem_type = type_queryset
             )
 
     wiki_queryset = order_by_if_not_none(wiki_queryset,
