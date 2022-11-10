@@ -257,8 +257,10 @@ def get_wiki(request):
             'date': wiki.date,
             'active': wiki.active,
             'content': wiki.content,
-            'language': wiki.language.name,
-            'type': wiki.problemtype.first().name
+            'language_name': wiki.language.name,
+            'language_common_name': wiki.language.common_name,
+            'type_name': wiki.problemtype.first().name,
+            'type_full_name': wiki.problemtype.first().full_name,
         }
     })
 
