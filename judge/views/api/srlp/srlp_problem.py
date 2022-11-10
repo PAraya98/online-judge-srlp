@@ -116,7 +116,7 @@ def get_types(request):
                 title__icontains = request.GET.get('wiki_title'),
                 author__user__username__icontains = request.GET.get('wiki_author'),
                 language__key = request.GET.get('wiki_language_key')
-            ).distinct() 
+            )
     )
 
     queryset = order_by_if_not_none(queryset,
@@ -137,7 +137,11 @@ def get_types(request):
                                     'author':   wiki.author.user.username, 
                                     'title':    wiki.title, 
                                     'language': wiki.language.name
-                                } for wiki in res.wikis.all()
+                                } for wiki in filter_if_not_none(res.wikis,
+                                        title__icontains = request.GET.get('wiki_title'),
+                                        author__user__username__icontains = request.GET.get('wiki_author'),
+                                        language__key = request.GET.get('wiki_language_key')
+                                    ).all()
                             ]
                 #TODO: AGREGAR ENLACE DE LA WIKI A FUTURO
             } for res in result_page]
