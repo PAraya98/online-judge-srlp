@@ -155,39 +155,6 @@ def get_types(request):
         return Response({'types': [], 'status': True, 'pages': 0})
 
 
-@api_view(['GET'])
-def get_wikis(request):
-    #wiki.problemtype.first().name
-    wiki_queryset = JupyterWiki.objects
-    
-    if(request.GET.get('problem_type')):
-        type_queryset = ProblemType.objects.filter(full_name=request.GET.get('problem_type'))
-
-    wiki_queryset = filter_if_not_none(wiki_queryset,
-                title__icontains = request.GET.get('wiki_title'),
-                author__user__username__icontains = request.GET.get('wiki_author'),
-                language__key = request.GET.get('wiki_language_key'),
-                problem_type__in = type_queryset
-            )
-
-    queryset = order_by_if_not_none(queryset,
-            request.GET.getlist('order_by')                  
-    )
-
-    if len(queryset)> 0:
-        paginator = CustomPagination()
-        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
-
-        data = [{   'title': wiki.title,
-                    'author': wiki.author.user.username,
-                    'language': wiki.language.name,
-                    'type': wiki.problemtype.first().name
-            } for wiki in result_page]
-              
-        return paginator.get_paginated_response({'types': data, 'status': True})
-    else:
-        return Response({'types': [], 'status': True, 'pages': 0})
-
 @api_view(['POST'])
 @permission_classes([isProfesor])
 def create_wiki(request):
@@ -266,17 +233,21 @@ def delete_wiki(request):
 
 @api_view(['GET'])
 def get_wiki(request):
+    user = get_jwt_user(request)
+    profile= Profile.objects.get(user=user)
     data = DefaultMunch.fromDict(json.loads(request.body))
     wiki_id = data.wiki_id 
     wiki = JupyterWiki.objects.filter(id=wiki_id).first()
-    if(not wiki):
-        return Response({'status': False, 'message': 'Esta wiki no existe.'})
+    if(not wiki or not wiki.active or not user or not user.is_superuser or not wiki.author == profile):
+        return Response({'status': False, 'message': 'Esta wiki no existe o no tienes acceso.'})
     
     return Response({
         'status': True, 
         'wiki': {
             'title': wiki.title,
             'author': wiki.author.user.username,
+            'date': wiki.date,
+            'active': wiki.active,
             'content': wiki.content,
             'language': wiki.language.name,
             'type': wiki.problemtype.first().name
@@ -285,20 +256,39 @@ def get_wiki(request):
 
 @api_view(['GET'])
 def list_wiki(request):
-    data = DefaultMunch.fromDict(json.loads(request.body))
-    wiki_id = data.wiki_id 
-    wiki = JupyterWiki.objects.filter(id=wiki_id).first()
-    if(not wiki):
-        return Response({'status': False, 'message': 'Esta wiki no existe.'})
-    
-    return Response({
-        'status': True, 
-        'wiki': {
-            'title': wiki.title,
-            'author': wiki.author.user.username,
-            'content': wiki.content,
-            'language': wiki.language.name,
-            'type': wiki.problemtype.first().name
-        }
-    })
+    wiki_queryset = JupyterWiki.objects
+    user = get_jwt_user(request)
+    profile= Profile.objects.get(user=user)
 
+    if(request.GET.get('problem_type')):
+        type_queryset = ProblemType.objects.filter(full_name=request.GET.get('problem_type'))
+
+    if(not user or not user.is_superuser or not profile.display_rank == 'Profesor'):
+        wiki_queryset.exclude(active=False) 
+
+    wiki_queryset = filter_if_not_none(wiki_queryset,
+                title__icontains = request.GET.get('wiki_title'),
+                author__user__username__icontains = request.GET.get('wiki_author'),
+                language__key = request.GET.get('wiki_language_key'),
+                problem_type__in = type_queryset
+            )
+
+    queryset = order_by_if_not_none(queryset,
+            request.GET.getlist('order_by')                  
+    )
+
+    if len(queryset)> 0:
+        paginator = CustomPagination()
+        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
+
+        data = [{   'title': wiki.title,
+                    'author': wiki.author.user.username,
+                    'language': wiki.language.name,
+                    'type': wiki.problemtype.first().name,
+                    'active': wiki.active,
+                    'date': wiki.date
+            } for wiki in result_page]
+              
+        return paginator.get_paginated_response({'wikis': data, 'status': True})
+    else:
+        return Response({'wikis': [], 'status': True, 'pages': 0})
