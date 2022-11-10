@@ -186,7 +186,7 @@ def get_contest_ranking(request):
     queryset = queryset.annotate(
         position=Window(
             expression=Rank(),
-            order_by=F('points').desc(),
+            order_by=F('score').desc(),
     ))
 
     if(len(queryset) > 0):
