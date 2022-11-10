@@ -110,9 +110,13 @@ def get_types(request):
 
     queryset = filter_if_not_none(
         queryset,
-        name__icontains=request.GET.get('name'),
-        full_name__icontains=request.GET.get('full_name'),
-        wikis__in= JupyterWiki.objects.filter(name__icontains= request.GET.get('wiki_title') if request.GET.get('wiki_title') is not None else '') 
+        name__icontains = request.GET.get('name'),
+        full_name__icontains = request.GET.get('full_name'),
+        wikis__in= filter_if_not_none(JupyterWiki.objects,
+                title__icontains = request.GET.get('wiki_title'),
+                author__user__username__icontains = request.GET.get('wiki_author'),
+                language__key = request.GET.get('wiki_language_key')
+            ) 
     )
 
     queryset = order_by_if_not_none(queryset,
