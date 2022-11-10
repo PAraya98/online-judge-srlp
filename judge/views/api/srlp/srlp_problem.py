@@ -14,7 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from django.db.models import F, OuterRef, Subquery
 from judge.models.problem import ProblemType
-
+from django.utils import timezone
 from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, filter_conjuntive_if_not_none, order_by_if_not_none, filter_if_not_none, isProfesor
 
 from judge.jinja2.markdown import markdown
@@ -155,6 +155,39 @@ def get_types(request):
         return Response({'types': [], 'status': True, 'pages': 0})
 
 
+@api_view(['GET'])
+def get_wikis(request):
+    #wiki.problemtype.first().name
+    wiki_queryset = JupyterWiki.objects
+    
+    if(request.GET.get('problem_type')):
+        type_queryset = ProblemType.objects.filter(full_name=request.GET.get('problem_type'))
+
+    wiki_queryset = filter_if_not_none(wiki_queryset,
+                title__icontains = request.GET.get('wiki_title'),
+                author__user__username__icontains = request.GET.get('wiki_author'),
+                language__key = request.GET.get('wiki_language_key'),
+                problem_type__in = type_queryset
+            )
+
+    queryset = order_by_if_not_none(queryset,
+            request.GET.getlist('order_by')                  
+    )
+
+    if len(queryset)> 0:
+        paginator = CustomPagination()
+        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(queryset, request))
+
+        data = [{   'title': wiki.title,
+                    'author': wiki.author.user.username,
+                    'language': wiki.language.name,
+                    'type': wiki.problemtype.first().name
+            } for wiki in result_page]
+              
+        return paginator.get_paginated_response({'types': data, 'status': True})
+    else:
+        return Response({'types': [], 'status': True, 'pages': 0})
+
 @api_view(['POST'])
 @permission_classes([isProfesor])
 def create_wiki(request):
@@ -163,18 +196,19 @@ def create_wiki(request):
     wiki_title = data.wiki_title
     wiki_content = data.wiki_content
     language_key = data.wiki_language_key
+    wiki_active = data.wiki_active
     user = get_jwt_user(request)
     profile= Profile.objects.get(user=user)
 
     language = Language.objects.filter(key = language_key).first()
     problem_type = ProblemType.objects.filter(name = problem_type_name).first()
 
-    if(language and problem_type and wiki_title and wiki_content):
+    if(language and problem_type and wiki_title and wiki_content and wiki_active is not None):
         
         if(JupyterWiki.objects.filter(title=wiki_title, language=language).first()): 
             return Response({'status': False, 'message': 'Esta wiki ya existe, intenta con otro título.'})
         
-        wiki = JupyterWiki.objects.create(author= profile,title=wiki_title, content=wiki_content, language=language)
+        wiki = JupyterWiki.objects.create(author= profile,title=wiki_title, content=wiki_content, language=language, active=wiki_active)
         wiki.save()
         problem_type.wikis.add(wiki)
         return Response({'status': True, 'message': 'Wiki añadida correctamente.', 'wiki_id': wiki.id})
@@ -202,7 +236,10 @@ def modify_wiki(request):
         wiki.title = data.new_wiki_title if data.new_wiki_title else wiki.title
         wiki.content = data.new_wiki_content if data.new_wiki_content else wiki.content
         language = Language.objects.filter(key = data.new_wiki_language_key).first()
+        wiki.active = data.wiki_active
         wiki.language = wiki.language if not language else language
+        if(data.new_wiki_title or data.new_wiki_content or data.new_wiki_language_key):
+            wiki.date = timezone.now()
         wiki.save()
 
         return Response({'status': True, 'message': 'Wiki modificada correctamente.'})
