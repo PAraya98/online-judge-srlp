@@ -2,7 +2,8 @@
 from dmoj import settings
 from judge.models import Contest, Contest, ContestParticipation, ContestTag, Rating
 from judge.views.api.srlp.srlp_utils_api import *
-from django.db.models import OuterRef, Subquery, BooleanField, Case, Count, F, FloatField, IntegerField, Max, Min, Q, Sum, Value, When, Prefetch
+from django.db.models import OuterRef, Subquery, BooleanField, Case, Count, F, FloatField, IntegerField, Max, Min, Q, Sum, Value, When, Prefetch, Window
+from django.db.models.functions import Rank
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -181,13 +182,19 @@ def get_contest_ranking(request):
 
     if(not contest.is_editable_by(user)):
         queryset = queryset.exclude(virtual__lt = 0)
+    
+    queryset = queryset.annotate(
+        position=Window(
+            expression=Rank(),
+            order_by=F('points').desc(),
+    ))
 
     if(len(queryset) > 0):
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
 
         ranking = [
-            {
+            {   'position': participation.position,
                 'user': participation.username,
                 'virtual': participation.virtual,
                 'points': participation.score,
