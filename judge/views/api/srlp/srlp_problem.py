@@ -254,8 +254,10 @@ def list_wiki(request):
     if(request.GET.get('problem_type')):
         type_queryset = ProblemType.objects.filter(name=request.GET.get('problem_type')).first()
 
-    if(not user and (not user.is_superuser or not profile.display_rank == 'Profesor')):
+
+    if(not (user and (user.is_superuser or profile.display_rank == 'Profesor'))):
         wiki_queryset.exclude(active=False) 
+
 
     wiki_queryset = filter_if_not_none(wiki_queryset,
                 title__icontains = request.GET.get('wiki_title'),
