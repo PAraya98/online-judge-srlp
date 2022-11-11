@@ -256,7 +256,7 @@ def list_wiki(request):
 
 
     if(not (user and (user.is_superuser or profile.display_rank == 'Profesor'))):
-        wiki_queryset.exclude(active=False) 
+        wiki_queryset = wiki_queryset.exclude(active=False) 
 
 
     wiki_queryset = filter_if_not_none(wiki_queryset,
@@ -281,7 +281,7 @@ def list_wiki(request):
                     'type': wiki.problemtype.first().name,
                     'active': wiki.active,
                     'date': wiki.date,
-                    'can_modify': user and (user.is_superuser or wiki.author == profile)
+                    'can_modify': bool(user and (user.is_superuser or wiki.author == profile))
             } for wiki in result_page]
               
         return paginator.get_paginated_response({'wikis': data, 'status': True})
