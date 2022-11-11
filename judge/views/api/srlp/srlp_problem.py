@@ -327,6 +327,7 @@ def list_wiki_topico(request):
         wiki_topico[wiki.problemtype.first().full_name].append({
             'title': wiki.title,
             'language_key': wiki.language.key,
+            'lenguaje': wiki.language.common_name,
             'type_key': wiki.problemtype.first().name
         })
     
