@@ -65,7 +65,7 @@ def sumbit_solution(request):
     with transaction.atomic():
         submission = Submission.objects.create(user=profile, problem=problem, language=language)
 
-        contest_problem = profile.current_contest
+        contest_problem = profile.current_contest.contest
 
         if contest_problem is not None:
             # Use the contest object from current_contest.contest because we already use it
