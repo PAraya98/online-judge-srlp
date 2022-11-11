@@ -66,10 +66,9 @@ def sumbit_solution(request):
         submission = Submission.objects.create(user=profile, problem=problem, language=language)
 
         contest_problem = profile.current_contest.contest
-        if contest_problem:
-            contest_problem = problem.contests.get(contest_id=profile.current_contest.contest_id)
-            
+
         if contest_problem is not None:
+            contest_problem = problem.contests.get(contest_id=profile.current_contest.contest_id)
             # Use the contest object from current_contest.contest because we already use it
             # in profile.update_contest().
             submission.contest_object = profile.current_contest.contest
