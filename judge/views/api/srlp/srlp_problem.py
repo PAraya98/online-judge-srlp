@@ -226,7 +226,8 @@ def get_wiki(request):
 
     wiki = JupyterWiki.objects.filter(language=language, title=data.wiki_title, problemtype=problemtype).first()
 
-    if(not wiki and (not wiki.active or (not user or not user.is_superuser or not wiki.author == profile))):
+    #if(not wiki and (not wiki.active and (not user or not user.is_superuser or not wiki.author == profile))):
+    if(not(wiki and (wiki.active or (user and (user.is_superuser or wiki.author == profile))))):
         return Response({'status': False, 'message': 'Esta wiki no existe o no tienes acceso.'})
     
     return Response({
