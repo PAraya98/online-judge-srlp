@@ -193,7 +193,8 @@ def get_info_submission(request):
                 'total_points': problem.points,
                 'result': res.result,
                 'source': res.source.source,
-                'error':  res.error
+                'error':  res.error,
+                'is_contest_submission': bool(res.contest_object)
             }
             query = DefaultMunch.fromDict(SubmissionTestCase.objects.filter(submission_id=res.id))
             array_ = []
