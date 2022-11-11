@@ -54,7 +54,7 @@ DMOJ_SSL = 0
 DMOJ_PP_STEP = 0.95
 DMOJ_PP_ENTRIES = 100
 DMOJ_PP_BONUS_FUNCTION = lambda n: 300 * (1 - 0.997 ** n)  # noqa: E731
-
+DATA_UPLOAD_MAX_MEMORY_SIZE = 100000000
 NODEJS = '/usr/bin/node'
 EXIFTOOL = '/usr/bin/exiftool'
 ACE_URL = '//cdnjs.cloudflare.com/ajax/libs/ace/1.1.3'

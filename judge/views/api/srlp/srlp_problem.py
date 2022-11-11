@@ -332,27 +332,7 @@ def list_wiki_topico(request):
         })
     
     return Response({'status': True, 'wikis': wiki_topico})
-
-    if len(wiki_queryset)> 0:
-        paginator = CustomPagination()
-        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(wiki_queryset, request))
-
-        data = [{   'id':   wiki.id,
-                    'title': wiki.title,
-                    'author': wiki.author.user.username,
-                    'language': wiki.language.name,
-                    'type': wiki.problemtype.first().full_name,
-                    'type_key': wiki.problemtype.first().name,
-                    'language_key': wiki.language.key,
-                    'active': wiki.active,
-                    'date': wiki.date,
-                    'can_modify': bool(user and (user.is_superuser or wiki.author == profile))
-            } for wiki in result_page]
-              
-        return paginator.get_paginated_response({'wikis': data, 'status': True})
-    else:
-        return Response({'wikis': [], 'status': True, 'pages': 0})
-
+    
 @api_view(['GET'])
 def list_languages(request):
     queryset = Language.objects.all()
