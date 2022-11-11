@@ -248,13 +248,13 @@ def get_wiki(request):
 def list_wiki(request):
     wiki_queryset = JupyterWiki.objects
     user = get_jwt_user(request)
-    profile= Profile.objects.get(user=user)
+    if(user): profile= Profile.objects.get(user=user)
 
     type_queryset = None
     if(request.GET.get('problem_type')):
         type_queryset = ProblemType.objects.filter(name=request.GET.get('problem_type')).first()
 
-    if(not user or not user.is_superuser or not profile.display_rank == 'Profesor'):
+    if(not user and (not user.is_superuser or not profile.display_rank == 'Profesor')):
         wiki_queryset.exclude(active=False) 
 
     wiki_queryset = filter_if_not_none(wiki_queryset,
