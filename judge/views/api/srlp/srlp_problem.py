@@ -278,7 +278,8 @@ def list_wiki(request):
                     'language': wiki.language.name,
                     'type': wiki.problemtype.first().name,
                     'active': wiki.active,
-                    'date': wiki.date
+                    'date': wiki.date,
+                    'can_modify': user and (user.is_superuser or wiki.author == profile)
             } for wiki in result_page]
               
         return paginator.get_paginated_response({'wikis': data, 'status': True})
