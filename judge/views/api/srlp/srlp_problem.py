@@ -278,7 +278,9 @@ def list_wiki(request):
                     'title': wiki.title,
                     'author': wiki.author.user.username,
                     'language': wiki.language.name,
-                    'type': wiki.problemtype.first().name,
+                    'type': wiki.problemtype.first().full_name,
+                    'type_key': wiki.problemtype.first().name,
+                    'language_key': wiki.language.key,
                     'active': wiki.active,
                     'date': wiki.date,
                     'can_modify': bool(user and (user.is_superuser or wiki.author == profile))
