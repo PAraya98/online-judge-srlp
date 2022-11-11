@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import F, OuterRef, Subquery
 from judge.models.problem import ProblemType
 from django.utils import timezone
-from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, filter_conjuntive_if_not_none, order_by_if_not_none, filter_if_not_none, isProfesor
+from judge.views.api.srlp.srlp_utils_api import get_jwt_user, CustomPagination, filter_conjuntive_if_not_none, order_by_if_not_none, filter_if_not_none, isProfesor, IsAdministrador
 
 from judge.jinja2.markdown import markdown
 
@@ -245,6 +245,7 @@ def get_wiki(request):
     })
 
 @api_view(['GET'])
+@permission_classes([isProfesor, IsAdministrador])
 def list_wiki(request):
     wiki_queryset = JupyterWiki.objects
     user = get_jwt_user(request)
@@ -269,6 +270,63 @@ def list_wiki(request):
     wiki_queryset = order_by_if_not_none(wiki_queryset,
             request.GET.getlist('order_by')                  
     )
+
+    if len(wiki_queryset)> 0:
+        paginator = CustomPagination()
+        result_page = DefaultMunch.fromDict(paginator.paginate_queryset(wiki_queryset, request))
+
+        data = [{   'id':   wiki.id,
+                    'title': wiki.title,
+                    'author': wiki.author.user.username,
+                    'language': wiki.language.name,
+                    'type': wiki.problemtype.first().full_name,
+                    'type_key': wiki.problemtype.first().name,
+                    'language_key': wiki.language.key,
+                    'active': wiki.active,
+                    'date': wiki.date,
+                    'can_modify': bool(user and (user.is_superuser or wiki.author == profile))
+            } for wiki in result_page]
+              
+        return paginator.get_paginated_response({'wikis': data, 'status': True})
+    else:
+        return Response({'wikis': [], 'status': True, 'pages': 0})
+
+@api_view(['GET'])
+def list_wiki_topico(request):
+    wiki_queryset = JupyterWiki.objects
+    user = get_jwt_user(request)
+    if(user): profile= Profile.objects.get(user=user)
+
+    type_queryset = None
+    if(request.GET.get('problem_type')):
+        type_queryset = ProblemType.objects.filter(name=request.GET.get('problem_type')).first()
+
+
+    wiki_queryset = wiki_queryset.exclude(active=False) 
+
+    wiki_queryset = filter_if_not_none(wiki_queryset,
+                title__icontains = request.GET.get('wiki_title'),
+                author__user__username__icontains = request.GET.get('wiki_author'),
+                language__key = request.GET.get('wiki_language_key'),
+                problemtype = type_queryset
+            )
+
+    wiki_queryset = order_by_if_not_none(wiki_queryset,
+            request.GET.getlist('order_by')                  
+    )
+
+    wiki_topico = {}
+
+    for wiki in wiki_queryset:
+        if wiki_topico[wiki.problemtype.first().full_name] is None:
+            wiki_topico[wiki.problemtype.first().full_name] = []
+        wiki_topico[wiki.problemtype.first().full_name].append({
+            'title': wiki.title,
+            'language_key': wiki.language.key,
+            'type_key': wiki.problemtype.first().name
+        })
+    
+    return Response({'status': True, 'wikis': wiki_topico})
 
     if len(wiki_queryset)> 0:
         paginator = CustomPagination()

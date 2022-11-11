@@ -30,6 +30,7 @@ problem_patterns = [
     path('delete_wiki', srlp_problem.delete_wiki),
     path('get_wiki', srlp_problem.get_wiki),
     path('list_wiki', srlp_problem.list_wiki),
+    path('list_wiki_topico', srlp_problem.list_wiki_topico),
     path('list_languages', srlp_problem.list_languages)
 ]
 
