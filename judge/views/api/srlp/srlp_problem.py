@@ -318,8 +318,12 @@ def list_wiki_topico(request):
     wiki_topico = {}
 
     for wiki in wiki_queryset:
-        if wiki_topico[wiki.problemtype.first().full_name] is None:
+
+        try:
+            wiki_topico[wiki.problemtype.first().full_name] is None
+        except KeyError:
             wiki_topico[wiki.problemtype.first().full_name] = []
+
         wiki_topico[wiki.problemtype.first().full_name].append({
             'title': wiki.title,
             'language_key': wiki.language.key,
