@@ -56,7 +56,7 @@ def get_ranking(request):
 @permission_classes([IsAuthenticated])
 def get_user_info(request):
     code = request.GET.getlist('username') 
-    username = get_jwt_user(request).username if not code and code != '' else code[0]
+    username = get_jwt_user(request).username if not code and code == '' else code[0]
     profile = Profile.objects.filter(user__username=username).first()
     if not profile: return Response({'status': False, 'message': 'Error al mostrar perfil, revisa la solicitud.'})
 
