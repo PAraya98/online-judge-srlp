@@ -64,7 +64,7 @@ def get_user_info(request):
             order_by=F('performance_points').desc(),
     ))
     sql, params = profile.query.sql_with_params()
-    profile = profile.raw(f"SELECT * FROM ({sql}) AS full WHERE user__username = "+ username, params)
+    profile = profile.raw(f"SELECT * FROM ({sql}) AS full WHERE username = "+ username, params)
 
     #profile = Profile.objects.filter(user__username=username).first()
     
