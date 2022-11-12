@@ -55,7 +55,7 @@ def get_ranking(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_info(request):
-    code = request.GET.getlist('username')
+    code = request.GET.getlist('username') if request.GET.getlist('username') is not None else get_jwt_user(request).username
     username = '' if not code else code[0]
     
     profile = get_object_or_404(Profile, user__username=username)
