@@ -58,7 +58,13 @@ def get_user_info(request):
     param = request.GET.get('username') 
     username = get_jwt_user(request).username if not param or param == '' else param
     
-    profile = Profile.objects.filter(user__username=username).first()
+    profile = Profile.objects.filter(is_unlisted=False).annotate(
+        ranking=Window(
+            expression=Rank(),
+            order_by=F('performance_points').desc(),
+    ))
+
+    profile.filter(user__username=username).first()
     if not profile: return Response({'status': False, 'message': 'Error al mostrar perfil, revisa la solicitud.'})
 
     submissions = list(Submission.objects.filter(case_points=F('case_total'), user=profile, problem__is_public=True,
@@ -67,6 +73,7 @@ def get_user_info(request):
     user = User.objects.get(username=username)
     
     resp = {
+        'ranking': user.ranking,
         'username': user.username,
         'avatar_url': gravatar_username(username),
         'about': profile.about,
