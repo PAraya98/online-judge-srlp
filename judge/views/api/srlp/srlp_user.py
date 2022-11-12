@@ -55,8 +55,8 @@ def get_ranking(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_info(request):
-    code = request.GET.getlist('username') if request.GET.getlist('username') is not None else get_jwt_user(request).username
-    username = '' if not code else code[0]
+    param = request.GET.get('username')
+    username = get_jwt_user(request) if param is not None else param
     
     profile = Profile.objects.filter(user__username=username).first()
     if not profile: return Response({'status': False, 'message': 'El usuario no existe.'})
