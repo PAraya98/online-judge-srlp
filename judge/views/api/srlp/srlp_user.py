@@ -55,22 +55,22 @@ def get_ranking(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_info(request):
-    user = None
-    if get_jwt_user(request):
-        profile_ = Profile.objects.filter(user=get_jwt_user(request)).first()
-    else:
-        profile_ = Profile.objects.filter(user_username=request.GET.get('username')).first()
-        if not profile_: return Response({'status': False, 'message': 'El usuario no existe.'})
-
+    param = request.GET.get('username') 
+    username = get_jwt_user(request).username if not param or param == '' else param
     
-    profile = Profile.objects.filter(is_unlisted=False, user__username__icontains='').annotate(
+    profile_ = Profile.objects.filter(user__username=username).first()
+    if not profile_: return Response({'status': False,'message': 'El usuario no existe.'})
+
+    profile = Profile.objects.filter(is_unlisted=False).annotate(
         ranking=Window(
             expression=Rank(),
             order_by=F('performance_points').desc(),
     ))
+
     sql, params = profile.query.sql_with_params()
+
     print(sql)
-    profile = profile.raw(f"SELECT * FROM ({sql}) AS full WHERE `auth_user`.`username` = "+ profile_.user.username, params)
+    profile = profile.raw(f"SELECT * FROM ({sql}) AS full WHERE id = "+ profile_.pk, params)
 
     #profile = Profile.objects.filter(user__username=username).first()
     
@@ -80,7 +80,7 @@ def get_user_info(request):
     submissions = list(Submission.objects.filter(case_points=F('case_total'), user=profile, problem__is_public=True,
                                                  problem__is_organization_private=False)
                        .values('problem').distinct().values_list('problem__code', flat=True))
-    user = User.objects.get(id=profile_.user.id)
+    user = User.objects.get(username=username)
     
     resp = {
         'ranking': profile.ranking,
