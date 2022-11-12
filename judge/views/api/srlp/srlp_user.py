@@ -57,7 +57,7 @@ def get_ranking(request):
 def get_user_info(request):
     code = request.GET.getlist('username') 
     username = get_jwt_user(request).username if not code else code[0]
-    profile = Profile.objects.filter(user__username=username)
+    profile = Profile.objects.filter(user__username=username).first()
     if not profile: return Response({'status': False, 'message': 'Error al mostrar perfil, revisa la solicitud.'})
 
     submissions = list(Submission.objects.filter(case_points=F('case_total'), user=profile, problem__is_public=True,
