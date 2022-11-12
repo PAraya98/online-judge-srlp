@@ -171,6 +171,40 @@ class Submission(models.Model):
 
         return False
 
+
+    def can_see_detail_rest(self, user):
+        if not user:
+            return False
+        profile = user.profile
+        source_visibility = self.problem.submission_source_visibility
+        if self.problem.is_editable_by(user):
+            return True
+        elif user.has_perm('judge.view_all_submission'):
+            return True
+        elif self.user_id == profile.id:
+            return True
+        elif source_visibility == SubmissionSourceAccess.ALWAYS:
+            return True
+        elif source_visibility == SubmissionSourceAccess.SOLVED and \
+                (self.problem.is_public or self.problem.testers.filter(id=profile.id).exists()) and \
+                self.problem.submission_set.filter(user_id=profile.id, result='AC',
+                                                   points=self.problem.points).exists():
+            return True
+        elif source_visibility == SubmissionSourceAccess.ONLY_OWN and \
+                self.problem.testers.filter(id=profile.id).exists():
+            return True
+
+        contest = self.contest_object
+        # If user is an author or curator of the contest the submission was made in, or they can see in-contest subs
+        if contest is not None and (
+            user.profile.id in contest.editor_ids or
+            contest.view_contest_submissions.filter(id=user.profile.id).exists() or
+            (contest.tester_see_submissions and user.profile.id in contest.tester_ids)
+        ):
+            return True
+
+        return False
+
     def update_contest(self):
         try:
             contest = self.contest
