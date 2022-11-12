@@ -227,11 +227,11 @@ def get_detail_submission(request):
     if not submission or not submission.can_see_detail_rest(get_jwt_user(request)): 
         return Response({'status': False, 'message': 'No puedes ver el detalle de la subida.'})
 
-    
     data = {
         'id': submission.id,
         'date': submission.date,
-        'language': submission.language.key,
+        'language_key': submission.language.key,
+        'language_name': submission.language.name,
         'time': submission.time,
         'memory': submission.memory,
         'points': submission.points,
