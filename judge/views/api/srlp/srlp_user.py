@@ -73,7 +73,7 @@ def get_user_info(request):
     user = User.objects.get(username=username)
     
     resp = {
-        'ranking': user.ranking,
+        'ranking': profile.ranking,
         'username': user.username,
         'avatar_url': gravatar_username(username),
         'about': profile.about,
