@@ -62,16 +62,15 @@ def get_user_info(request):
         profile_ = Profile.objects.filter(user_username=request.GET.get('username')).first()
         if not profile_: return Response({'status': False, 'message': 'El usuario no existe.'})
 
-    username = get_jwt_user(request).username if not param or param == '' else param
     
-    profile = Profile.objects.filter(is_unlisted=False).annotate(
+    profile = Profile.objects.filter(is_unlisted=False, user__username__icontains='').annotate(
         ranking=Window(
             expression=Rank(),
             order_by=F('performance_points').desc(),
     ))
     sql, params = profile.query.sql_with_params()
     
-    profile = profile.raw(f"SELECT * FROM ({sql}) AS full WHERE user_id = "+ profile_.user.id, params)
+    profile = profile.raw(f"SELECT * FROM ({sql}) AS full WHERE user_id = "+ profile_.user_id, params)
 
     #profile = Profile.objects.filter(user__username=username).first()
     
