@@ -58,10 +58,8 @@ def get_user_info(request):
     code = request.GET.getlist('username') if request.GET.getlist('username') is not None else get_jwt_user(request).username
     username = '' if not code else code[0]
     
-    profile = Profile.objects.filter(user__username=username)
+    profile = Profile.objects.filter(user__username=username).first()
     if not profile: return Response({'status': False, 'message': 'El usuario no existe.'})
-    
-    get_object_or_404(Profile, user__username=username)
 
     submissions = list(Submission.objects.filter(case_points=F('case_total'), user=profile, problem__is_public=True,
                                                  problem__is_organization_private=False)
