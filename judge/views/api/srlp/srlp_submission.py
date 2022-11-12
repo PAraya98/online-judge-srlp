@@ -300,7 +300,7 @@ def get_all_submissions(request):
                 'points': res.points,
                 'total_points': res.total_points,
                 'result': res.result,
-                'can_see_detail': res.can_see_detail_rest
+                'can_see_detail': res.can_see_detail_rest(get_jwt_user(request))
             } for res in result_page)
         }       
         return paginator.get_paginated_response(data)
