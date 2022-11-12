@@ -62,9 +62,9 @@ def get_user_info(request):
         ranking=Window(
             expression=Rank(),
             order_by=F('performance_points').desc(),
-    ))
+    )).all()
 
-    profile = profile.filter(user__username=username).first()
+    profile = profile.filter(user__username=username)
     if not profile: return Response({'status': False, 'message': 'Error al mostrar perfil, revisa la solicitud.'})
 
     submissions = list(Submission.objects.filter(case_points=F('case_total'), user=profile, problem__is_public=True,
