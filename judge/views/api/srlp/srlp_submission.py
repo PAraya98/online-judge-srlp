@@ -279,7 +279,7 @@ def get_all_submissions(request):
         language_key = request.GET.get('language_key'),
         problem_code__icontains =  request.GET.get('problem_code')
     )
-    submission = submission.values('id', 'problem_code', 'problem_name', 'username', 'language_key', 'date', 'time', 'memory', 'points', 'result', 'total_points')
+    #submission = submission.values('id', 'problem_code', 'problem_name', 'username', 'language_key', 'date', 'time', 'memory', 'points', 'result', 'total_points')
     submission = order_by_if_not_none(submission,
         request.GET.getlist('order_by')                 
     )
@@ -300,6 +300,7 @@ def get_all_submissions(request):
                 'points': res.points,
                 'total_points': res.total_points,
                 'result': res.result,
+                'can_see_detail': res.can_see_detail_rest
             } for res in result_page)
         }       
         return paginator.get_paginated_response(data)
