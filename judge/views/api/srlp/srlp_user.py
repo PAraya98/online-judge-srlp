@@ -74,10 +74,7 @@ def get_user_info(request):
 
     #profile = Profile.objects.filter(user__username=username).first()
     
-    
-    if not profile: return Response({'status': False, 'message': 'Error al mostrar perfil, revisa la solicitud.'})
-
-    submissions = list(Submission.objects.filter(case_points=F('case_total'), user=profile, problem__is_public=True,
+    submissions = list(Submission.objects.filter(case_points=F('case_total'), user=profile_, problem__is_public=True,
                                                  problem__is_organization_private=False)
                        .values('problem').distinct().values_list('problem__code', flat=True))
     user = User.objects.get(username=username)
