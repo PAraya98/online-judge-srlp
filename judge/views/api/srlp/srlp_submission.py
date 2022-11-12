@@ -226,15 +226,6 @@ def get_detail_submission(request):
 
     if not submission or not submission.can_see_detail_rest(get_jwt_user(request)): 
         return Response({'status': False, 'message': 'No puedes ver el detalle de la subida.'})
-    submission = filter_if_not_none(
-        submission,
-        result = request.GET.get('result'),
-        language = request.GET.get('language')
-    )
-
-    submission = order_by_if_not_none(submission,
-        request.GET.getlist('order_by')                  
-    )
 
     for res in submission:
         res_data = {
