@@ -230,7 +230,6 @@ def get_detail_submission(request):
     
     data = {
         'id': submission.id,
-        'num': submission.num, 
         'date': submission.date,
         'language': submission.language.key,
         'time': submission.time,
