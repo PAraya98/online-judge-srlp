@@ -151,7 +151,6 @@ def get_contest_submission_count(problem, profile, virtual):
 
 @permission_classes([isLogueado])
 @api_view(['GET'])
-
 def get_info_submission(request):
     user = get_jwt_user(request)
     profile = Profile.objects.filter(user_id=user.id).first()
@@ -218,6 +217,56 @@ def get_info_submission(request):
         return paginator.get_paginated_response(data)
     else:
         return Response({ "submissions": [], "pages": 0})
+
+
+@permission_classes([isLogueado])
+@api_view(['GET'])
+def get_detail_submission(request):
+    submission = Submission.objects.filter(id=request.GET.get('id')).first()
+
+    if not submission or not submission.can_see_detail_rest(get_jwt_user(request)): 
+        return Response({'status': False, 'message': 'No puedes ver el detalle de la subida.'})
+    submission = filter_if_not_none(
+        submission,
+        result = request.GET.get('result'),
+        language = request.GET.get('language')
+    )
+
+    submission = order_by_if_not_none(submission,
+        request.GET.getlist('order_by')                  
+    )
+
+    for res in submission:
+        res_data = {
+            'id': res.id,
+            'num': res.num, 
+            'date': res.date,
+            'language': res.language.key,
+            'time': res.time,
+            'memory': res.memory,
+            'points': res.points,
+            'total_points': submission.problem.points,
+            'result': res.result,
+            'source': res.source.source,
+            'error':  res.error,
+            'is_contest_submission': bool(res.contest_object)
+        }
+        query = DefaultMunch.fromDict(SubmissionTestCase.objects.filter(submission_id=res.id))
+        array_ = []
+        for case in query:
+            array_.append(
+                {   "case": case.case,
+                    "status": case.status,
+                    "time": case.time,
+                    "memory": case.memory,
+                    "points": case.points,
+                    "total_points": case.total,
+                    "feedback": case.feedback,
+                    "output":   case.output
+                }
+            )
+
+    return Response({'status': True, 'submission': res_data})
 
 @permission_classes([isLogueado])
 @api_view(['GET'])
@@ -300,7 +349,8 @@ def get_all_submissions(request):
                 'points': res.points,
                 'total_points': res.total_points,
                 'result': res.result,
-                'can_see_detail': res.can_see_detail_rest(get_jwt_user(request))
+                'can_see_detail': res.can_see_detail_rest(get_jwt_user(request)),
+                'is_contest_submission': bool(res.contest_object)
             } for res in result_page)
         }       
         return paginator.get_paginated_response(data)
