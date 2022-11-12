@@ -70,7 +70,7 @@ def get_user_info(request):
     ))
     sql, params = profile.query.sql_with_params()
     print(sql)
-    profile = profile.raw(f"SELECT * FROM ({sql}) AS full WHERE user_id = "+ profile_.user_id, params)
+    profile = profile.raw(f"SELECT * FROM ({sql}) AS full WHERE username = "+ profile_.user.username, params)
 
     #profile = Profile.objects.filter(user__username=username).first()
     
