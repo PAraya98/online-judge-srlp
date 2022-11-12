@@ -57,7 +57,7 @@ def get_ranking(request):
 def get_user_info(request):
     user = None
     if get_jwt_user(request):
-        profile_ = Profile.objects.filter(user_id=user.id).first()
+        profile_ = Profile.objects.filter(user=get_jwt_user(request)).first()
     else:
         profile_ = Profile.objects.filter(user_username=request.GET.get('username')).first()
         if not profile_: return Response({'status': False, 'message': 'El usuario no existe.'})
