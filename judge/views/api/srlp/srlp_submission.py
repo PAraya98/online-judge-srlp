@@ -227,37 +227,37 @@ def get_detail_submission(request):
     if not submission or not submission.can_see_detail_rest(get_jwt_user(request)): 
         return Response({'status': False, 'message': 'No puedes ver el detalle de la subida.'})
 
-    for res in submission:
-        res_data = {
-            'id': res.id,
-            'num': res.num, 
-            'date': res.date,
-            'language': res.language.key,
-            'time': res.time,
-            'memory': res.memory,
-            'points': res.points,
-            'total_points': submission.problem.points,
-            'result': res.result,
-            'source': res.source.source,
-            'error':  res.error,
-            'is_contest_submission': bool(res.contest_object)
-        }
-        query = DefaultMunch.fromDict(SubmissionTestCase.objects.filter(submission_id=res.id))
-        array_ = []
-        for case in query:
-            array_.append(
-                {   "case": case.case,
-                    "status": case.status,
-                    "time": case.time,
-                    "memory": case.memory,
-                    "points": case.points,
-                    "total_points": case.total,
-                    "feedback": case.feedback,
-                    "output":   case.output
-                }
-            )
+    
+    data = {
+        'id': submission.id,
+        'num': submission.num, 
+        'date': submission.date,
+        'language': submission.language.key,
+        'time': submission.time,
+        'memory': submission.memory,
+        'points': submission.points,
+        'total_points': submission.problem.points,
+        'result': submission.result,
+        'source': submission.source.source,
+        'error':  submission.error,
+        'is_contest_submission': bool(submission.contest_object)
+    }
+    query = DefaultMunch.fromDict(SubmissionTestCase.objects.filter(submission_id=submission.id))
+    array_ = []
+    for case in query:
+        array_.append(
+            {   "case": case.case,
+                "status": case.status,
+                "time": case.time,
+                "memory": case.memory,
+                "points": case.points,
+                "total_points": case.total,
+                "feedback": case.feedback,
+                "output":   case.output
+            }
+        )
 
-    return Response({'status': True, 'submission': res_data})
+    return Response({'status': True, 'submission': data})
 
 @permission_classes([isLogueado])
 @api_view(['GET'])
