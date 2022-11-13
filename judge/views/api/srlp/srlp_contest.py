@@ -89,7 +89,7 @@ def get_contest_info(request):
     contest_code = '' if not code else code[0]
     contest = Contest.objects.filter(key=contest_code).first()
 
-    if not contest and not user and not contest.is_accessible_by(user):
+    if contest and (not user or not contest.is_accessible_by(user)):
        return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso a este concurso.'})
 
     in_contest = contest.is_in_contest_rest(user)
@@ -151,7 +151,7 @@ def get_contest_ranking(request):
     code = request.GET.getlist('code')
     contest_code = '' if not code else code[0]
     contest = Contest.objects.filter(key=contest_code).first()
-    if contest or not (user and contest and contest.is_accessible_by(user)):
+    if contest and (not user or not contest.is_accessible_by(user)):
        return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso a este concurso.'})
 
     if not contest.can_see_full_scoreboard_rest(user) or not contest.can_see_own_scoreboard(user): 
