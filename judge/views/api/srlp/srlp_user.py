@@ -67,6 +67,7 @@ def get_user_info(request):
     user = User.objects.get(username=username)
     
     resp = {
+        'avatar_url': gravatar_username(user.username),
         'username': user.username,
         'about': profile.about,
         'points': profile.points,
