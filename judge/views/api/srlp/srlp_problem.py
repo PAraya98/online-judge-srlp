@@ -101,6 +101,7 @@ def get_problem_info(request):
                 }
 
     return Response({
+        'status': True,
         'name': p.name,
         'authors': list(p.authors.values_list('user__username', flat=True)),
         'types': list(p.types.values_list('full_name', flat=True)),
