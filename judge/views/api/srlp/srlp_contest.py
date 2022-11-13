@@ -216,7 +216,7 @@ def get_contest_ranking(request):
                                 'points': solution.points
                                 #CANTIDAD DE INTENTOS (?) TODO: quizás
                               }
-                            for solution in participation.submissions]
+                            for solution in participation.submissions.all()]
             } for participation in result_page]
         data = {'ranking': ranking, 'status': True}
         return paginator.get_paginated_response(data)
