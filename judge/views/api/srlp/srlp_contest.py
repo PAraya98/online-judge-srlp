@@ -52,7 +52,7 @@ def get_contest_list(request):
             queryset = queryset.filter(id= profile.current_contest.contest.id)
         else: return Response({'status': False, 'message': 'El usuario no está participando en ningún concurso.'})
 
-    else: return Response({'status': False, 'message': 'Consulta erronéa.'}) 
+    else: return Response({'status': False, 'message': 'Consulta erróna.'}) 
     #is_in_contest_rest TODO: sirve
     
     queryset = filter_if_not_none(queryset,        
@@ -89,7 +89,7 @@ def get_contest_info(request):
     contest_code = '' if not code else code[0]
     contest = Contest.objects.filter(key=contest_code).first()
 
-    if not contest or (not user or not contest.is_accessible_by(user)):
+    if not contest or (contest.is_accessible_by(user)):
        return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso a este concurso.'})
 
     in_contest = contest.is_in_contest_rest(user)
