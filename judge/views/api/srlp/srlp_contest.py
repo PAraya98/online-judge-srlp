@@ -99,15 +99,15 @@ def get_contest_info(request):
 
     can_see_problems = (in_contest or contest.ended or contest.is_editable_by(user))
 
-
     user_context = {}
-    user_context['is_in_contest'] = contest.is_in_contest_rest(user)
-    user_context['can_see_full_scoreboard'] = contest.can_see_full_scoreboard_rest(user)   
-    user_context['can_see_own_scoreboard'] = contest.can_see_own_scoreboard(user)
-    user_context['has_completed_contest'] = contest.has_completed_contest_rest(user)
-    user_context['live_joinable'] = contest.is_live_joinable_by(user)
-    user_context['editable'] = contest.is_editable_by(user)
-    user_context['has_participated'] = bool(ContestParticipation.objects.filter(user=user, contest=contest).first())
+    if user:    
+        user_context['is_in_contest'] = contest.is_in_contest_rest(user)
+        user_context['can_see_full_scoreboard'] = contest.can_see_full_scoreboard_rest(user)   
+        user_context['can_see_own_scoreboard'] = contest.can_see_own_scoreboard(user)
+        user_context['has_completed_contest'] = contest.has_completed_contest_rest(user)
+        user_context['live_joinable'] = contest.is_live_joinable_by(user)
+        user_context['editable'] = contest.is_editable_by(user)
+        user_context['has_participated'] = bool(ContestParticipation.objects.filter(user=Profile.objects.get(user=user), contest=contest).first())
 
 
     return Response({
