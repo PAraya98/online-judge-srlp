@@ -99,7 +99,9 @@ def get_contest_info(request):
 
     can_see_problems = (in_contest or contest.ended or contest.is_editable_by(user))
 
-    user_context = {}
+    user_context = {
+        'is_connected': bool(user)
+    }
     if user:    
         user_context['is_in_contest'] = contest.is_in_contest_rest(user)
         user_context['can_see_full_scoreboard'] = contest.can_see_full_scoreboard_rest(user)   
@@ -196,6 +198,7 @@ def get_contest_ranking(request):
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
 
+        #solutions = participation.users.filter(user=participation.user).first().submissions
         ranking = [
             {   'position': participation.position,
                 'user': participation.username,
