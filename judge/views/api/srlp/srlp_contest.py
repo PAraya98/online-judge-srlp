@@ -148,7 +148,7 @@ def get_contest_info(request):
 @api_view(['GET'])
 def get_contest_ranking(request):
     user = get_jwt_user(request)
-    profile = Profile.objects.get(user=user) 
+    if user: profile = Profile.objects.get(user=user) 
     code = request.GET.getlist('code')
     contest_code = '' if not code else code[0]
     contest = Contest.objects.filter(key=contest_code).first()
@@ -172,9 +172,10 @@ def get_contest_ranking(request):
                     .annotate(username=F('user__user__username'))
                     .order_by('-score', 'cumtime', 'tiebreaker') if contest.can_see_full_scoreboard_rest(user) else [])
     
-    queryset = filter_if_not_none(queryset, 
-        user_id = profile.id if not contest.can_see_full_scoreboard_rest(user) else None
-    )
+    if user:
+        queryset = filter_if_not_none(queryset, 
+           user_id = profile.id if not contest.can_see_full_scoreboard_rest(user) else None
+        )
     if request.GET.get('virtual') == 'true':
         queryset = queryset.exclude(virtual = 0)
     else:
