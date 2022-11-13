@@ -221,7 +221,7 @@ def get_contest_ranking(request):
 def get_participation_info(contest_problems, participation):
     data = []
     for problem in contest_problems:
-        submission_data = participation.submissions.filter(submission__problem__id=problem.pk).first()
+        submission_data = participation.contest.filter(problem=problem).first()
 
         test_cases = submission_data.submission.test_cases
         total_testcases = test_cases.count()
