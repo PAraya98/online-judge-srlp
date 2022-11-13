@@ -210,10 +210,10 @@ def get_contest_ranking(request):
                 'new_rating': participation.new_rating,
                 'is_disqualified': participation.is_disqualified,
                 #'solutions': contest.format.get_problem_breakdown(participation, problems),
-                'solutions': [{ 'result_code': solution.result, 
-                                'date': solution.date,
-                                'time': solution.time,
-                                'points': solution.points
+                'solutions': [{ 'result_code': solution.submission.result, 
+                                'date': solution.submission.date,
+                                'time': solution.submission.time,
+                                'points': solution.submission.points
                                 #CANTIDAD DE INTENTOS (?) TODO: quizás
                               }
                             for solution in participation.submissions.all()]
