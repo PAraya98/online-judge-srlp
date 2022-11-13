@@ -198,7 +198,7 @@ def get_contest_ranking(request):
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
 
-        #solutions = participation.users.filter(user=participation.user).first().submissions
+        #
         ranking = [
             {   'position': participation.position,
                 'user': participation.username,
@@ -209,7 +209,14 @@ def get_contest_ranking(request):
                 'old_rating': participation.old_rating,
                 'new_rating': participation.new_rating,
                 'is_disqualified': participation.is_disqualified,
-                'solutions': contest.format.get_problem_breakdown(participation, problems),
+                #'solutions': contest.format.get_problem_breakdown(participation, problems),
+                'solutions': [{ 'result_code': solution.result, 
+                                'date': solution.date,
+                                'time': solution.time,
+                                'points': solution.points
+                                #CANTIDAD DE INTENTOS (?) TODO: quizás
+                              }
+                            for solution in participation.submissions]
             } for participation in result_page]
         data = {'ranking': ranking, 'status': True}
         return paginator.get_paginated_response(data)
