@@ -85,6 +85,14 @@ def get_problem_info(request):
     if not p and not p.is_accessible_by(get_jwt_user(request)): 
         return Response({'status': False, 'message': 'El problema no existe o no se tiene acceso.'})
 
+    constest_problem = False
+    user = get_jwt_user(request)
+    if(user):
+        profile = Profile.objects.get(user=user)
+        contest = profile.current_contest
+        if(contest):
+            constest_problem = bool(contest.problems.filter(problem=p).first())
+
     return Response({
         'name': p.name,
         'authors': list(p.authors.values_list('user__username', flat=True)),
@@ -96,7 +104,8 @@ def get_problem_info(request):
         'partial': p.partial,
         'languages': list(p.allowed_languages.values_list('key', flat=True)),
         'description': p.description,        
-        'description2': markdown(p.description, p.markdown_style)
+        'description2': markdown(p.description, p.markdown_style),
+        'is_contest_problem': constest_problem
     })
     
 #@action(methods=['GET'], detail=False)
