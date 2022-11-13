@@ -29,7 +29,10 @@ def get_ranking(request):
         rank__icontains = request.GET.get('rank')
     )    
     
-    queryset = queryset.order_by('performance_points')
+    queryset = queryset.order_by('-performance_points')
+    #queryset = order_by_if_not_none(queryset,
+    #        request.GET.getlist('order_by')                  
+    #)
     
     queryset = queryset.values('username', 'points', 'performance_points', 'rank', 'problem_count', 'last_access', 'ranking')
 
