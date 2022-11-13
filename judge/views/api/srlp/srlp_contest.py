@@ -193,12 +193,13 @@ def get_contest_ranking(request):
             expression=Rank(),
             order_by=F('score').desc(),
     ))
-
+    
     if(len(queryset) > 0):
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
 
-        #
+        contest_problems = contest.problems.all()
+
         ranking = [
             {   'position': participation.position,
                 'user': participation.username,
@@ -210,19 +211,44 @@ def get_contest_ranking(request):
                 'new_rating': participation.new_rating,
                 'is_disqualified': participation.is_disqualified,
                 #'solutions': contest.format.get_problem_breakdown(participation, problems),
-                'solutions': [{ 'problem_name':     solution.submission.problem.name,
-                                'result_code': solution.submission.result, 
-                                'date': solution.submission.date,
-                                'time': solution.submission.time,
-                                'points': solution.submission.points
-                                #CANTIDAD DE INTENTOS (?) TODO: quizás
-                              }
-                            for solution in participation.submissions.all()]
+                'solutions': get_participation_info(contest_problems, participation)
             } for participation in result_page]
         data = {'ranking': ranking, 'status': True}
         return paginator.get_paginated_response(data)
     else:
         return Response({'ranking': [], 'pages': 0, 'status': True})
+
+def get_participation_info(contest_problems, participation):
+    data = []
+    for problem in contest_problems:
+        submission_data = participation.submissions.filter(problem=problem).first()
+
+        test_cases = submission_data.submission.test_cases.all()
+        total_testcases = test_cases.count()
+        correct_testcases = test_cases.filter(status='AC').count()
+        if submission_data:
+            data.append({   'problem_name':     problem.name,
+                            'result_code': submission_data.submission.result, 
+                            'date': submission_data.submission.date,
+                            'time': submission_data.submission.time,
+                            'points': submission_data.submission.points,   
+                            'total_points': problem.points,
+                            'total_testcases': total_testcases,
+                            'correct_testcases': correct_testcases
+                            #CANTIDAD DE INTENTOS (?) TODO: quizás
+                        })
+        else:
+            data.append({   'problem_name':   problem.name,
+                            'result_code': None, 
+                            'date': None,
+                            'time': None,
+                            'points': None,
+                            'total_testcases': None,
+                            'correct_testcases': None                                
+                            #CANTIDAD DE INTENTOS (?) TODO: quizás
+                        })
+    return data
+
 
 @permission_classes([isLogueado]) 
 @api_view(['POST'])
