@@ -89,9 +89,9 @@ def get_problem_info(request):
     user = get_jwt_user(request)
     if(user):
         profile = Profile.objects.get(user=user)
-        contest = profile.current_contest
-        if(contest):
-            constest_problem = bool(contest.problems.filter(problem=p).first())
+        current_contest = profile.current_contest
+        if(current_contest):
+            constest_problem = bool(current_contest.contest.problems.filter(problem=p).first())
 
     return Response({
         'name': p.name,
