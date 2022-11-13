@@ -114,7 +114,8 @@ def get_problem_info(request):
         'description': p.description,        
         'description2': markdown(p.description, p.markdown_style),
         'is_contest_problem': is_contest_problem,
-        'contest_info': contest_info
+        'contest_info': contest_info,
+        'is_connected': bool(get_jwt_user(request))
     })
     
 #@action(methods=['GET'], detail=False)
