@@ -216,7 +216,7 @@ def get_contest_ranking(request):
 def join_contest(request):
     data = DefaultMunch.fromDict(json.loads(request.body))
     contest_code = data.contest_code
-    access_code = data.acces_code
+    access_code = data.access_code
     contest = Contest.objects.filter(key=contest_code).first()
     user = get_jwt_user(request)
     profile= Profile.objects.get(user=user)
