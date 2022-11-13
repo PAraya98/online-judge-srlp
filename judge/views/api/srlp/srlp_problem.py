@@ -91,7 +91,7 @@ def get_problem_info(request):
         profile = Profile.objects.get(user=user)
         current_contest = profile.current_contest
         if(current_contest):
-            constest_problem = bool(current_contest.contest.problems.filter(problem=p).first())
+            constest_problem = bool(current_contest.contest.problems.filter(id=p.pk).first())
 
     return Response({
         'name': p.name,
