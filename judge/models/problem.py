@@ -271,6 +271,49 @@ class Problem(models.Model):
 
         return False
 
+    def is_accessible_by_rest(self, user, skip_contest_problem_check=False):
+        # If we don't want to check if the user is in a contest containing that problem.
+        if not skip_contest_problem_check and user:
+            # If user is currently in a contest containing that problem.
+            current = user.profile.current_contest_id
+            if current is not None:
+                from judge.models import ContestProblem
+                if ContestProblem.objects.filter(problem_id=self.id, contest__users__id=current).exists():
+                    return True
+
+        # Problem is public.
+        if self.is_public:
+            # Problem is not private to an organization.
+            if not self.is_organization_private:
+                return True
+
+            # If the user can see all organization private problems.
+            if user.has_perm('judge.see_organization_problem'):
+                return True
+
+            # If the user is in the organization.
+            if user and \
+                    self.organizations.filter(id__in=user.profile.organizations.all()):
+                return True
+
+        if not user:
+            return False
+
+        # If the user can view all problems.
+        if user.has_perm('judge.see_private_problem'):
+            return True
+
+        # If the user can edit the problem.
+        # We are using self.editor_ids to take advantage of caching.
+        if self.is_editable_by(user) or user.profile.id in self.editor_ids:
+            return True
+
+        # If user is a tester.
+        if self.testers.filter(id=user.profile.id).exists():
+            return True
+
+        return False
+
     def is_subs_manageable_by(self, user):
         return user.is_staff and user.has_perm('judge.rejudge_submission') and self.is_editable_by(user)
 
