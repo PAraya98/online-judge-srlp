@@ -82,7 +82,7 @@ def get_problem_info(request):
     code = request.GET.getlist('code')
     problem_code = '' if not code else code[0]
     p = Problem.objects.filter(code=problem_code).first()
-    if not p and not p.is_accessible_by(get_jwt_user(request)): 
+    if not (p and p.is_accessible_by(get_jwt_user(request))): 
         return Response({'status': False, 'message': 'El problema no existe o no se tiene acceso.'})
 
     constest_problem = False
