@@ -96,8 +96,8 @@ def get_problem_info(request):
             if is_contest_problem:
                 contest_info = {
                     'key': current_contest.contest.key,
-                    'name': current_contest.name,
-                    'time_before_end': current_contest.time_before_end
+                    'name': current_contest.contest.name,
+                    'time_before_end': current_contest.contest.time_before_end
                 }
 
     return Response({
@@ -112,7 +112,8 @@ def get_problem_info(request):
         'languages': list(p.allowed_languages.values_list('key', flat=True)),
         'description': p.description,        
         'description2': markdown(p.description, p.markdown_style),
-        'is_contest_problem': is_contest_problem
+        'is_contest_problem': is_contest_problem,
+        'contest_info': contest_info
     })
     
 #@action(methods=['GET'], detail=False)
