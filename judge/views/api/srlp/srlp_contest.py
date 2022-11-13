@@ -107,6 +107,7 @@ def get_contest_info(request):
     user_context['has_completed_contest'] = contest.has_completed_contest_rest(user)
     user_context['live_joinable'] = contest.is_live_joinable_by(user)
     user_context['editable'] = contest.is_editable_by(user)
+    user_context['has_participated'] = bool(ContestParticipation.objects.filter(user=user, contest=contest).first())
 
 
     return Response({
