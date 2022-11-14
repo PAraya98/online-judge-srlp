@@ -256,6 +256,8 @@ def get_detail_submission(request):
             }
         )
 
+    data['test_cases'] = array_
+
     return Response({'status': True, 'submission': data})
 
 @permission_classes([isLogueado])
