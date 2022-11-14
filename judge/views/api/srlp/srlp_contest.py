@@ -227,28 +227,23 @@ def get_participation_info(contest_problems, participation, user):
             test_cases = submission_data.submission.test_cases
             total_testcases = test_cases.count()
             correct_testcases = test_cases.filter(status='AC').count()
-            data.append({   'problem_name':     problem.name,
-                            'submission_id':    submission_data.submission.id,
-                            'can_see_detail': submission_data.submission.can_see_detail_rest(user),
-                            'result_code': submission_data.submission.result, 
-                            'date': submission_data.submission.date,
-                            'time': submission_data.submission.time,
-                            'points': submission_data.submission.points,   
-                            'total_points': problem.points,
-                            'total_testcases': total_testcases,
-                            'correct_testcases': correct_testcases
+            data.append({   'problem_name':         problem.name,
+                            'has_submission':       True,
+                            'submission_id':        submission_data.submission.id,
+                            'can_see_detail':       submission_data.submission.can_see_detail_rest(user),
+                            'language_name':        submission_data.submission.language.name,
+                            'result_code':          submission_data.submission.result, 
+                            'date':                 submission_data.submission.date,
+                            'time':                 submission_data.submission.time,
+                            'points':               submission_data.submission.points,   
+                            'total_points':         problem.points,
+                            'total_testcases':      total_testcases,
+                            'correct_testcases':    correct_testcases
                             #CANTIDAD DE INTENTOS (?) TODO: quizás
                         })
         else:
-            data.append({   'problem_name':   problem.name,
-                            'result_code': None, 
-                            'submission_id': None,
-                            'date': None,
-                            'time': None,
-                            'points': None,
-                            'total_testcases': None,
-                            'correct_testcases': None                                
-                            #CANTIDAD DE INTENTOS (?) TODO: quizás
+            data.append({   'problem_name':     problem.name,
+                            'has_submission':   False              
                         })
     return data
 
