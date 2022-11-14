@@ -229,7 +229,7 @@ def get_participation_info(contest_problems, participation, user):
             correct_testcases = test_cases.filter(status='AC').count()
             data.append({   'problem_name':         problem.name,
                             'has_submission':       True,
-                            'submission_id':        submission_data.submission.id,
+                            'id':                   submission_data.submission.id,
                             'can_see_detail':       submission_data.submission.can_see_detail_rest(user),
                             'language_name':        submission_data.submission.language.name,
                             'result_code':          submission_data.submission.result, 
