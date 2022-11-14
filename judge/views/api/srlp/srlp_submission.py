@@ -181,6 +181,10 @@ def get_info_submission(request):
         result_page = DefaultMunch.fromDict(paginator.paginate_queryset(submission, request))
         array = []
         for res in result_page:
+           
+            query = DefaultMunch.fromDict(SubmissionTestCase.objects.filter(submission_id=res.id))
+            total_testcases = query.count()
+            correct_testcases = query.filter(status='AC').count()
             res_data = {
                 'id': res.id,
                 'num': res.num, 
@@ -193,9 +197,11 @@ def get_info_submission(request):
                 'result': res.result,
                 'source': res.source.source,
                 'error':  res.error,
+                'total_testcases': total_testcases,
+                'correct_testcases': correct_testcases,
                 'is_contest_submission': bool(res.contest_object)
             }
-            query = DefaultMunch.fromDict(SubmissionTestCase.objects.filter(submission_id=res.id))
+            
             array_ = []
             for case in query:
                 array_.append(
