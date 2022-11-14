@@ -211,14 +211,14 @@ def get_contest_ranking(request):
                 'new_rating': participation.new_rating,
                 'is_disqualified': participation.is_disqualified,
                 #'solutions': contest.format.get_problem_breakdown(participation, problems),
-                'solutions': get_participation_info(contest_problems, participation)
+                'solutions': get_participation_info(contest_problems, participation, user)
             } for participation in result_page]
         data = {'ranking': ranking, 'status': True}
         return paginator.get_paginated_response(data)
     else:
         return Response({'ranking': [], 'pages': 0, 'status': True})
 
-def get_participation_info(contest_problems, participation):
+def get_participation_info(contest_problems, participation, user):
     data = []
     for problem in contest_problems:
         submission_data = participation.submissions.filter(problem__problem=problem).first()
@@ -228,6 +228,8 @@ def get_participation_info(contest_problems, participation):
             total_testcases = test_cases.count()
             correct_testcases = test_cases.filter(status='AC').count()
             data.append({   'problem_name':     problem.name,
+                            'submission_id':    submission_data.submission.id,
+                            'can_see_detail': submission_data.submission.can_see_detail_rest(user),
                             'result_code': submission_data.submission.result, 
                             'date': submission_data.submission.date,
                             'time': submission_data.submission.time,
@@ -240,6 +242,7 @@ def get_participation_info(contest_problems, participation):
         else:
             data.append({   'problem_name':   problem.name,
                             'result_code': None, 
+                            'submission_id': None,
                             'date': None,
                             'time': None,
                             'points': None,
