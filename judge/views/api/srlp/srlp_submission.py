@@ -226,6 +226,9 @@ def get_detail_submission(request):
 
     if not submission or not submission.can_see_detail_rest(get_jwt_user(request)): 
         return Response({'status': False, 'message': 'No puedes ver el detalle de la subida.'})
+    query = DefaultMunch.fromDict(SubmissionTestCase.objects.filter(submission_id=submission.id))
+    total_testcases = query.count()
+    correct_testcases = query.filter(status='AC').count()
 
     data = {
         'id': submission.id,
@@ -239,9 +242,11 @@ def get_detail_submission(request):
         'result': submission.result,
         'source': submission.source.source,
         'error':  submission.error,
-        'is_contest_submission': bool(submission.contest_object)
+        'is_contest_submission': bool(submission.contest_object),
+        'total_testcases': total_testcases,
+        'correct_testcases': correct_testcases
     }
-    query = DefaultMunch.fromDict(SubmissionTestCase.objects.filter(submission_id=submission.id))
+    
     array_ = []
     for case in query:
         array_.append(
