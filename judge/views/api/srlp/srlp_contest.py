@@ -222,6 +222,7 @@ def get_participation_info(contest_problems, participation):
     data = []
     for problem in contest_problems:
         submission_data = participation.submissions.all().filter(problem__problem=problem).first()
+        print(submission_data)
         test_cases = submission_data.submission.test_cases
         total_testcases = test_cases.count()
         correct_testcases = test_cases.filter(status='AC').count()
