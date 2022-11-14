@@ -245,6 +245,7 @@ def get_detail_submission(request):
         'memory': submission.memory,
         'points': submission.points,
         'total_points': submission.problem.points,
+        'problem_name': submission.problem.name,
         'result': submission.result,
         'source': submission.source.source,
         'error':  submission.error,
