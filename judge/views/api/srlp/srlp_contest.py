@@ -154,11 +154,9 @@ def get_contest_ranking(request):
     code = request.GET.getlist('code')
     contest_code = '' if not code else code[0]
     contest = Contest.objects.filter(key=contest_code).first()
+
     if not contest and not contest.is_accessible_by(user):
        return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso a este concurso.'})
-
-    if not contest.can_see_full_scoreboard_rest(user) or not contest.can_see_own_scoreboard(user): 
-        return Response({'status': False, 'message': 'No tienes acceso para ver el ranking.'})
 
     problems = list(contest.contest_problems.select_related('problem')
                 .defer('problem__description').order_by('order'))
@@ -173,6 +171,7 @@ def get_contest_ranking(request):
                     .prefetch_related('user__organizations')
                     .annotate(username=F('user__user__username'))
                     .order_by('-score', 'cumtime', 'tiebreaker') if contest.can_see_full_scoreboard_rest(user) else [])
+    
     
     if user:
         queryset = filter_if_not_none(queryset, 
@@ -194,11 +193,37 @@ def get_contest_ranking(request):
             order_by=F('score').desc(),
     ))
     
+    if not contest.can_see_own_scoreboard(user):
+        return Response({'status': False, 'own_ranking': False, 'message': 'No tienes acceso para ver el ranking.'})
+    
+    contest_problems = contest.problems.all()
+
+    user_best = queryset.filter(user=user).first()
+    if user_best:  
+        user_participation =    {   'position': user_best.position,
+                                    'user': user_best.username,
+                                    'virtual': user_best.virtual,
+                                    'points': user_best.score,
+                                    'cumtime': user_best.cumtime,
+                                    'tiebreaker': user_best.tiebreaker,
+                                    'old_rating': user_best.old_rating,
+                                    'new_rating': user_best.new_rating,
+                                    'is_disqualified': user_best.is_disqualified,
+                                    'solutions': get_participation_info(contest_problems, user_best, user)
+                                }
+
+    else: user_participation = {}
+    
+    if not contest.can_see_full_scoreboard_rest(user): 
+        return Response({'status': False, 'user_has_submit': bool(user_best), 'user_participation': user_participation, 'message': 'No tienes acceso para ver el ranking general.'})
+
     if(len(queryset) > 0):
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
 
-        contest_problems = contest.problems.all()
+        
+
+        
 
         ranking = [
             {   'position': participation.position,
