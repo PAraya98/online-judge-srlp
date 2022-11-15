@@ -170,7 +170,8 @@ def get_contest_ranking(request):
                     .annotate(old_rating=Subquery(old_ratings_subquery.values('rating')[:1]))
                     .prefetch_related('user__organizations')
                     .annotate(username=F('user__user__username'))
-                    .order_by('-score', 'cumtime', 'tiebreaker') if contest.can_see_full_scoreboard_rest(user) else [])
+                    .order_by('-score', 'cumtime', 'tiebreaker'))
+    
     
     if request.GET.get('virtual') == 'true':
         queryset = queryset.exclude(virtual = 0)
