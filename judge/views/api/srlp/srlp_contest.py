@@ -213,7 +213,7 @@ def get_contest_ranking(request):
                                 }
 
     else: user_participation = {}
-    
+
     if not contest.can_see_full_scoreboard_rest(user): 
         return Response({'status': False, 'user_has_submit': bool(user_best), 'user_participation': user_participation, 'message': 'No tienes acceso para ver el ranking general.'})
 
@@ -238,10 +238,10 @@ def get_contest_ranking(request):
                 #'solutions': contest.format.get_problem_breakdown(participation, problems),
                 'solutions': get_participation_info(contest_problems, participation, user)
             } for participation in result_page]
-        data = {'ranking': ranking, 'status': True}
+        data = {'ranking': ranking, 'user_has_submit': bool(user_best), 'user_participation': user_participation, 'status': True}
         return paginator.get_paginated_response(data)
     else:
-        return Response({'ranking': [], 'pages': 0, 'status': True})
+        return Response({'ranking': [], 'user_has_submit': bool(user_best), 'user_participation': user_participation, 'pages': 0, 'status': True})
 
 def get_participation_info(contest_problems, participation, user):
     data = []
