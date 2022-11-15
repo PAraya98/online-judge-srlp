@@ -178,20 +178,30 @@ class Submission(models.Model):
         profile = user.profile
         source_visibility = self.problem.submission_source_visibility
         if self.problem.is_editable_by(user):
+            print('LN:181 ',self.problem.is_editable_by(user))
             return True
         elif user.has_perm('judge.view_all_submission'):
+            print('LN:184 ',user.has_perm('judge.view_all_submission'))
             return True
         elif self.user_id == profile.id:
+            print('LN:187 ',self.user_id == profile.id)
             return True
         elif source_visibility == SubmissionSourceAccess.ALWAYS:
+            print('LN:190 ',source_visibility == SubmissionSourceAccess.ALWAYS)
             return True
         elif source_visibility == SubmissionSourceAccess.SOLVED and \
                 (self.problem.is_public or self.problem.testers.filter(id=profile.id).exists()) and \
                 self.problem.submission_set.filter(user_id=profile.id, result='AC',
                                                    points=self.problem.points).exists():
+            print('LN:196 ',source_visibility == SubmissionSourceAccess.SOLVED and \
+                (self.problem.is_public or self.problem.testers.filter(id=profile.id).exists()) and \
+                self.problem.submission_set.filter(user_id=profile.id, result='AC',
+                                                   points=self.problem.points).exists())
             return True
         elif source_visibility == SubmissionSourceAccess.ONLY_OWN and \
                 self.problem.testers.filter(id=profile.id).exists():
+            print('LN:203 ', source_visibility == SubmissionSourceAccess.ONLY_OWN and \
+                self.problem.testers.filter(id=profile.id).exists())
             return True
 
         contest = self.contest_object
