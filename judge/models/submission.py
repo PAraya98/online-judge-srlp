@@ -194,7 +194,7 @@ class Submission(models.Model):
                 self.problem.submission_set.filter(user_id=profile.id, result='AC',
                                                    points=self.problem.points).exists():
             print('LN:196 ',source_visibility == SubmissionSourceAccess.SOLVED and \
-                (self.problem.is_public or self.problem.testers.filter(id=profile.id).exists()) and \
+                (self.problem.is_public , self.problem.testers.filter(id=profile.id).exists()) and \
                 self.problem.submission_set.filter(user_id=profile.id, result='AC',
                                                    points=self.problem.points).exists())
             return True
