@@ -198,7 +198,7 @@ def get_contest_ranking(request):
     
     contest_problems = contest.problems.all()
 
-    user_best = queryset.filter(user=user).first()
+    user_best = queryset.filter(user=user.profile).first()
     if user_best:  
         user_participation =    {   'position': user_best.position,
                                     'user': user_best.username,
@@ -220,10 +220,6 @@ def get_contest_ranking(request):
     if(len(queryset) > 0):
         paginator = CustomPagination()
         result_page = paginator.paginate_queryset(queryset, request)
-
-        
-
-        
 
         ranking = [
             {   'position': participation.position,
