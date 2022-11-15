@@ -172,11 +172,6 @@ def get_contest_ranking(request):
                     .annotate(username=F('user__user__username'))
                     .order_by('-score', 'cumtime', 'tiebreaker') if contest.can_see_full_scoreboard_rest(user) else [])
     
-    
-    if user:
-        queryset = filter_if_not_none(queryset, 
-           user_id = profile.id if not contest.can_see_full_scoreboard_rest(user) else None
-        )
     if request.GET.get('virtual') == 'true':
         queryset = queryset.exclude(virtual = 0)
     else:
