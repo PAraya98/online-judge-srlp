@@ -190,7 +190,7 @@ def get_contest_ranking(request):
     ))
     
     if not contest.can_see_own_scoreboard(user):
-        return Response({'status': False, 'own_ranking': False, 'message': 'No tienes acceso para ver el ranking.'})
+        return Response({'status': False, 'own_ranking': False,'has_ended': contest.ended, 'message': 'No tienes acceso para ver el ranking.'})
     
     contest_problems = contest.problems.all()
 
@@ -204,15 +204,14 @@ def get_contest_ranking(request):
                                     'tiebreaker': user_best.tiebreaker,
                                     'old_rating': user_best.old_rating,
                                     'new_rating': user_best.new_rating,
-                                    'is_disqualified': user_best.is_disqualified,
-                                    'has_ended': contest.ended,
+                                    'is_disqualified': user_best.is_disqualified,                                    
                                     'solutions': get_participation_info(contest_problems, user_best, user)
                                 }
 
     else: user_participation = {}
 
     if not contest.can_see_full_scoreboard_rest(user): 
-        return Response({'status': False, 'own_ranking': True, 'user_participation': user_participation, 'message': 'No tienes acceso para ver el ranking general.'})
+        return Response({'status': False, 'own_ranking': True, 'has_ended': contest.ended, 'user_participation': user_participation, 'message': 'No tienes acceso para ver el ranking general.'})
 
     if(len(queryset) > 0):
         paginator = CustomPagination()
@@ -231,10 +230,10 @@ def get_contest_ranking(request):
                 #'solutions': contest.format.get_problem_breakdown(participation, problems),
                 'solutions': get_participation_info(contest_problems, participation, user)
             } for participation in result_page]
-        data = {'ranking': ranking,'own_ranking': True, 'user_participation': user_participation, 'status': True}
+        data = {'ranking': ranking, 'has_ended': contest.ended,'own_ranking': True, 'user_participation': user_participation, 'status': True}
         return paginator.get_paginated_response(data)
     else:
-        return Response({'ranking': [], 'own_ranking': True, 'user_participation': user_participation, 'pages': 0, 'status': True})
+        return Response({'ranking': [], 'own_ranking': True, 'has_ended': contest.ended,'user_participation': user_participation, 'pages': 0, 'status': True})
 
 def get_participation_info(contest_problems, participation, user):
     data = []
