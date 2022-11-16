@@ -22,25 +22,28 @@ def get_tokens_for_user(request):
                 'username':   user.username,
                 'avatar_url': gravatar_username(user.username),
                 'refresh_token': str(RefreshToken.for_user(user)),
-                'access_token': str(AccessToken.for_user(user))
-                #'status': 200
+                'access_token': str(AccessToken.for_user(user)),
+                'status': True
             })
         else:
             return Response({
-                'error': "El usuario no existe"
+                'error': "El usuario no existe o se encuentra deshabilitado.",
+                'status': False
             })
     except NameError:
         return Response({'error': NameError})
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def validate_session(request):
     user = get_jwt_user(request)
-    return Response(
-        {'session': {   'username': user.username,
-                        'gravatar': gravatar_username(user.username),
-                        'is_admin': user.is_superuser,
-                        'is_profesor': user.is_staff,
-                        "is_logged_in": True
-                    }
-        })
+    if user:
+        return Response(
+            {'session': {   'username': user.username,
+                            'gravatar': gravatar_username(user.username),
+                            'is_admin': user.is_superuser,
+                            'is_profesor': user.is_staff,
+                            "is_logged_in": True
+                        },
+                'status': True
+            })
+    else: return Response({'status': False, 'message': 'Sesión inválida.'})
