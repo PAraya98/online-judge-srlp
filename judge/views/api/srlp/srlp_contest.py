@@ -381,12 +381,12 @@ def get_time(request):
     if not contest_key: return Response({'status': False, 'message': 'Consulta errónea.'})
     contest = Contest.objects.filter(key=contest_key).first()    
     if(contest and contest.is_accessible_by(request.user)):
-        timezone_now = timezone.now()
+        timezone_now = timezone.now().timestamp()
         if contest.ended:
             return Response({'status': True, 'server_time': timezone_now, 'time': None})
         elif contest.started:
-            return Response({'status': True, 'server_time': timezone_now, 'time': contest.end_time})
+            return Response({'status': True, 'server_time': timezone_now, 'time': contest.end_time.timestamp()})
         else:
-            return Response({'status': True, 'server_time': timezone_now, 'time': contest.start_time})
+            return Response({'status': True, 'server_time': timezone_now, 'time': contest.start_time.timestamp()})
     else:
         return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso.'})
