@@ -299,16 +299,16 @@ class Contest(models.Model):
     @cached_property
     def _now(self):
         # This ensures that all methods talk about the same now.
-        return timezone.now()
+        return timezone.now().timestamp()
 
     @cached_property
     def started(self):
-        return self.start_time <= self._now
+        return self.start_time.timestamp() <= self._now
 
     @property
     def time_before_start(self):
         if self.start_time >= self._now:
-            return self.start_time - self._now
+            return self.start_time.timestamp() - self._now
         else:
             return None
 
@@ -350,7 +350,7 @@ class Contest(models.Model):
         self.user_count = self.users.filter(virtual=0).count()
         self.save()
 
-    update_user_count.alters_data = True
+        user_count.alters_data = True
 
     class Inaccessible(Exception):
         pass

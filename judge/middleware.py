@@ -36,7 +36,6 @@ class DMOJLoginMiddleware(object):
         if JWTAuthentication().authenticate(request):
             request.user = JWTAuthentication().authenticate(request)[0]
             profile = request.profile = request.user.profile
-            print("38:middleware.py")
         elif request.user.is_authenticated:
             profile = request.profile = request.user.profile
             logout_path = reverse('auth_logout')
@@ -77,7 +76,6 @@ class ContestMiddleware(object):
     def __call__(self, request):
         profile = request.profile
         if profile:
-            print("79:middleware.py")
             profile.update_contest()
             request.participation = profile.current_contest
             request.in_contest = request.participation is not None
