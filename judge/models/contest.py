@@ -299,16 +299,16 @@ class Contest(models.Model):
     @cached_property
     def _now(self):
         # This ensures that all methods talk about the same now.
-        return timezone.now().timestamp()
+        return timezone.now()
 
     @cached_property
     def started(self):
-        return self.start_time.timestamp() <= self._now
+        return self.start_time <= self._now
 
     @property
     def time_before_start(self):
         if self.start_time >= self._now:
-            return self.start_time.timestamp() - self._now
+            return self.start_time - self._now
         else:
             return None
 
