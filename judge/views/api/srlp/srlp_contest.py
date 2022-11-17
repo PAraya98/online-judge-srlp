@@ -385,8 +385,8 @@ def get_time(request):
         if contest.ended:
             return Response({'status': True, 'server_time': timezone_now, 'time': None})
         elif contest.started:
-            return Response({'status': True, 'server_time': timezone_now, 'time': contest.end_time.timestamp()})
+            return Response({'status': True, 'server_time': timezone_now, 'time': contest.end_time.timestamp() + 0.5})
         else:
-            return Response({'status': True, 'server_time': timezone_now, 'time': contest.start_time.timestamp()})
+            return Response({'status': True, 'server_time': timezone_now, 'time': contest.start_time.timestamp() + 0.5})
     else:
         return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso.'})
