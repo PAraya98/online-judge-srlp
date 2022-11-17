@@ -350,7 +350,7 @@ class Contest(models.Model):
         self.user_count = self.users.filter(virtual=0).count()
         self.save()
 
-        user_count.alters_data = True
+    user_count.alters_data = True
 
     class Inaccessible(Exception):
         pass
