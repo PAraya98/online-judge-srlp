@@ -7,3 +7,4 @@ from .srlp_submission import *
 from .srlp_comment import *
 from .srlp_utils_api import *
 from .urls_api_srlp import *
+from .srlp_middleware import *

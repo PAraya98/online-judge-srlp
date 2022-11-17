@@ -301,6 +301,7 @@ REST_FRAMEWORK = {
 }
 
 MIDDLEWARE = (
+    #'judge.views.api.srlp.srlp_middleware',
     'judge.middleware.ShortCircuitMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

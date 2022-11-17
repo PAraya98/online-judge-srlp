@@ -10,6 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import Resolver404, resolve, reverse
 from django.utils.encoding import force_bytes
 from requests.exceptions import HTTPError
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class ShortCircuitMiddleware:
@@ -32,7 +33,10 @@ class DMOJLoginMiddleware(object):
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.user.is_authenticated:
+        if JWTAuthentication().authenticate(request):
+            request.user = JWTAuthentication().authenticate(request)[0]
+            profile = request.profile = request.user.profile
+        elif request.user.is_authenticated:
             profile = request.profile = request.user.profile
             logout_path = reverse('auth_logout')
             login_2fa_path = reverse('login_2fa')
