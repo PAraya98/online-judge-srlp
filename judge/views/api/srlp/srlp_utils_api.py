@@ -60,13 +60,6 @@ def RepresentsInt(s):
         return False
 
 
-def verify_contest(profile):
-    if profile.current_contest != None \
-     and profile.current_contest.contest.time_before_end == None:
-        profile.current_contest = None
-        profile.save()
-    
-
 ######################################################
 #PERMISOS DE USUARIO
 
@@ -76,21 +69,18 @@ def verify_contest(profile):
 class isLogueado(permissions.BasePermission):
     def has_permission(self, request, view):
         if(bool(request.user and request.user.is_authenticated)):
-            verify_contest(request.user.profile)
             return True
         else: return False
 
 class IsAdministrador(permissions.BasePermission):
     def has_permission(self, request, view):
         if(bool(request.user and request.user.is_authenticated)):
-            verify_contest(request.user.profile)
             return bool(request.user.is_superuser)
         else: return False
 
 class isProfesor(permissions.BasePermission):
     def has_permission(self, request, view):
         if(bool(request.user and request.user.is_authenticated)):
-            verify_contest(request.user.profile)
             return bool(request.user.is_staff)
         else: return False
 

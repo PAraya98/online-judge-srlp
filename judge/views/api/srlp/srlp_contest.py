@@ -372,3 +372,21 @@ def leave_contest(request):
 
     profile.remove_contest()
     return Response({'status': True, 'message': 'Has salido del concurso '+contest.name+"."})
+
+
+@permission_classes([isLogueado]) 
+@api_view(['GET'])
+def get_time(request):
+    contest_key = request.GET.get('contest_key')
+    if not contest_key: return Response({'status': False, 'message': 'Consulta errónea.'})
+    contest = Contest.objects.filter().first()    
+    if(contest.is_accessible_by(request.user)):
+        timezone_now = timezone.now()
+        if contest.ended:
+            return Response({'status': True, 'server_time': timezone_now, 'time': None})
+        elif contest.started:
+            return Response({'status': True, 'server_time': timezone_now, 'time': contest.end_time})
+        else:
+            return Response({'status': True, 'server_time': timezone_now, 'time': contest.start_time})
+    else:
+        return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso.'})

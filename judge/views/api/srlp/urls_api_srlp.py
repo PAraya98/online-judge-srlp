@@ -40,7 +40,8 @@ contest_patterns = [
     path('info', srlp_contest.get_contest_info),
     path('join_contest', srlp_contest.join_contest),
     path('leave_contest', srlp_contest.leave_contest),
-    path('get_ranking', srlp_contest.get_contest_ranking)
+    path('get_ranking', srlp_contest.get_contest_ranking),
+    path('get_time', srlp_contest.get_time)
 ]
 
 admin_patterns = [
