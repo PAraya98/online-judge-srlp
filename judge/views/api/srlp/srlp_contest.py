@@ -379,7 +379,7 @@ def leave_contest(request):
 def get_time(request):
     contest_key = request.GET.get('contest_key')
     if not contest_key: return Response({'status': False, 'message': 'Consulta errónea.'})
-    contest = Contest.objects.filter().first()    
+    contest = Contest.objects.filter(key=contest_key).first()    
     if(contest.is_accessible_by(request.user)):
         timezone_now = timezone.now()
         if contest.ended:
