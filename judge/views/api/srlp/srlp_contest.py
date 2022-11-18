@@ -404,7 +404,7 @@ def get_time(request):
                 has_limit_time = contest.time_limit and (contest.time_limit + timezone.now()) > contest.end_time
                 if has_limit_time:
                     aux_date = contest.time_limit + timezone.now()
-                    conditional_time = aux_date.timestapm()
+                    conditional_time = aux_date.timestamp()
                 else:
                     conditional_time = contest.end_time.timestamp() + 0.5            
             
