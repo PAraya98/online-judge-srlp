@@ -74,6 +74,8 @@ def get_contest_list(request):
                 'time_limit': c.time_limit and sane_time_repr(c.time_limit),
                 'time_before_start': c.time_before_start,
                 'time_before_end': c.time_before_end,
+                'locked_after': c.locked_after.timestamp(),
+                'is_locked': c.locked_after > timezone.now(),
                 'labels': list(map(attrgetter('name'), c.tag_list))
             })
         data = ({"contests": array, 'current_time': datetime.now(), 'is_connected': bool(user), 'status': True})
@@ -380,12 +382,33 @@ def get_time(request):
     contest_key = request.GET.get('contest_key')
     if not contest_key: return Response({'status': False, 'message': 'Consulta errónea.'})
     contest = Contest.objects.filter(key=contest_key).first()    
+    
     if(contest and contest.is_accessible_by(request.user)):
-        timezone_now = timezone.now().timestamp()
+        timezone_now = timezone.now().timestamp()        
+        
         if contest.ended:
             return Response({'status': True, 'server_time': timezone_now, 'time': None})
         elif contest.started:
-            return Response({'status': True, 'server_time': timezone_now, 'time': contest.end_time.timestamp() + 0.5})
+            conditional_time = None
+
+            ### Time condition
+            has_locked_time = contest.locked_after and contest.locked_after < contest.end_time
+            if has_locked_time:
+                has_limit_time = contest.time_limit and (contest.time_limit + timezone.now()) > contest.locked_after
+                if has_limit_time:
+                    aux_date = contest.time_limit + timezone.now()
+                    conditional_time = aux_date.timestapm()
+                else:
+                    conditional_time = contest.locked_after.timestamp() + 0.5
+            else:
+                has_limit_time = contest.time_limit and (contest.time_limit + timezone.now()) > contest.end_time
+                if has_limit_time:
+                    aux_date = contest.time_limit + timezone.now()
+                    conditional_time = aux_date.timestapm()
+                else:
+                    conditional_time = contest.end_time.timestamp() + 0.5            
+            
+            return Response({'status': True, 'server_time': timezone_now, 'time': conditional_time})
         else:
             return Response({'status': True, 'server_time': timezone_now, 'time': contest.start_time.timestamp() + 0.5})
     else:

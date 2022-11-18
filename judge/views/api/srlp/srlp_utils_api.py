@@ -87,7 +87,6 @@ class isProfesor(permissions.BasePermission):
 class isAlumno(permissions.BasePermission):
     def has_permission(self, request, view):
         if(bool(request.user and request.user.is_authenticated)):
-            verify_contest(request.user.profile)
             return bool(request.user.profile.display_rank == "Alumno")
         else: return False
 
