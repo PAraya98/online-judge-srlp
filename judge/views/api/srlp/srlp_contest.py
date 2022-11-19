@@ -398,18 +398,20 @@ def get_time(request):
             ### Time condition
             has_locked_time = contest.locked_after and contest.locked_after < contest.end_time
             if has_locked_time:
-                has_limit_time = contest.time_limit and (contest.time_limit + timezone.now()) > contest.locked_after
+                has_limit_time = contest.time_limit and (contest.time_limit + timezone.now()) > contest.locked_after and \
+                                 request.profile.current_contest
                 if has_limit_time:
-                    aux_date = contest.time_limit + timezone.now()
+                    aux_date = contest.time_limit + request.profile.current_contest.real_start
                     conditional_time = aux_date.timestamp()
                     message = 'Tú tiempo limite termina en: '+datetime.fromtimestamp(conditional_time - timezone_now).strftime("%d:%H:%M:%S")  
                 else:
                     conditional_time = contest.locked_after.timestamp() + 0.5
                     message = 'El concurso se bloquea en: '+datetime.fromtimestamp(conditional_time - timezone_now).strftime("%d:%H:%M:%S")  
             else:
-                has_limit_time = contest.time_limit and (contest.time_limit + timezone.now()) > contest.end_time
+                has_limit_time = contest.time_limit and (contest.time_limit + timezone.now()) > contest.end_time and \
+                                 request.profile.current_contest
                 if has_limit_time:
-                    aux_date = contest.time_limit + timezone.now()
+                    aux_date = contest.time_limit + request.profile.current_contest.real_start
                     conditional_time = aux_date.timestamp()
                     message = 'Tú tiempo limite termina en: '+datetime.fromtimestamp(conditional_time - timezone_now).strftime("%d:%H:%M:%S")  
                 else:
