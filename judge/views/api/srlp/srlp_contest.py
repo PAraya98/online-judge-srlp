@@ -75,7 +75,7 @@ def get_contest_list(request):
                 'time_before_start': c.time_before_start,
                 'time_before_end': c.time_before_end,
                 'locked_after': c.locked_after.timestamp() if c.locked_after else None,
-                'is_locked': c.locked_after > timezone.now(),
+                'is_locked': c.locked_after > timezone.now() if c.locked_after else False,
                 'labels': list(map(attrgetter('name'), c.tag_list))
             })
         data = ({"contests": array, 'current_time': datetime.now(), 'is_connected': bool(user), 'status': True})
