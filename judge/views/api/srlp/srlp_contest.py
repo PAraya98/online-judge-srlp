@@ -402,7 +402,7 @@ def get_time(request):
                      (contest.time_limit + request.profile.current_contest.real_start) < contest.locked_after 
                                  
                 if has_limit_time:
-                    aux_date = (contest.time_limit + request.profile.current_contest.real_start)-timezone_now
+                    aux_date = (contest.time_limit + request.profile.current_contest.real_start) - timezone.now()
                     conditional_time = aux_date.timestamp()
                     message = 'Tú tiempo limite termina en: '+datetime.fromtimestamp(conditional_time - timezone_now).strftime("%d:%H:%M:%S")  
                 else:
@@ -412,7 +412,7 @@ def get_time(request):
                 has_limit_time = contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key and \
                      (contest.time_limit + request.profile.current_contest.real_start) < contest.end_time 
                 if has_limit_time:
-                    aux_date = (contest.time_limit + request.profile.current_contest.real_start)-timezone_now
+                    aux_date = (contest.time_limit + request.profile.current_contest.real_start) - timezone.now()
                     conditional_time = aux_date.timestamp()
                     message = 'Tú tiempo limite termina en: '+datetime.fromtimestamp(conditional_time - timezone_now).strftime("%d:%H:%M:%S")  
                 else:
