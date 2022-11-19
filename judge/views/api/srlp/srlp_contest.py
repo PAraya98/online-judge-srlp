@@ -387,7 +387,7 @@ def get_time(request):
         timezone_now = timezone.now().timestamp()        
         
         if contest.ended:
-            return Response({'status': True, 'server_time': timezone_now, 'time': None})
+            return Response({'status': True, 'server_time': timezone_now, 'time': None, 'message': 'Concurso terminado.'})
         elif contest.started:
             conditional_time = None
 
