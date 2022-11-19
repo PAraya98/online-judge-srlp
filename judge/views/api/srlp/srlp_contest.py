@@ -386,13 +386,8 @@ def get_time(request):
     if(contest and contest.is_accessible_by(request.user)):
         timezone_now = timezone.now().timestamp()        
         
-        if contest.ended:
-            return Response({   'status': True, 
-                                'server_time': timezone_now, 
-                                'time': None, 
-                                'message': 'Concurso terminado.'
-                            })
-        elif contest.started or (contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key) :
+
+        if contest.started or (contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key) :
             conditional_time = None
             message = ''
             ### Time condition
@@ -422,6 +417,12 @@ def get_time(request):
                                 'server_time': timezone_now, 
                                 'time': conditional_time, 
                                 'message': message})
+        elif contest.ended:
+            return Response({   'status': True, 
+                                'server_time': timezone_now, 
+                                'time': None, 
+                                'message': 'Concurso terminado.'
+                            })
         else:
             return Response({   'status': True, 
                                 'server_time': timezone_now, 
