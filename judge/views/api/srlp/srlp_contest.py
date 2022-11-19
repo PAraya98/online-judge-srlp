@@ -210,7 +210,7 @@ def get_contest_ranking(request):
                                     'solutions': get_participation_info(contest_problems, user_best, user)
                                 }
 
-    else: user_participation = {}
+    else: user_participation = None
 
     if not contest.can_see_full_scoreboard_rest(user): 
         return Response({'status': False, 'own_ranking': True, 'has_ended': contest.ended, 'user_participation': user_participation, 'message': 'No tienes acceso para ver el ranking general.'})
