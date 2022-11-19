@@ -385,7 +385,7 @@ def get_time(request):
     
     if(contest and contest.is_accessible_by(request.user)):
         timezone_now = timezone.now().timestamp()        
-        if contest.started or (contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key) :
+        if contest.started and not contest.ended or (contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key) :
             conditional_time = None
             message = ''
             ### Time condition
