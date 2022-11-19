@@ -404,18 +404,18 @@ def get_time(request):
                 if has_limit_time:
                     conditional_time = contest.time_limit + request.profile.current_contest.real_start
                     delta__date = conditional_time - timezone.now() 
-                    message = 'Tú tiempo limite termina en: '+datetime.fromtimestamp(delta__date.total_seconds / 1000).strftime("%d:%H:%M:%S")  
+                    message = 'Tú tiempo limite termina en: '+datetime.fromtimestamp(delta__date.total_seconds() / 1000).strftime("%d:%H:%M:%S")  
                 else:
                     
                     conditional_time = contest.locked_after.timestamp() + 0.5
-                    message = 'El concurso se bloquea en: '+datetime.fromtimestamp(delta__date.total_seconds / 1000).strftime("%d:%H:%M:%S")  
+                    message = 'El concurso se bloquea en: '+datetime.fromtimestamp(conditional_time - timezone_now).strftime("%d:%H:%M:%S")  
             else:
                 has_limit_time = contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key and \
                      (contest.time_limit + request.profile.current_contest.real_start) < contest.end_time 
                 if has_limit_time: 
                     conditional_time = contest.time_limit + request.profile.current_contest.real_start
                     delta__date = conditional_time - timezone.now() 
-                    essage = 'Tú tiempo limite termina en: '+datetime.strptime(delta__date,"%d:%H:%M:%S")  
+                    essage = 'Tú tiempo limite termina en: '+datetime.fromtimestamp(delta__date.total_seconds() / 1000).strftime("%d:%H:%M:%S")  
                 else:
                     conditional_time = contest.end_time.timestamp() + 0.5  
                     message = 'El concurso termina en: '+datetime.fromtimestamp(conditional_time - timezone_now).strftime("%d:%H:%M:%S")          
