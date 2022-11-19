@@ -387,7 +387,11 @@ def get_time(request):
         timezone_now = timezone.now().timestamp()        
         
         if contest.ended:
-            return Response({'status': True, 'server_time': timezone_now, 'time': None, 'message': 'Concurso terminado.'})
+            return Response({   'status': True, 
+                                'server_time': timezone_now, 
+                                'time': None, 
+                                'message': 'Concurso terminado.'
+                            })
         elif contest.started:
             conditional_time = None
 
@@ -412,7 +416,10 @@ def get_time(request):
                     conditional_time = contest.end_time.timestamp() + 0.5  
                     message = 'El concurso termina en: '+datetime.fromtimestamp(conditional_time - timezone_now).strftime("%d:%H:%M:%S")          
             
-            return Response({'status': True, 'server_time': timezone_now, 'time': conditional_time, 'message': message})
+            return Response({   'status': True, 
+                                'server_time': timezone_now, 
+                                'time': conditional_time, 
+                                'message': message})
         else:
             return Response({   'status': True, 
                                 'server_time': timezone_now, 
@@ -420,4 +427,6 @@ def get_time(request):
                                 'message': 'Empieza en : '+datetime.strftime(datetime.fromtimestamp(contest.start_time.timestamp() + 0.5 - timezone_now), "%d:-%H:%M:%S")
                             })
     else:
-        return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso.'})
+        return Response({   'status': False, 
+                            'message': 'El concurso no existe o no tienes acceso.'
+                        })
