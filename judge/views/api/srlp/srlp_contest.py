@@ -408,7 +408,7 @@ def get_time(request):
                      (contest.time_limit + request.profile.current_contest.real_start) < contest.end_time 
 
                 print(contest.time_limit is not None + ' '+ request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key + ' ' + (contest.time_limit + request.profile.current_contest.real_start) < contest.end_time)
-                print(contest.time_limit.total_seconds(),'+', request.profile.current_contest.real_start, '< ', contest.end_time)
+                print((contest.time_limit + request.profile.current_contest.real_start).strftime("%m/%d/%Y, %H:%M:%S") , '< ', contest.end_time.strftime("%m/%d/%Y, %H:%M:%S"))
                 if has_limit_time: 
                     conditional_time = (contest.time_limit + request.profile.current_contest.real_start).timestamp()
                     message = 'Tú tiempo limite termina en: '  
