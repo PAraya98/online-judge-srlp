@@ -404,7 +404,7 @@ def get_time(request):
                 if has_limit_time:
                     aux_date = contest.time_limit + request.profile.current_contest.real_start
                     aux_date = timezone.now() - aux_date 
-                    conditional_time = aux_date.total_seconds()
+                    conditional_time = aux_date.total_seconds() / 1000
                     message = 'Tú tiempo limite termina en: '+datetime.fromtimestamp(conditional_time - timezone_now).strftime("%d:%H:%M:%S")  
                 else:
                     
@@ -416,7 +416,7 @@ def get_time(request):
                 if has_limit_time:
                     aux_date = contest.time_limit + request.profile.current_contest.real_start 
                     aux_date = timezone.now() - aux_date 
-                    conditional_time = aux_date.total_seconds()
+                    conditional_time = aux_date.total_seconds() / 1000
                     message = 'Tú tiempo limite termina en: '+datetime.fromtimestamp(conditional_time - timezone_now).strftime("%d:%H:%M:%S")  
                 else:
                     conditional_time = contest.end_time.timestamp() + 0.5  
