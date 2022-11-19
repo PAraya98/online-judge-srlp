@@ -385,13 +385,13 @@ def get_time(request):
     
     if(contest and contest.is_accessible_by(request.user)):
         timezone_now = timezone.now().timestamp()        
-        
-
         if contest.started or (contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key) :
             conditional_time = None
             message = ''
             ### Time condition
+
             has_locked_time = contest.locked_after and contest.locked_after < contest.end_time
+
             if has_locked_time:
                 has_limit_time = contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key and \
                      (contest.time_limit + request.profile.current_contest.real_start) < contest.locked_after 
@@ -406,6 +406,9 @@ def get_time(request):
             else:
                 has_limit_time = contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key and \
                      (contest.time_limit + request.profile.current_contest.real_start) < contest.end_time 
+
+                print(contest.time_limit is not None + ' '+ request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key + ' ' + (contest.time_limit + request.profile.current_contest.real_start) < contest.end_time)
+                print(contest.time_limit.total_seconds(),'+', request.profile.current_contest.real_start, '< ', contest.end_time)
                 if has_limit_time: 
                     conditional_time = (contest.time_limit + request.profile.current_contest.real_start).timestamp()
                     message = 'Tú tiempo limite termina en: '  
