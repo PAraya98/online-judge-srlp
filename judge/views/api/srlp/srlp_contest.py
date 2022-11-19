@@ -385,7 +385,7 @@ def get_time(request):
     
     if(contest and contest.is_accessible_by(request.user)):
         timezone_now = timezone.now().timestamp()        
-        if contest.started and not contest.ended or (contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key) :
+        if contest.started and (not contest.ended or (contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key) ):
             conditional_time = None
             message = ''
             ### Time condition
@@ -402,7 +402,7 @@ def get_time(request):
                 else:
                     
                     conditional_time = contest.locked_after.timestamp() + 0.5
-                    message = 'El concurso se bloquea en: '+datetime.fromtimestamp(conditional_time - timezone_now).strftime("%d:%H:%M:%S")  
+                    message = 'El concurso se bloquea en: '  
             else:
                 has_limit_time = contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key \
                     and ((contest.time_limit + request.profile.current_contest.real_start) < contest.end_time or contest.ended)
@@ -412,7 +412,7 @@ def get_time(request):
                     message = 'Tú tiempo limite termina en: '  
                 else:
                     conditional_time = contest.end_time.timestamp() + 0.5  
-                    message = 'El concurso termina en: '+datetime.fromtimestamp(conditional_time - timezone_now).strftime("%d:%H:%M:%S")          
+                    message = 'El concurso termina en: '         
             
             return Response({   'status': True, 
                                 'server_time': timezone_now, 
@@ -428,7 +428,7 @@ def get_time(request):
             return Response({   'status': True, 
                                 'server_time': timezone_now, 
                                 'time': contest.start_time.timestamp() + 0.5, 
-                                'message': 'Empieza en : '+datetime.strftime(datetime.fromtimestamp(contest.start_time.timestamp() + 0.5 - timezone_now), "%d:-%H:%M:%S")
+                                'message': 'Empieza en :'
                             })
     else:
         return Response({   'status': False, 
