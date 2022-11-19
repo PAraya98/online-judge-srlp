@@ -399,7 +399,7 @@ def get_time(request):
             has_locked_time = contest.locked_after and contest.locked_after < contest.end_time
             if has_locked_time:
                 has_limit_time = contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key and \
-                     (contest.time_limit + request.profile.current_contest.real_start) > contest.locked_after 
+                     (contest.time_limit + request.profile.current_contest.real_start) < contest.locked_after 
                                  
                 if has_limit_time:
                     aux_date = contest.time_limit + request.profile.current_contest.real_start
@@ -410,7 +410,7 @@ def get_time(request):
                     message = 'El concurso se bloquea en: '+datetime.fromtimestamp(conditional_time - timezone_now).strftime("%d:%H:%M:%S")  
             else:
                 has_limit_time = contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key and \
-                     (contest.time_limit + request.profile.current_contest.real_start) > contest.end_time 
+                     (contest.time_limit + request.profile.current_contest.real_start) < contest.end_time 
                 if has_limit_time:
                     aux_date = contest.time_limit + request.profile.current_contest.real_start
                     conditional_time = aux_date.timestamp()
