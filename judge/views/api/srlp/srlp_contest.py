@@ -74,7 +74,7 @@ def get_contest_list(request):
                 'time_limit': c.time_limit and sane_time_repr(c.time_limit),
                 'time_before_start': c.time_before_start,
                 'time_before_end': c.time_before_end,
-                'locked_after': c.locked_after.timestamp(),
+                'locked_after': c.locked_after.timestamp() if c.locked_after else None,
                 'is_locked': c.locked_after > timezone.now(),
                 'labels': list(map(attrgetter('name'), c.tag_list))
             })
