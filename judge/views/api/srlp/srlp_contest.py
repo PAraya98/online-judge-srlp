@@ -320,7 +320,7 @@ def join_contest(request):
             )
         except ContestParticipation.DoesNotExist:
             if requires_access_code:
-               return Response({'status': False, 'message': 'Acceso denegado.'})
+               return Response({'status': False, 'message': 'Acceso denegado. (2)'})
 
             participation = ContestParticipation.objects.create(
                 contest=contest, user=profile, virtual=participation_type,
