@@ -392,7 +392,7 @@ def get_time(request):
                                 'time': None, 
                                 'message': 'Concurso terminado.'
                             })
-        elif contest.started:
+        elif contest.started or (contest.time_limit and request.profile and request.profile.current_contest and request.profile.current_contest.contest.key == contest.key) :
             conditional_time = None
             message = ''
             ### Time condition
