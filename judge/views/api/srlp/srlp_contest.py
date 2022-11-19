@@ -320,7 +320,7 @@ def join_contest(request):
             )
         except ContestParticipation.DoesNotExist:
             if requires_access_code:
-               return Response({'status': False, 'message': 'Se ha acabado tu tiempo de participación.'})
+               return Response({'status': False, 'message': 'Se ha acabado tu tiempo de participación, espera a que termine el concurso.'})
 
             participation = ContestParticipation.objects.create(
                 contest=contest, user=profile, virtual=participation_type,
