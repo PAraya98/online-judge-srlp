@@ -421,7 +421,7 @@ def get_time(request):
         elif contest.ended:
             return Response({   'status': True, 
                                 'server_time': timezone_now, 
-                                'time': None, 
+                                'time': timezone_now, 
                                 'message': 'Concurso terminado.'
                             })
         else:
