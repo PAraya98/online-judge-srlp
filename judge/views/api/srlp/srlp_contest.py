@@ -248,7 +248,7 @@ def get_participation_info(contest_problems, participation, user):
             data.append({   'problem_name':         problem.name,
                             'has_submission':       True,
                             'id':                   submission_data.submission.id,
-                            'can_see_detail':       submission_data.submission.can_see_detail_rest(user),
+                            'can_see_detail':       submission_data.submission.can_see_detail(user),
                             'language_name':        submission_data.submission.language.name,
                             'result_code':          submission_data.submission.result, 
                             'date':                 submission_data.submission.date,
