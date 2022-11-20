@@ -91,7 +91,7 @@ def get_contest_info(request):
     contest_code = '' if not code else code[0]
     contest = Contest.objects.filter(key=contest_code).first()
 
-    if not contest and (not contest.is_accessible_by(user)):
+    if not contest and (contest.is_accessible_by(user)):
        return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso a este concurso.'})
 
     in_contest = contest.is_in_contest_rest(user)
@@ -158,7 +158,7 @@ def get_contest_ranking(request):
     contest_code = '' if not code else code[0]
     contest = Contest.objects.filter(key=contest_code).first()
 
-    if not contest and not contest.is_accessible_by(user):
+    if not (contest and contest.is_accessible_by(user)):
        return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso a este concurso.'})
 
     problems = list(contest.contest_problems.select_related('problem')
@@ -441,7 +441,7 @@ def get_time__(request):
 def get_time(request):
     contest = Contest.objects.filter(key=request.GET.get('contest_key')).first()
 
-    if not contest and not contest.is_accessible_by(request.user): 
+    if not (contest and contest.is_accessible_by(request.user)): 
         return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso.'})
     
     profile = request.profile
