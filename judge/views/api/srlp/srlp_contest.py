@@ -467,15 +467,15 @@ def get_time(request):
         else:
             return Response({
                 'status': True, 
-                'server_time': timezone.now(), 
+                'server_time': timezone.now().timestamp(), 
                 'time': contest.end_time.timestamp() + 0.5,
                 'message': 'El concurso termina en:'
             })
     elif contest.ended:
         return Response({
             'status': True, 
-            'server_time': timezone.now(), 
-            'time': timezone.now(),
+            'server_time': timezone.now().timestamp(), 
+            'time': timezone.now().timestamp(),
             'message': 'El concurso ha terminado:'
         })
     else: # contest is in coming:
