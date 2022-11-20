@@ -378,7 +378,7 @@ def leave_contest(request):
 
 @permission_classes([isLogueado]) 
 @api_view(['GET'])
-def get_time(request):
+def get_time__(request):
     contest_key = request.GET.get('contest_key')
     if not contest_key: return Response({'status': False, 'message': 'Consulta errónea.'})
     contest = Contest.objects.filter(key=contest_key).first()    
@@ -434,3 +434,54 @@ def get_time(request):
         return Response({   'status': False, 
                             'message': 'El concurso no existe o no tienes acceso.'
                         })
+
+@permission_classes([isLogueado]) 
+@api_view(['GET'])
+def get_time(request):
+    contest = Contest.objects.filter(key=request.GET.get('contest_key')).first()
+
+    if not contest and not contest.is_accessible_by(request.user): 
+        return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso.'})
+    
+    profile = request.profile
+
+    #Conditions for time_limit time
+    if profile and contest.time_limit and profile.current_contest and profile.current_contest.contest.key == contest.key:
+        if  profile.current_contest.virtual != 0 or profile.current_contest.virtual == 0 \
+            and ((contest.locked_after and contest.time_limit + profile.current_contest.real_start < contest.locked_after) \
+            or contest.time_limit + profile.current_contest.real_start < contest.end_time):
+             return Response({
+                'status': True, 
+                'server_time': contest.locked_after.timestamp() + 0.5, 
+                'time': (contest.time_limit + request.profile.current_contest.real_start).timestamp(),
+                'message': 'Tú tiempo límite termina en:'
+            })
+    if contest.started:
+        if contest.locked_after and contest.locked_after < contest.end_time:
+            return Response({
+                'status': True, 
+                'server_time': contest.locked_after.timestamp() + 0.5, 
+                'time': contest.end_time.timestamp() + 0.5,
+                'message': 'El concurso se bloqueara en:'
+            })
+        else:
+            return Response({
+                'status': True, 
+                'server_time': timezone.now(), 
+                'time': contest.end_time.timestamp() + 0.5,
+                'message': 'El concurso termina en:'
+            })
+    elif contest.ended:
+        return Response({
+            'status': True, 
+            'server_time': timezone.now(), 
+            'time': timezone.now(),
+            'message': 'El concurso ha terminado:'
+        })
+    else: # contest is in coming:
+        return Response({   
+            'status': True, 
+            'server_time': timezone.now(), 
+            'time': contest.start_time.timestamp() + 0.5, 
+            'message': 'El concurso empieza en:'
+            })
