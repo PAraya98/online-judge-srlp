@@ -206,7 +206,7 @@ def get_contest_ranking(request):
                                     'old_rating': user_best.old_rating,
                                     'new_rating': user_best.new_rating,
                                     'is_disqualified': user_best.is_disqualified,                                    
-                                    'solutions': get_participation_info(contest_problems, user_best, user)
+                                    'solutions': get_participation_info(contest_problems, user_best, request.user)
                                 }
 
     else: user_participation = None
