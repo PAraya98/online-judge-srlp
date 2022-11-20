@@ -152,13 +152,11 @@ def get_contest_info(request):
 
 @api_view(['GET'])
 def get_contest_ranking(request):
-    user = get_jwt_user(request)
-    if user: profile = Profile.objects.get(user=user) 
     code = request.GET.getlist('code')
     contest_code = '' if not code else code[0]
     contest = Contest.objects.filter(key=contest_code).first()
 
-    if not (contest and contest.is_accessible_by(user)):
+    if not (contest and contest.is_accessible_by(request.user)):
        return Response({'status': False, 'message': 'El concurso no existe o no tienes acceso a este concurso.'})
 
     problems = list(contest.contest_problems.select_related('problem')
@@ -192,12 +190,12 @@ def get_contest_ranking(request):
             order_by=F('score').desc(),
     ))
     
-    if not contest.can_see_own_scoreboard(user):
+    if not contest.can_see_own_scoreboard(request.user):
         return Response({'status': False, 'own_ranking': False,'has_ended': contest.ended, 'message': 'No tienes acceso para ver el ranking.'})
     
     contest_problems = contest.problems.all()
 
-    if profile: user_best = queryset.filter(user=user.profile).first()
+    user_best = queryset.filter(user=request.profile).first()
     if user_best:  
         user_participation =    {   'position': user_best.position,
                                     'user': user_best.username,
@@ -213,7 +211,7 @@ def get_contest_ranking(request):
 
     else: user_participation = None
 
-    if not contest.can_see_full_scoreboard_rest(user): 
+    if not contest.can_see_full_scoreboard_rest(request.user): 
         return Response({'status': False, 'own_ranking': True, 'has_ended': contest.ended, 'user_participation': user_participation, 'message': 'No tienes acceso para ver el ranking general.'})
 
     if(len(queryset) > 0):
@@ -231,7 +229,7 @@ def get_contest_ranking(request):
                 'new_rating': participation.new_rating,
                 'is_disqualified': participation.is_disqualified,
                 #'solutions': contest.format.get_problem_breakdown(participation, problems),
-                'solutions': get_participation_info(contest_problems, participation, user)
+                'solutions': get_participation_info(contest_problems, participation, request.user)
             } for participation in result_page]
         data = {'ranking': ranking, 'has_ended': contest.ended,'own_ranking': True, 'user_participation': user_participation, 'status': True}
         return paginator.get_paginated_response(data)
