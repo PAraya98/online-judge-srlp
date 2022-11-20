@@ -105,6 +105,7 @@ def get_contest_info(request):
         'is_connected': bool(user)
     }
     if user:    
+        user_context['is_virtual_participation'] = request.profile.current_contest and request.profile.current_contest.virtual != 0
         user_context['is_in_contest'] = contest.is_in_contest_rest(user)
         user_context['can_see_full_scoreboard'] = contest.can_see_full_scoreboard_rest(user)   
         user_context['can_see_own_scoreboard'] = contest.can_see_own_scoreboard(user)
@@ -447,9 +448,9 @@ def get_time(request):
 
     #Conditions for time_limit time
     if profile and contest.time_limit and profile.current_contest and profile.current_contest.contest.key == contest.key:
-        if  profile.current_contest.virtual != 0 or profile.current_contest.virtual == 0 \
+        if  profile.current_contest.virtual != 0 or (profile.current_contest.virtual == 0 \
             and ((contest.locked_after and contest.time_limit + profile.current_contest.real_start < contest.locked_after) \
-            or contest.time_limit + profile.current_contest.real_start < contest.end_time):
+            or contest.time_limit + profile.current_contest.real_start < contest.end_time)):
              return Response({
                 'status': True, 
                 'server_time': timezone.now().timestamp(), 
