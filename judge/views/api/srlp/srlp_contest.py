@@ -105,7 +105,7 @@ def get_contest_info(request):
         'is_connected': bool(user)
     }
     if user:    
-        user_context['is_virtual_participation'] = request.profile.current_contest and request.profile.current_contest.virtual != 0
+        user_context['is_virtual_participation'] = bool(request.profile.current_contest) and request.profile.current_contest.contest.key == contest.key and request.profile.current_contest.virtual != 0
         user_context['is_in_contest'] = contest.is_in_contest_rest(user)
         user_context['can_see_full_scoreboard'] = contest.can_see_full_scoreboard_rest(user)   
         user_context['can_see_own_scoreboard'] = contest.can_see_own_scoreboard(user)
