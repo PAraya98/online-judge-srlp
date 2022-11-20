@@ -452,7 +452,7 @@ def get_time(request):
             or contest.time_limit + profile.current_contest.real_start < contest.end_time):
              return Response({
                 'status': True, 
-                'server_time': contest.locked_after.timestamp() + 0.5, 
+                'server_time': timezone.now().timestamp(), 
                 'time': (contest.time_limit + request.profile.current_contest.real_start).timestamp(),
                 'message': 'Tú tiempo límite termina en:'
             })
