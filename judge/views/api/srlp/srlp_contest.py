@@ -457,7 +457,8 @@ def get_time(request):
                 'status': True, 
                 'server_time': timezone.now().timestamp(), 
                 'time': (contest.time_limit + request.profile.current_contest.real_start).timestamp(),
-                'message': 'Tú tiempo límite termina en:'
+                'message': 'Tú tiempo límite termina en:',
+                'message_end': 'Tú tiempo límite se ha terminado.'
             })
     if contest.started and not contest.ended:
         if contest.locked_after and contest.locked_after < contest.end_time and timezone.now() < contest.locked_after:
@@ -465,26 +466,30 @@ def get_time(request):
                 'status': True, 
                 'server_time': timezone.now().timestamp(), 
                 'time': contest.locked_after.timestamp() + 0.5,
-                'message': 'El concurso se bloqueara en:'
+                'message': 'El concurso se bloqueara en:',
+                'message_end': 'Se ha terminado el tiempo de participación del concurso.'
             })
         else:
             return Response({
                 'status': True, 
                 'server_time': timezone.now().timestamp(), 
                 'time': contest.end_time.timestamp() + 0.5,
-                'message': 'El concurso termina en:'
+                'message': 'El concurso termina en:',
+                'message_end': 'El concurso ha terminado.'
             })
     elif contest.ended:
         return Response({
             'status': True, 
             'server_time': timezone.now().timestamp(), 
             'time': timezone.now().timestamp(),
-            'message': 'El concurso ha terminado:'
+            'message': 'El concurso ha terminado:',
+            'message_end': ''
         })
     else: # contest is in coming:
         return Response({   
             'status': True, 
             'server_time': timezone.now().timestamp(), 
             'time': contest.start_time.timestamp() + 0.5, 
-            'message': 'El concurso empieza en:'
+            'message': 'El concurso empieza en:',
+            'message_end': 'El concurso ha comenzado!'
             })
