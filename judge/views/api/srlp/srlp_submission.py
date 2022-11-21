@@ -199,8 +199,9 @@ def get_info_submission(request):
                 'error':  res.error,
                 'total_testcases': total_testcases,
                 'correct_testcases': correct_testcases,
-                'is_contest_submission': bool(res.contest_object),
-                'is_virtual_submission': bool(res.contest_object) and res.contest.participation.virtual != 0   
+                'is_contest_submission': bool(res.contest_object) and res.contest.participation.virtual != -1,
+                'is_live_submission': bool(res.contest_object) and res.contest.participation.virtual == 0,   
+                'is_virtual_submission': bool(res.contest_object) and res.contest.participation.virtual > 0   
             }
             
             array_ = []
