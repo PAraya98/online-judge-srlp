@@ -67,7 +67,7 @@ def get_contest_list(request):
         for c in result_page:
             array.append({
                 'key': c.key,
-                'name': c.name,                
+                'name': c.name, 
                 'summary': c.summary,
                 'start_time': c.start_time.isoformat(),
                 'end_time': c.end_time.isoformat(),
@@ -76,6 +76,8 @@ def get_contest_list(request):
                 'time_before_end': c.time_before_end,
                 'locked_after': c.locked_after.timestamp() if c.locked_after else None,
                 'is_locked': c.locked_after > timezone.now() if c.locked_after else False,
+                'is_spectable': bool(request.profile) and c.is_spectatable_by(request.user),
+                'has_password': c.access_code is not None,
                 'labels': list(map(attrgetter('name'), c.tag_list))
             })
         data = ({"contests": array, 'current_time': datetime.now(), 'is_connected': bool(user), 'status': True})
