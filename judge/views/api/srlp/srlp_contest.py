@@ -107,6 +107,8 @@ def get_contest_info(request):
         'is_connected': bool(user)
     }
     if user:    
+        last_participation = ContestParticipation.objects.filter(user=Profile.objects.get(user=user), contest=contest).order_by('-id').first()
+
         user_context['is_virtual_participation'] = bool(request.profile.current_contest) and request.profile.current_contest.contest.key == contest.key and request.profile.current_contest.virtual > 0
         user_context['is_spectator'] = bool(request.profile.current_contest) and request.profile.current_contest.contest.key == contest.key and request.profile.current_contest.virtual == -1
         user_context['is_in_live'] = bool(request.profile.current_contest) and request.profile.current_contest.contest.key == contest.key and request.profile.current_contest.virtual == 0
@@ -116,7 +118,7 @@ def get_contest_info(request):
         user_context['has_completed_contest'] = contest.has_completed_contest_rest(user)
         user_context['live_joinable'] = contest.is_live_joinable_by(user)
         user_context['editable'] = contest.is_editable_by(user)
-        user_context['has_participated'] = bool(ContestParticipation.objects.filter(user=Profile.objects.get(user=user), contest=contest).first())
+        user_context['has_participated'] =  last_participation and not last_participation.ended
 
 
     return Response({
