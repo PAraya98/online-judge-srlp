@@ -445,7 +445,7 @@ def get_time(request):
     profile = request.profile
 
     #Conditions for time_limit time
-    if profile and contest.time_limit and profile.current_contest and profile.current_contest.contest.key == contest.key and not profile.id in contest.spectator_ids :
+    if profile and contest.time_limit and profile.current_contest and profile.current_contest.contest.key == contest.key and not (profile.id in contest.spectator_ids):
         if  profile.current_contest.virtual != 0 or (profile.current_contest.virtual == 0 \
             and ((contest.locked_after and contest.time_limit + profile.current_contest.real_start < contest.locked_after) \
             or contest.time_limit + profile.current_contest.real_start < contest.end_time)):
