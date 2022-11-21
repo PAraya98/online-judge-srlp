@@ -448,7 +448,7 @@ def get_time(request):
     if profile and contest.time_limit and profile.current_contest and profile.current_contest.contest.key == contest.key:
         if  profile.current_contest.virtual != 0 or (profile.current_contest.virtual == 0 \
             and ((contest.locked_after and contest.time_limit + profile.current_contest.real_start < contest.locked_after) \
-            or contest.time_limit + profile.current_contest.real_start < contest.end_time)):
+            or contest.time_limit + profile.current_contest.real_start < contest.end_time)) and not profile.id in contest.spectator_ids:
              return Response({
                 'status': True, 
                 'server_time': timezone.now().timestamp(), 
