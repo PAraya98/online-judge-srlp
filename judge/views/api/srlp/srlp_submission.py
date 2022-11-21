@@ -252,6 +252,8 @@ def get_detail_submission(request):
         'source': submission.source.source,
         'error':  submission.error,
         'is_contest_submission': bool(submission.contest_object),
+        'is_live_submission': bool(submission.contest_object) and submission.contest.participation.virtual == 0,   
+        'is_virtual_submission': bool(submission.contest_object) and submission.contest.participation.virtual > 0,   
         'total_testcases': total_testcases,
         'correct_testcases': correct_testcases
     }
@@ -356,7 +358,9 @@ def get_all_submissions(request):
                 'total_points': res.total_points,
                 'result': res.result,
                 'can_see_detail': res.can_see_detail_rest(get_jwt_user(request)),
-                'is_contest_submission': bool(res.contest_object)
+                'is_contest_submission': bool(res.contest_object),
+                'is_live_submission': bool(res.contest_object) and res.contest.participation.virtual == 0,   
+                'is_virtual_submission': bool(res.contest_object) and res.contest.participation.virtual > 0   
             } for res in result_page)
         }       
         return paginator.get_paginated_response(data)
