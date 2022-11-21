@@ -77,7 +77,7 @@ def get_contest_list(request):
                 'locked_after': c.locked_after.timestamp() if c.locked_after else None,
                 'is_locked': c.locked_after > timezone.now() if c.locked_after else False,
                 'is_spectable': bool(request.profile) and c.is_spectatable_by(request.user),
-                'has_password': c.access_code is not None,
+                'has_password': c.access_code != '',
                 'labels': list(map(attrgetter('name'), c.tag_list))
             })
         data = ({"contests": array, 'current_time': datetime.now(), 'is_connected': bool(user), 'status': True})
