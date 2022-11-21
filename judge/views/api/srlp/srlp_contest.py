@@ -105,8 +105,9 @@ def get_contest_info(request):
         'is_connected': bool(user)
     }
     if user:    
-        user_context['is_virtual_participation'] = bool(request.profile.current_contest) and request.profile.current_contest.contest.key == contest.key and request.profile.current_contest.virtual != 0
-        user_context['is_in_contest'] = contest.is_in_contest_rest(user)
+        user_context['is_virtual_participation'] = bool(request.profile.current_contest) and request.profile.current_contest.contest.key == contest.key and request.profile.current_contest.virtual > 0
+        user_context['is_spectator'] = bool(request.profile.current_contest) and request.profile.current_contest.contest.key == contest.key and request.profile.current_contest.virtual == -1
+        user_context['is_in_contest'] = contest.is_in_contest_rest(user)        
         user_context['can_see_full_scoreboard'] = contest.can_see_full_scoreboard_rest(user)   
         user_context['can_see_own_scoreboard'] = contest.can_see_own_scoreboard(user)
         user_context['has_completed_contest'] = contest.has_completed_contest_rest(user)
@@ -124,7 +125,8 @@ def get_contest_info(request):
         'start_time': contest.start_time.isoformat(),
         'end_time': contest.end_time.isoformat(),
         'has_ended': contest.ended,
-        'current_time': datetime.now(),
+        'is_blocked': bool(contest.locked_after) and timezone.now() >= contest.locked_after,
+        'is_specteable': bool(request.profile) and contest.is_spectatable_by(request.profile),
         'tags': list(contest.tags.values_list('name', flat=True)),
         'is_rated': contest.is_rated,
         'rate_all': contest.is_rated and contest.rate_all,
@@ -132,8 +134,6 @@ def get_contest_info(request):
         'rating_floor': contest.rating_floor,   
         'rating_ceiling': contest.rating_ceiling,
         'has_access_code': True if contest.access_code is not '' else False,
-        'time_before_start': contest.time_before_start,
-        'time_before_end': contest.time_before_end,
         'format': {
             'name': contest.format_name,
             'config': contest.format_config,
