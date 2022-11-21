@@ -466,7 +466,7 @@ def get_time(request):
                 'status': True, 
                 'server_time': timezone.now().timestamp(), 
                 'time': contest.locked_after.timestamp() + 0.5,
-                'message': 'El concurso se bloqueara en:',
+                'message': 'El concurso se bloqueará en:',
                 'message_end': 'Se ha terminado el tiempo de participación del concurso.'
             })
         else:
