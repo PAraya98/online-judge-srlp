@@ -459,8 +459,8 @@ def get_time(request):
         if contest.locked_after and contest.locked_after < contest.end_time:
             return Response({
                 'status': True, 
-                'server_time': contest.locked_after.timestamp() + 0.5, 
-                'time': contest.end_time.timestamp() + 0.5,
+                'server_time': timezone.now().timestamp(), 
+                'time': contest.locked_after.timestamp() + 0.5,
                 'message': 'El concurso se bloqueara en:'
             })
         else:
@@ -480,7 +480,7 @@ def get_time(request):
     else: # contest is in coming:
         return Response({   
             'status': True, 
-            'server_time': timezone.now(), 
+            'server_time': timezone.now().timestamp(), 
             'time': contest.start_time.timestamp() + 0.5, 
             'message': 'El concurso empieza en:'
             })
