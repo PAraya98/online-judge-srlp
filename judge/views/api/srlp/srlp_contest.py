@@ -175,12 +175,11 @@ def get_contest_ranking(request):
     
     
     if request.GET.get('virtual') == 'true':
-        queryset = queryset.exclude(virtual = 0)
+        queryset = queryset.filter(virtual__gt = 0)
+    elif request.GET.get('virtual') == 'false':
+        queryset = queryset.filter(virtual = 0) 
     else:
-        queryset = filter_if_not_none(queryset,        
-            virtual = 0 if request.GET.get('virtual') == 'false' else None
-        )  
-
+        return Response({'status': False, 'message': 'Error en la solicitud.'})
     #if(not contest.is_editable_by(user)):
     #    queryset = queryset.exclude(virtual__lt = 0)
     

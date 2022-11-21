@@ -98,7 +98,8 @@ def get_problem_info(request):
                     'key': current_contest.contest.key,
                     'name': current_contest.contest.name,
                     'time_before_end': current_contest.contest.time_before_end,
-                    'is_virtual_participation': current_contest.virtual != 0
+                    'is_virtual_participation': current_contest.virtual > 0,
+                    'is_spectator': current_contest.virtual == -1
                 }
 
     return Response({
