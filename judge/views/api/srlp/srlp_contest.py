@@ -126,7 +126,7 @@ def get_contest_info(request):
         'end_time': contest.end_time.isoformat(),
         'has_ended': contest.ended,
         'is_blocked': bool(contest.locked_after) and timezone.now() >= contest.locked_after,
-        'is_specteable': bool(request.profile) and contest.is_spectatable_by(request.profile),
+        'is_specteable': bool(request.profile) and contest.is_spectatable_by(request.user),
         'tags': list(contest.tags.values_list('name', flat=True)),
         'is_rated': contest.is_rated,
         'rate_all': contest.is_rated and contest.rate_all,
