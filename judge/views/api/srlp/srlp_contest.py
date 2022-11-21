@@ -456,7 +456,7 @@ def get_time(request):
                 'message': 'Tú tiempo límite termina en:'
             })
     if contest.started and not contest.ended:
-        if contest.locked_after and contest.locked_after < contest.end_time:
+        if contest.locked_after and contest.locked_after < contest.end_time and timezone.now() < contest.locked_after:
             return Response({
                 'status': True, 
                 'server_time': timezone.now().timestamp(), 
