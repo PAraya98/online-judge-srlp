@@ -91,9 +91,9 @@ def get_problem_info(request):
     if(user):
         profile = Profile.objects.get(user=user)
         current_contest = profile.current_contest
-        if(current_contest and not profile.id in current_contest.contest.spectator_ids):
+        if(current_contest):
             is_contest_problem = bool(current_contest.contest.problems.filter(id=p.pk).first())
-            if is_contest_problem:
+            if is_contest_problem and current_contest.virtual != -1:
                 contest_info = {
                     'key': current_contest.contest.key,
                     'name': current_contest.contest.name,
